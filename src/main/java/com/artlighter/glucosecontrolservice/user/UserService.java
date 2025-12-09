@@ -1,6 +1,6 @@
 package com.artlighter.glucosecontrolservice.user;
 
-import com.artlighter.glucosecontrolservice.user.entity.User;
+import com.artlighter.glucosecontrolservice.auth.entity.User;
 import com.artlighter.glucosecontrolservice.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,7 +21,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User saveUser(User user) {
-        return userRepository.insertUser(user);
+        return userRepository.save(user);
     }
 
     @Override
@@ -35,7 +35,7 @@ public class UserService implements UserDetailsService {
 
     public User getUserByUsername(String username) {
         if (username == null) return null;
-        Optional<User> userOptional = userRepository.getUserByUsername(username);
+        Optional<User> userOptional = userRepository.findByUsername(username);
         return userOptional.orElse(null);
     }
 }

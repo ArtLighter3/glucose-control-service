@@ -1,5 +1,6 @@
 package com.artlighter.glucosecontrolservice.diary.controller;
 
+import com.artlighter.glucosecontrolservice.auth.entity.Role;
 import com.artlighter.glucosecontrolservice.diary.DiaryEntryDTO;
 import com.artlighter.glucosecontrolservice.diary.DiaryService;
 import com.artlighter.glucosecontrolservice.diary.entity.DiaryEntry;
@@ -35,12 +36,12 @@ public class DiaryController {
             return diaryService.getAllMeasurements().stream().map(entry -> convertToDTO(entry)).toList();
         }
 
-        return diaryService.getAllUserMeasurements(new UserDTO(username, "", Collections.emptyList()))
+        return diaryService.getAllUserMeasurements(new UserDTO(username, "", Collections.emptySet()))
                 .stream().map(entry -> convertToDTO(entry)).toList();
     }
 
     private DiaryEntry convertFromDTO(DiaryEntryDTO dto) {
-        return new DiaryEntry(dto.measurement(), dto.date(), dto.notes(), new UserDTO(dto.username(), "", Collections.emptyList()));
+        return new DiaryEntry(dto.measurement(), dto.date(), dto.notes(), new UserDTO(dto.username(), "", Collections.emptySet()));
     }
 
     private DiaryEntryDTO convertToDTO(DiaryEntry diaryEntry) {

@@ -3,7 +3,6 @@ package com.artlighter.glucosecontrolservice.diary;
 import com.artlighter.glucosecontrolservice.diary.entity.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.repository.DiaryRepository;
 import com.artlighter.glucosecontrolservice.user.UserDTO;
-import com.artlighter.glucosecontrolservice.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

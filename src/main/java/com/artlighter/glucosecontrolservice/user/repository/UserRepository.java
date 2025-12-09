@@ -1,30 +1,13 @@
 package com.artlighter.glucosecontrolservice.user.repository;
 
-import com.artlighter.glucosecontrolservice.user.entity.User;
-import org.springframework.stereotype.Component;
+import com.artlighter.glucosecontrolservice.auth.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
-@Component
-public class UserRepository {
-    private Map<String, User> users = new HashMap<>();
+@Repository
+public interface UserRepository extends JpaRepository<User, Integer> {
 
-    public UserRepository() {
-        User user = new User();
-        user.setUsername("user");
-        user.setPassword("user");
-        users.put(user.getUsername(), user);
-    }
-
-    public Optional<User> getUserByUsername(String username) {
-        User user = users.get(username);
-        return Optional.of(user);
-    }
-
-    public User insertUser(User user) {
-        return users.put(user.getUsername(), user);
-    }
+    Optional<User> findByUsername(String username);
 }
