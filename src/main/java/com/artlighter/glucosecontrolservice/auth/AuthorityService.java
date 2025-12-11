@@ -2,10 +2,8 @@ package com.artlighter.glucosecontrolservice.auth;
 
 import com.artlighter.glucosecontrolservice.auth.entity.Authority;
 import com.artlighter.glucosecontrolservice.auth.entity.Role;
-import com.artlighter.glucosecontrolservice.auth.exception.AuthorityIsNotDeletableException;
+import com.artlighter.glucosecontrolservice.auth.util.exception.AuthorityIsNotDeletableException;
 import com.artlighter.glucosecontrolservice.auth.repository.AuthorityRepository;
-import com.artlighter.glucosecontrolservice.auth.repository.impl.DatabaseAuthorityRepository;
-import com.artlighter.glucosecontrolservice.auth.repository.impl.InMemoryAuthorityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,7 +54,7 @@ public class AuthorityService {
         if (authorities == null || !authorities.containsKey(authority)) return null;
 
         boolean isDeletable = authorities.get(authority);
-        if (!isDeletable) throw new AuthorityIsNotDeletableException(authority, role);
+        if (!isDeletable) throw new AuthorityIsNotDeletableException(role, authority);
 
         return authorityRepository.removeAuthority(role, authority);
     }

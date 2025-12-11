@@ -32,7 +32,7 @@ public class DiaryController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('GLUCOSE_SHOW_OWN')")
+    @PreAuthorize("hasAuthority('GLUCOSE_SHOW_ALL')")
     public List<DiaryEntryDTO> getUserMeasurements(@RequestParam(required = false) String username) {
         if (username == null) {
             return diaryService.getAllMeasurements().stream().map(entry -> convertToDTO(entry)).toList();

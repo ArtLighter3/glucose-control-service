@@ -48,8 +48,11 @@ public class DatabaseAuthorityRepository implements AuthorityRepository {
     public Authority removeAuthority(Role role, Authority authority) {
         if (role == null || authority == null) return null;
 
-        entityManager.remove(new RoleAuthorityID(role, authority));
+        RoleAuthorityEntity entity = entityManager.find(RoleAuthorityEntity.class,
+                new RoleAuthorityID(role, authority));
+        if (entity == null) return null;
 
+        entityManager.remove(entity);
         //TODO Почему-то entityManager не закрывается автоматически.
         // Все аннотации на месте (@Transactional, @PersistenceContext). Почему?
         entityManager.close();
