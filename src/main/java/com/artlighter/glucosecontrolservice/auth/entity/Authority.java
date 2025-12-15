@@ -1,5 +1,9 @@
 package com.artlighter.glucosecontrolservice.auth.entity;
 
+/**
+ * Перечисление доступных прав пользователей
+ */
+
 public enum Authority {
     GLUCOSE_SHOW_OWN,
     GLUCOSE_SHOW_ATTACHED,

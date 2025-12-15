@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * Класс, помогающий обнулять сессии пользователей после модификации их прав
+ */
 @Component
 public class SessionManager {
     private SessionRegistry sessionRegistry;
@@ -16,6 +19,10 @@ public class SessionManager {
         this.sessionRegistry = sessionRegistry;
     }
 
+    /**
+     * Отозвать все сессии определенного пользователя
+     * @param user пользователь, чьи сессии необходимо отозвать
+     */
     public void expireUser(User user) {
         if (user == null) return;
         List<SessionInformation> sessions = sessionRegistry.getAllSessions(user, false);
@@ -24,6 +31,10 @@ public class SessionManager {
         }
     }
 
+    /**
+     * Отозвать все сессии всех пользователей с определенной ролью
+     * @param role роль, у пользователей с которой необходимо отозвать сессии
+     */
     public void expireAllUsersWithRole(Role role) {
         List<Object> principals = sessionRegistry.getAllPrincipals();
         for (Object principal : principals) {

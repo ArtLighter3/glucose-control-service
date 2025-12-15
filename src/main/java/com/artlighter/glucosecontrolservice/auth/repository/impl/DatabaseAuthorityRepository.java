@@ -15,6 +15,9 @@ import org.springframework.stereotype.Repository;
 import java.io.Serializable;
 import java.util.*;
 
+/**
+ * Реализация репозитория прав для базы данных с использованием ORM
+ */
 @Repository
 public class DatabaseAuthorityRepository implements AuthorityRepository {
     @PersistenceContext
@@ -27,16 +30,16 @@ public class DatabaseAuthorityRepository implements AuthorityRepository {
 
     @Override
     public Authority addAuthority(Role role, Authority authority, boolean isDeletable) {
-        if (role == null || authority == null) return null;
+        if (role == null || authority == null)
+            throw new IllegalArgumentException("Role and/or authority cannot be null");
 
         RoleAuthorityEntity roleAuthorityEntity =
                 new RoleAuthorityEntity(new RoleAuthorityID(role, authority), isDeletable);
         RoleAuthorityEntity inDatabaseEntity =
                 entityManager.find(RoleAuthorityEntity.class, roleAuthorityEntity.getId());
-        if (inDatabaseEntity == null) {
-            entityManager.persist(roleAuthorityEntity);
-        }
+        if (inDatabaseEntity != null) return null;
 
+        entityManager.persist(roleAuthorityEntity);
         //TODO Почему-то entityManager не закрывается автоматически.
         // Все аннотации на месте (@Transactional у сервиса, @PersistenceContext у менеджера). Почему?
         entityManager.close();
@@ -46,7 +49,8 @@ public class DatabaseAuthorityRepository implements AuthorityRepository {
 
     @Override
     public Authority removeAuthority(Role role, Authority authority) {
-        if (role == null || authority == null) return null;
+        if (role == null || authority == null)
+            throw new IllegalArgumentException("Role and/or authority cannot be null");
 
         RoleAuthorityEntity entity = entityManager.find(RoleAuthorityEntity.class,
                 new RoleAuthorityID(role, authority));
@@ -61,7 +65,7 @@ public class DatabaseAuthorityRepository implements AuthorityRepository {
 
     @Override
     public Map<Authority, Boolean> getRoleAuthorities(Role role) {
-        if (role == null) return null;
+        if (role == null) return Collections.<Authority, Boolean>emptyMap();
 
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<RoleAuthorityEntity> query = builder.createQuery(RoleAuthorityEntity.class);
