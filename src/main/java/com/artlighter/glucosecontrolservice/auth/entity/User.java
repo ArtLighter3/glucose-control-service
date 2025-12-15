@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Класс, представляющий пользователя системы с его данными для аутентификации и авторизации
+ */
 @Entity
 @Table(name = "serviceuser")
 public class User implements UserDetails {

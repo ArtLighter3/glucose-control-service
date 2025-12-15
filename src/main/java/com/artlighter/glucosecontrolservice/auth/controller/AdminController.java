@@ -38,13 +38,10 @@ public class AdminController {
         Role role = pair.getFirst();
         Authority authority = pair.getSecond();
 
-        if (authorityService.hasAuthority(role, authority)) {
-            authorityService.removeAuthority(role, authority);
-            sessionManager.expireAllUsersWithRole(role);
-            return roleAuthorityDTO;
-        }
+        Authority revokedAuthority = authorityService.removeAuthority(role, authority);
+        if (revokedAuthority != null) sessionManager.expireAllUsersWithRole(role);
 
-        throw new RoleDoesNotHaveSuchAuthorityException(role, authority);
+        return roleAuthorityDTO;
     }
 
     @PostMapping("/add-authority")
@@ -53,17 +50,14 @@ public class AdminController {
         Role role = pair.getFirst();
         Authority authority = pair.getSecond();
 
-        if (!authorityService.hasAuthority(role, authority)) {
-            authorityService.addDeletableAuthority(role, authority);
-            sessionManager.expireAllUsersWithRole(role);
-            return roleAuthorityDTO;
-        }
+        Authority addedAuthority = authorityService.addDeletableAuthority(role, authority);
+        if (addedAuthority != null) sessionManager.expireAllUsersWithRole(role);
 
-        throw new RoleAlreadyHasAuthorityException(role, authority);
+        return roleAuthorityDTO;
     }
 
     @ExceptionHandler(AuthoritiesException.class)
-    public ResponseEntity roleDoesNotHaveSuchAuthority(AuthoritiesException e) {
+    public ResponseEntity authoritiesException(AuthoritiesException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

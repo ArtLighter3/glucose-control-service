@@ -3,10 +3,20 @@ package com.artlighter.glucosecontrolservice.auth.util.exception;
 import com.artlighter.glucosecontrolservice.auth.entity.Authority;
 import com.artlighter.glucosecontrolservice.auth.entity.Role;
 
+/**
+ * Общее исключение, выбрасываемое при ошибках в действиях со связкой Роли и Права
+ */
+
 public class AuthoritiesException extends RuntimeException {
     private Authority authority;
     private Role role;
 
+    /**
+     * Конструктор
+     * @param role роль, с которой связано исключение
+     * @param authority право, с которым связано исключение
+     * @param message сообщение исключения
+     */
     public AuthoritiesException(Role role, Authority authority, String message) {
       super(message);
       this.authority = authority;

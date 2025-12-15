@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * WIP
+ */
 public class InMemoryAuthorityRepository implements AuthorityRepository {
     private Map<Role, Map<Authority, Boolean>> roleAuthorities = new HashMap<>();
 

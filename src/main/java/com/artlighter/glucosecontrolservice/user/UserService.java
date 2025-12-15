@@ -19,6 +19,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Сервис для сбора, добавления, удаления... пользователей системы
+ */
 @Service
 public class UserService implements UserDetailsService {
     private AuthorityService authorityService;
