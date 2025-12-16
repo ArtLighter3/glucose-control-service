@@ -11,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -26,14 +27,23 @@ import java.util.stream.Collectors;
 public class UserService implements UserDetailsService {
     private AuthorityService authorityService;
     private UserRepository userRepository;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, AuthorityService authorityService) {
+    public UserService(UserRepository userRepository,
+                       AuthorityService authorityService,
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.authorityService = authorityService;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public User saveUser(User user) {
+    public User addUser(User user, Role role) {
+        if (user == null) return null;
+
+        user.setRoles(Set.of(role));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         return userRepository.save(user);
     }
 
@@ -53,13 +63,18 @@ public class UserService implements UserDetailsService {
                     .collect(Collectors.toSet()));
         }
 
+        //TODO возможно, стоит добавить все роли, если роль - суперпользователь
         user.setGrantedAuthorities(grantedAuthorities);
         return user;
     }
 
+    /**
+     * Находит пользователя в системе по его имени
+     * @param username строковое уникальное имя пользователя
+     * @return объект пользователя, если был найден; null в случае невозможности достать пользователя
+     */
     public User getUserByUsername(String username) {
         User user = userRepository.findByUsername(username);
-        if (user == null) return null;
         return user;
     }
 }

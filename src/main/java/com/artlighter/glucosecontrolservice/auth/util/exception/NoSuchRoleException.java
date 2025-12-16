@@ -20,7 +20,7 @@ public class NoSuchRoleException extends NoSuchEnumerableConstantException {
      * @param nonExistentRoleName строковое имя переданной роли, которой нет в системе
      */
     public NoSuchRoleException(String nonExistentRoleName) {
-        this(nonExistentRoleName, "Role");
+        super(nonExistentRoleName, "Role");
     }
 
 }

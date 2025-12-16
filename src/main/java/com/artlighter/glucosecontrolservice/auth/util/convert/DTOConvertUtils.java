@@ -1,11 +1,24 @@
 package com.artlighter.glucosecontrolservice.auth.util.convert;
 
-import com.artlighter.glucosecontrolservice.auth.RoleAuthorityDTO;
+import com.artlighter.glucosecontrolservice.auth.dto.RoleAuthorityDTO;
+import com.artlighter.glucosecontrolservice.auth.dto.UserRegistrationDTO;
 import com.artlighter.glucosecontrolservice.auth.entity.Authority;
 import com.artlighter.glucosecontrolservice.auth.entity.Role;
+import com.artlighter.glucosecontrolservice.auth.entity.User;
+import com.artlighter.glucosecontrolservice.auth.util.exception.ExceptionDTO;
 import com.artlighter.glucosecontrolservice.auth.util.exception.NoSuchAuthorityException;
 import com.artlighter.glucosecontrolservice.auth.util.exception.NoSuchRoleException;
 import org.springframework.data.util.Pair;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.Errors;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+
+import java.time.Instant;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Класс, помогающий конвертировать объекты DTO для передачи вовне (или полученных извне) во внутренние объекты
@@ -38,6 +51,39 @@ public class DTOConvertUtils {
         }
 
         return Pair.of(role, authority);
+    }
+
+    public static User convertToUserFromRegistrationForm(UserRegistrationDTO userRegistrationDTO) {
+        User user = new User();
+        user.setUsername(userRegistrationDTO.username());
+        user.setPassword(userRegistrationDTO.password());
+        user.setRoles(Set.of(Role.ROLE_PATIENT));
+        return user;
+    }
+
+    public static ExceptionDTO createValidationException(Errors errors) {
+        return createException(HttpStatus.BAD_REQUEST, errors, "Validation of request body failed");
+    }
+
+    public static ExceptionDTO createOutputException(HttpStatus status, Exception exception) {
+        return createException(status, null, exception.getMessage());
+    }
+
+    private static ExceptionDTO createException(HttpStatus status, Errors errors, String message) {
+        Map<String, String> validationErrors = errors != null ? new HashMap<>() : null;
+        if (errors != null && errors.hasErrors()) {
+            for (ObjectError error : errors.getAllErrors()) {
+                validationErrors.put(error.getObjectName(), error.getDefaultMessage());
+            }
+        }
+
+        ExceptionDTO exceptionDTO = new ExceptionDTO(Date.from(Instant.now()),
+                String.valueOf(status.value()),
+                status.name(),
+                message,
+                validationErrors);
+
+        return exceptionDTO;
     }
 
 }

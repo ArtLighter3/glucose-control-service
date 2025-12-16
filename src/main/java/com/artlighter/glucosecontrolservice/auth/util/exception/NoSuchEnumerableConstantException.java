@@ -26,7 +26,7 @@ public class NoSuchEnumerableConstantException extends RuntimeException {
      * @param enumName строковое имя энума, значение которого пытались передать
      */
     public NoSuchEnumerableConstantException(String nonExistentEnumValue, String enumName) {
-        this(nonExistentEnumValue, enumName, String.format("%s '%s' does not exist", enumName, nonExistentEnumValue));
+        this(nonExistentEnumValue, enumName, String.format("%s \'%s\' does not exist", enumName, nonExistentEnumValue));
     }
 
     public String getNonExistentEnumValue() {

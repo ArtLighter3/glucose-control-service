@@ -19,7 +19,7 @@ public class NoSuchAuthorityException extends NoSuchEnumerableConstantException 
      * @param nonExistentAuthorityName строковое имя переданного права, которого нет в системе
      */
     public NoSuchAuthorityException(String nonExistentAuthorityName) {
-        this(nonExistentAuthorityName, "Authority");
+        super(nonExistentAuthorityName, "Authority");
     }
 
 }

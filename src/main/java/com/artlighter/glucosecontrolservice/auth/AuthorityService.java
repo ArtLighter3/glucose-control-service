@@ -147,13 +147,14 @@ public class AuthorityService {
     }
 
     /**
-     * Находит и составляет коллекцию всех прав переданной роли
+     * Находит и составляет коллекцию всех прав переданной роли. У суперпользователя возвращает все права
      * @param role определенная роль, список прав которой нужно получить
      * @return Множество прав роли; пустое множество в случае ошибок
      */
     @Transactional(readOnly = true)
     public Set<Authority> getRoleAuthorities(Role role) {
-        if (role == null) return Collections.emptySet();;
+        if (role == null) return Collections.emptySet();
+        if (role == Role.ROLE_SUPERUSER) return getAllAuthorities();
 
         Map<Authority, Boolean> authorities = authorityRepository.getRoleAuthorities(role);
         if (authorities == null) return Collections.emptySet();

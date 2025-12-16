@@ -8,6 +8,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -20,6 +21,7 @@ import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @Configuration
@@ -32,10 +34,13 @@ public class AuthConfig {
         return http
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((requests) ->
-                //                requests.anyRequest().permitAll())
-                        requests.anyRequest().authenticated())
-                .formLogin(form -> form.loginPage("/api/auth/login")
-                        .loginProcessingUrl("/api/auth/login-process"))
+                                requests.requestMatchers("/api/auth/register").permitAll()
+                                        .anyRequest().authenticated())
+                        //        .requestMatchers("/api/auth/process-login").permitAll()
+                .exceptionHandling(exception ->
+                        exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .formLogin(form ->
+                        form.loginProcessingUrl("/api/auth/process-login"))
                 .userDetailsService(userService)
                 .sessionManagement(session ->
                         session.maximumSessions(1).sessionRegistry(sessionRegistry()))

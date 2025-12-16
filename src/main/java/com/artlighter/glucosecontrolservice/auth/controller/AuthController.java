@@ -1,24 +1,42 @@
-//package com.artlighter.glucosecontrolservice.auth.controller;
-//
-//import com.artlighter.glucosecontrolservice.auth.UserLoginDTO;
-//import com.artlighter.glucosecontrolservice.user.UserService;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RestController;
-//
-//@RestController
-//@RequestMapping("/api/auth")
-//public class AuthController {
-//    private UserService userService;
-//
-//    public AuthController(UserService userService) {
-//        this.userService = userService;
+package com.artlighter.glucosecontrolservice.auth.controller;
+
+import com.artlighter.glucosecontrolservice.auth.dto.UserRegistrationDTO;
+import com.artlighter.glucosecontrolservice.auth.entity.Role;
+import com.artlighter.glucosecontrolservice.auth.entity.User;
+import com.artlighter.glucosecontrolservice.auth.util.convert.DTOConvertUtils;
+import com.artlighter.glucosecontrolservice.user.UserService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
+    private UserService userService;
+
+    public AuthController(UserService userService) {
+        this.userService = userService;
+    }
+
+//    @PostMapping("/login")
+//    public RedirectView login(@RequestBody UserLoginDTO userLoginDTO, RedirectAttributes redirectAttributes) {
+//        redirectAttributes.addFlashAttribute("username", userLoginDTO.username());
+//        redirectAttributes.addFlashAttribute("password", userLoginDTO.password());
+//        return new RedirectView("/api/auth/process-login");
 //    }
-//
-//    @GetMapping("/process-login")
-//    public HttpStatus processLogin(UserLoginDTO userLoginDTO) {
-//        return HttpStatus.CREATED;
-//    }
-//}
+
+    @PostMapping(value = "/register")
+    public ResponseEntity<Object> register(@RequestBody @Valid UserRegistrationDTO userRegistrationDTO,
+                                   BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.badRequest().body(DTOConvertUtils.createValidationException(bindingResult));
+        }
+
+        User addedUser = userService.addUser(DTOConvertUtils.convertToUserFromRegistrationForm(userRegistrationDTO),
+                Role.ROLE_PATIENT);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+    }
+}
