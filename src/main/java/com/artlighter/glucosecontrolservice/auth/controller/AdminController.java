@@ -1,6 +1,6 @@
 package com.artlighter.glucosecontrolservice.auth.controller;
 
-import com.artlighter.glucosecontrolservice.auth.AuthorityService;
+import com.artlighter.glucosecontrolservice.auth.service.AuthorityService;
 import com.artlighter.glucosecontrolservice.auth.dto.RoleAuthorityDTO;
 import com.artlighter.glucosecontrolservice.auth.entity.Authority;
 import com.artlighter.glucosecontrolservice.auth.entity.Role;

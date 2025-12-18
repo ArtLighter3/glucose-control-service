@@ -42,7 +42,7 @@ public class DatabaseAuthorityRepository implements AuthorityRepository {
         entityManager.persist(roleAuthorityEntity);
         //TODO Почему-то entityManager не закрывается автоматически.
         // Все аннотации на месте (@Transactional у сервиса, @PersistenceContext у менеджера). Почему?
-        entityManager.close();
+       // entityManager.close();
 
         return authority;
     }
@@ -59,7 +59,7 @@ public class DatabaseAuthorityRepository implements AuthorityRepository {
         entityManager.remove(entity);
         //TODO Почему-то entityManager не закрывается автоматически.
         // Все аннотации на месте (@Transactional, @PersistenceContext). Почему?
-        entityManager.close();
+        //entityManager.close();
         return authority;
     }
 
@@ -112,6 +112,18 @@ public class DatabaseAuthorityRepository implements AuthorityRepository {
 
         public void setDeletable(boolean deletable) {
             isDeletable = deletable;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) return false;
+            RoleAuthorityEntity that = (RoleAuthorityEntity) o;
+            return Objects.equals(id, that.id);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(id);
         }
     }
 

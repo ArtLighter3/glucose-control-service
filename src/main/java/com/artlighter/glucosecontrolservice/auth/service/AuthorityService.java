@@ -1,4 +1,4 @@
-package com.artlighter.glucosecontrolservice.auth;
+package com.artlighter.glucosecontrolservice.auth.service;
 
 import com.artlighter.glucosecontrolservice.auth.entity.Authority;
 import com.artlighter.glucosecontrolservice.auth.entity.Role;
@@ -6,7 +6,6 @@ import com.artlighter.glucosecontrolservice.auth.util.exception.AuthorityIsNotDe
 import com.artlighter.glucosecontrolservice.auth.repository.AuthorityRepository;
 import com.artlighter.glucosecontrolservice.auth.util.exception.RoleAlreadyHasAuthorityException;
 import com.artlighter.glucosecontrolservice.auth.util.exception.RoleDoesNotHaveSuchAuthorityException;
-import jakarta.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
