@@ -1,9 +1,10 @@
 package com.artlighter.glucosecontrolservice.auth.util;
 
 import com.artlighter.glucosecontrolservice.auth.entity.Role;
-import com.artlighter.glucosecontrolservice.auth.entity.User;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.session.SessionInformation;
 import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,11 +22,11 @@ public class SessionManager {
 
     /**
      * Отозвать все сессии определенного пользователя
-     * @param user пользователь, чьи сессии необходимо отозвать
+     * @param userDetails объект с данными пользователя, чьи сессии необходимо отозвать
      */
-    public void expireUser(User user) {
-        if (user == null) return;
-        List<SessionInformation> sessions = sessionRegistry.getAllSessions(user, false);
+    public void expireUser(UserDetails userDetails) {
+        if (userDetails == null) return;
+        List<SessionInformation> sessions = sessionRegistry.getAllSessions(userDetails, false);
         for (SessionInformation session : sessions) {
             session.expireNow();
         }
@@ -38,8 +39,9 @@ public class SessionManager {
     public void expireAllUsersWithRole(Role role) {
         List<Object> principals = sessionRegistry.getAllPrincipals();
         for (Object principal : principals) {
-            if (principal instanceof User user && user.getRoles().contains(role)) {
-                expireUser(user);
+            if (principal instanceof UserDetails userDetails &&
+                    userDetails.getAuthorities().contains(new SimpleGrantedAuthority(role.name()))) {
+                expireUser(userDetails);
                 break;
             }
         }

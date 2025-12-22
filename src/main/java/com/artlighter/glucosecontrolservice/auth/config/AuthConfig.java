@@ -3,7 +3,7 @@ package com.artlighter.glucosecontrolservice.auth.config;
 import com.artlighter.glucosecontrolservice.auth.service.AuthorityService;
 import com.artlighter.glucosecontrolservice.auth.entity.Authority;
 import com.artlighter.glucosecontrolservice.auth.entity.Role;
-import com.artlighter.glucosecontrolservice.user.UserService;
+import com.artlighter.glucosecontrolservice.auth.service.UserDetailsFromUserService;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +25,8 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 public class AuthConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsFromUserService userDetailsService)
+            throws Exception {
         return http
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((requests) ->
@@ -36,7 +37,7 @@ public class AuthConfig {
                         exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .formLogin(form ->
                         form.loginProcessingUrl("/api/auth/process-login"))
-                .userDetailsService(userService)
+                .userDetailsService(userDetailsService)
                 .sessionManagement(session ->
                         session.maximumSessions(1).sessionRegistry(sessionRegistry()))
                 .build();

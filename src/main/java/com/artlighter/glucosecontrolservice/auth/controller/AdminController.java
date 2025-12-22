@@ -13,26 +13,24 @@ import com.artlighter.glucosecontrolservice.user.UserService;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/admin")
 //@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
-    private UserService userService;
     private AuthorityService authorityService;
     private SessionManager sessionManager;
 
-    public AdminController(UserService userService,
-                           AuthorityService authorityService,
+    public AdminController(AuthorityService authorityService,
                            SessionManager sessionManager) {
-        this.userService = userService;
         this.authorityService = authorityService;
         this.sessionManager = sessionManager;
     }
 
-    @PostMapping("/revoke-authority")
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/roles/revoke-authority")
+    @PreAuthorize("hasRole('ADMIN')")
     public RoleAuthorityDTO revokeAuthority(@RequestBody RoleAuthorityDTO roleAuthorityDTO) {
         Pair<Role, Authority> pair = DTOConvertUtils.convertToRoleAndAuthority(roleAuthorityDTO);
         Role role = pair.getFirst();
@@ -44,7 +42,8 @@ public class AdminController {
         return roleAuthorityDTO;
     }
 
-    @PostMapping("/add-authority")
+    @PostMapping("/roles/add-authority")
+    @PreAuthorize("hasRole('ADMIN')")
     public RoleAuthorityDTO addAuthority(@RequestBody RoleAuthorityDTO roleAuthorityDTO) {
         Pair<Role, Authority> pair = DTOConvertUtils.convertToRoleAndAuthority(roleAuthorityDTO);
         Role role = pair.getFirst();

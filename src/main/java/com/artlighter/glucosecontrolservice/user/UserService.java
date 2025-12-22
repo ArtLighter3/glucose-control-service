@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * Сервис для сбора, добавления, удаления... пользователей системы
  */
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
     private AuthorityService authorityService;
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
@@ -43,27 +43,6 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         return userRepository.save(user);
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = getUserByUsername(username);
-        if (user == null) {
-            throw new UsernameNotFoundException(username);
-        }
-
-        Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
-        for (Role role : user.getRoles()) {
-            grantedAuthorities.add(new SimpleGrantedAuthority(role.name()));
-            Set<Authority> authorities = authorityService.getRoleAuthorities(role);
-            grantedAuthorities.addAll(authorities.stream()
-                    .map(authority -> new SimpleGrantedAuthority(authority.name()))
-                    .collect(Collectors.toSet()));
-        }
-
-        //TODO возможно, стоит добавить все роли, если роль - суперпользователь
-        user.setGrantedAuthorities(grantedAuthorities);
-        return user;
     }
 
     /**
