@@ -45,6 +45,9 @@ public class AdminController {
     @PostMapping("/roles/add-authority")
     @PreAuthorize("hasRole('ADMIN')")
     public RoleAuthorityDTO addAuthority(@RequestBody RoleAuthorityDTO roleAuthorityDTO) {
+        //TODO Сделать так, чтобы можно было передавать массив ролей и прав, иначе админов после первого
+        //запроса выкинет из сессии, и последующие запросы по одной паре на добавление не пройдут (или мб
+        // переделать логику и не выкидывать из сессии, а обновлять права?).
         Pair<Role, Authority> pair = DTOConvertUtils.convertToRoleAndAuthority(roleAuthorityDTO);
         Role role = pair.getFirst();
         Authority authority = pair.getSecond();

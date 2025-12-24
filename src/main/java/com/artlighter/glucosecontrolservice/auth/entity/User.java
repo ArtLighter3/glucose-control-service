@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  * Класс, представляющий пользователя системы с его данными для аутентификации и авторизации
  */
 @Entity
-@Table(name = "serviceuser")
+@Table(name = "service_user")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
