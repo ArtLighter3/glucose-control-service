@@ -40,9 +40,8 @@ public class DatabaseAuthorityRepository implements AuthorityRepository {
         if (inDatabaseEntity != null) return null;
 
         entityManager.persist(roleAuthorityEntity);
-        //TODO Почему-то entityManager не закрывается автоматически.
-        // Все аннотации на месте (@Transactional у сервиса, @PersistenceContext у менеджера). Почему?
-       // entityManager.close();
+
+        entityManager.flush();
 
         return authority;
     }
@@ -57,9 +56,9 @@ public class DatabaseAuthorityRepository implements AuthorityRepository {
         if (entity == null) return null;
 
         entityManager.remove(entity);
-        //TODO Почему-то entityManager не закрывается автоматически.
-        // Все аннотации на месте (@Transactional, @PersistenceContext). Почему?
-        //entityManager.close();
+
+        entityManager.flush();
+
         return authority;
     }
 

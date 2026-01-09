@@ -59,12 +59,12 @@ public class AdminController {
     }
 
     @ExceptionHandler(AuthoritiesException.class)
-    public ResponseEntity<ExceptionDTO> authoritiesException(AuthoritiesException e) {
-        return ResponseEntity.badRequest().body(DTOConvertUtils.createOutputException(HttpStatus.BAD_REQUEST, e));
+    public ResponseEntity<ExceptionDTO> authoritiesException(AuthoritiesException ex) {
+        return ResponseEntity.badRequest().body(DTOConvertUtils.createOutputException(HttpStatus.BAD_REQUEST, ex));
     }
 
     @ExceptionHandler(NoSuchEnumerableConstantException.class)
-    public ResponseEntity<ExceptionDTO> noSuchEnum(NoSuchEnumerableConstantException e) {
-        return ResponseEntity.badRequest().body(DTOConvertUtils.createOutputException(HttpStatus.BAD_REQUEST, e));
+    public ResponseEntity<ExceptionDTO> noSuchEnum(NoSuchEnumerableConstantException ex) {
+        return ResponseEntity.badRequest().body(DTOConvertUtils.createOutputException(HttpStatus.BAD_REQUEST, ex));
     }
 }

@@ -49,7 +49,7 @@ CREATE TABLE Glucose_Entry (
 
 CREATE TABLE Insulin_Entry (
     profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
-    value int NOT NULL CHECK (value >= 1 AND value <= 100),
+    value real NOT NULL CHECK (value >= 1 AND value <= 100),
     commited_at timestamptz(0) NOT NULL,
     insulin_type insulin_type NOT NULL,
     notes varchar(500),

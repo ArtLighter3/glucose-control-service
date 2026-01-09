@@ -9,7 +9,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "insulin_entry")
 public class InsulinEntry extends DiaryEntry {
-    private Integer value;
+    private Float value;
     @Enumerated(EnumType.STRING)
     private InsulinType insulinType;
 
@@ -20,7 +20,7 @@ public class InsulinEntry extends DiaryEntry {
 
     @Override
     public void setValue(Number value) {
-        this.value = value.intValue();
+        this.value = value.floatValue();
     }
 
     public InsulinType getInsulinType() {

@@ -2,31 +2,33 @@ package com.artlighter.glucosecontrolservice.diary;
 
 import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
-import com.artlighter.glucosecontrolservice.diary.repository.DiaryEntryRepository;
+import com.artlighter.glucosecontrolservice.diary.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DiaryEntryService {
+   // private Map<DiaryEntryType, DiaryEntryJpaRepository<? extends DiaryEntry>> repositories;
     private DiaryEntryRepository diaryEntryRepository;
 
     @Autowired
-    public DiaryEntryService(DiaryEntryRepository diaryEntryRepository) {
+    public DiaryEntryService(@Qualifier("diaryEntryRepository") DiaryEntryRepository diaryEntryRepository) {
         this.diaryEntryRepository = diaryEntryRepository;
     }
 
-    public DiaryEntry saveMeasurement(DiaryEntry diaryEntry) {
-        return diaryEntryRepository.save(diaryEntry);
-    }
+//    public DiaryEntry addDiaryEntry(DiaryEntry diaryEntry) {
+//        return diaryEntryRepository.save(diaryEntry);
+//    }
 
     public List<DiaryEntry> getAllPatientEntries(PatientProfile patientProfile) {
         if (patientProfile == null) return Collections.emptyList();
 
         List<DiaryEntry> measurements =
-                diaryEntryRepository.getDiaryEntriesByPatientProfileOrderByCommitedAtDesc(patientProfile);
+                diaryEntryRepository.getAllByPatientProfileOrderByCommitedAtDesc(patientProfile);
 
         if (measurements == null) return Collections.emptyList();
         return measurements;
@@ -42,5 +44,22 @@ public class DiaryEntryService {
 
 //    public List<DiaryEntry> getAllMeasurements() {
 //        return diaryEntryRepository.getAllMeasurements();
+//    }
+
+//    private enum DiaryEntryType {
+//        GLUCOSE_ENTRY(GlucoseEntryRepository.class),
+//        INSULIN_ENTRY(InsulinEntryRepository.class),
+//        MEAL_ENTRY(MealEntryRepository.class),
+//        MEDICATION_ENTRY(MedicationEntryRepository.class);
+//
+//        private Class<? extends DiaryEntryRepository> repositoryClass;
+//
+//        DiaryEntryType(Class<? extends DiaryEntryRepository> repositoryClass) {
+//            this.repositoryClass = repositoryClass;
+//        }
+//
+//        Class<? extends DiaryEntryRepository> getRepositoryClass() {
+//            return repositoryClass;
+//        }
 //    }
 }

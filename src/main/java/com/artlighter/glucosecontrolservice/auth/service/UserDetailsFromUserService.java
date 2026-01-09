@@ -2,6 +2,7 @@ package com.artlighter.glucosecontrolservice.auth.service;
 
 import com.artlighter.glucosecontrolservice.auth.entity.Authority;
 import com.artlighter.glucosecontrolservice.auth.entity.Role;
+import com.artlighter.glucosecontrolservice.auth.ServiceUserDetails;
 import com.artlighter.glucosecontrolservice.auth.entity.User;
 import com.artlighter.glucosecontrolservice.user.UserService;
 import org.springframework.security.core.GrantedAuthority;
@@ -51,7 +52,7 @@ public class UserDetailsFromUserService implements UserDetailsService {
             }
         }
 
-        return new org.springframework.security.core.userdetails.User(user.getUsername(),
+        return new ServiceUserDetails(user.getId(), user.getUsername(),
                 user.getPassword(),
                 grantedAuthorities);
     }
