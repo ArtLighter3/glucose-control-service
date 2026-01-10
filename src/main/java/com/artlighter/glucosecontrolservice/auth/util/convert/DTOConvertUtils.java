@@ -8,6 +8,16 @@ import com.artlighter.glucosecontrolservice.auth.entity.User;
 import com.artlighter.glucosecontrolservice.auth.util.exception.ExceptionDTO;
 import com.artlighter.glucosecontrolservice.auth.util.exception.NoSuchAuthorityException;
 import com.artlighter.glucosecontrolservice.auth.util.exception.NoSuchRoleException;
+import com.artlighter.glucosecontrolservice.auth.util.exception.ValidationIsFailedException;
+import com.artlighter.glucosecontrolservice.diary.dto.GlucoseEntryDTO;
+import com.artlighter.glucosecontrolservice.diary.dto.InsulinEntryDTO;
+import com.artlighter.glucosecontrolservice.diary.dto.MealEntryDTO;
+import com.artlighter.glucosecontrolservice.diary.dto.MedicationEntryDTO;
+import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
+import com.artlighter.glucosecontrolservice.diary.entity.entry.GlucoseEntry;
+import com.artlighter.glucosecontrolservice.diary.entity.entry.InsulinEntry;
+import com.artlighter.glucosecontrolservice.diary.entity.entry.MealEntry;
+import com.artlighter.glucosecontrolservice.diary.entity.entry.MedicationEntry;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.Errors;
@@ -61,11 +71,63 @@ public class DTOConvertUtils {
         return user;
     }
 
-    public static ExceptionDTO createValidationException(Errors errors) {
-        return createException(HttpStatus.BAD_REQUEST, errors, "Validation of request body failed");
+    public static GlucoseEntry convertToEntry(GlucoseEntryDTO entryDTO, PatientProfile patientProfile) {
+        GlucoseEntry entry = new GlucoseEntry();
+
+        entry.setPatientProfile(patientProfile);
+        entry.setValue(entryDTO.value());
+        entry.setCommitedAt(entryDTO.commitedAt());
+        entry.setNotes(entryDTO.notes());
+
+        entry.setMeasurementType(entryDTO.type());
+
+        return entry;
     }
 
-    public static ExceptionDTO createOutputException(HttpStatus status, Exception exception) {
+    public static InsulinEntry convertToEntry(InsulinEntryDTO entryDTO, PatientProfile patientProfile) {
+        InsulinEntry entry = new InsulinEntry();
+
+        entry.setPatientProfile(patientProfile);
+        entry.setValue(entryDTO.value());
+        entry.setCommitedAt(entryDTO.commitedAt());
+        entry.setNotes(entryDTO.notes());
+
+        entry.setInsulinType(entryDTO.type());
+
+        return entry;
+    }
+
+    public static MealEntry convertToEntry(MealEntryDTO entryDTO, PatientProfile patientProfile) {
+        MealEntry entry = new MealEntry();
+
+        entry.setPatientProfile(patientProfile);
+        entry.setValue(entryDTO.value());
+        entry.setCommitedAt(entryDTO.commitedAt());
+        entry.setNotes(entryDTO.notes());
+
+        return entry;
+    }
+
+    public static MedicationEntry convertToEntry(MedicationEntryDTO entryDTO, PatientProfile patientProfile) {
+        MedicationEntry entry = new MedicationEntry();
+
+        entry.setPatientProfile(patientProfile);
+        entry.setValue(entryDTO.value());
+        entry.setCommitedAt(entryDTO.commitedAt());
+        entry.setNotes(entryDTO.notes());
+
+        entry.setMedicationName(entryDTO.name());
+
+        return entry;
+    }
+
+    public static ExceptionDTO createValidationException(ValidationIsFailedException ex) {
+        return createException(HttpStatus.BAD_REQUEST, ex.getErrors(), ex.getMessage());
+    }
+
+    public static ExceptionDTO createOutputException(HttpStatus status, Exception exception,
+                                                     boolean hideExceptionMessage) {
+        String exceptionMessage = hideExceptionMessage ? "" : exception.getMessage();
         return createException(status, null, exception.getMessage());
     }
 

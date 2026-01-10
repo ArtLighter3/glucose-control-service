@@ -1,10 +1,11 @@
 package com.artlighter.glucosecontrolservice.diary.repository;
 
-import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -16,6 +17,10 @@ import java.util.List;
 public interface ParticularDiaryEntryRepository<T extends DiaryEntry>
         extends JpaRepository<T, DiaryEntry.DiaryEntryID> {
 
-    List<? extends DiaryEntry> getAllByPatientProfileOrderByCommitedAtDesc(PatientProfile patientProfile);
-
+//    List<T> getAllByPatientProfile(PatientProfile patientProfile);
+//    List<T> getAllByPatientProfile(PatientProfile patientProfile, Sort sort);
+    List<T> getAllByPatientProfileIdAndCommitedAtBetween(int profileId,
+                                                         Instant from, Instant to);
+    List<T> getAllByPatientProfileIdAndCommitedAtBetween(int profileId,
+                                                         Instant from, Instant to, Sort sort);
 }

@@ -3,6 +3,7 @@ package com.artlighter.glucosecontrolservice.diary.entity.entry;
 import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -18,7 +19,7 @@ public abstract class DiaryEntry {
   //  @MapsId("profileId")
     @Id
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private PatientProfile patientProfile;
 
@@ -103,6 +104,15 @@ public abstract class DiaryEntry {
 //        public void setProfileId(int profileId) {
 //            this.profileId = profileId;
 //        }
+
+
+        public DiaryEntryID() {
+        }
+
+        public DiaryEntryID(PatientProfile patientProfile, Instant commitedAt) {
+            this.patientProfile = patientProfile;
+            this.commitedAt = commitedAt;
+        }
 
         public Instant getCommitedAt() {
             return commitedAt;
