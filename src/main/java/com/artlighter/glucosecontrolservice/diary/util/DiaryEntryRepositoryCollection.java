@@ -12,6 +12,7 @@ import java.util.Collection;
 
 public interface DiaryEntryRepositoryCollection {
     ParticularDiaryEntryRepository getRepositoryForEntity(DiaryEntry entry);
-
+    ParticularDiaryEntryRepository getRepositoryForType(DiaryEntryType entryType);
     Collection<ParticularDiaryEntryRepository> getAllRepositories();
+
 }

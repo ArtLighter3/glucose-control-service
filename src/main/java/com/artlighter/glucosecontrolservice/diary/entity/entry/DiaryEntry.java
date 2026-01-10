@@ -104,6 +104,15 @@ public abstract class DiaryEntry {
 //            this.profileId = profileId;
 //        }
 
+
+        public DiaryEntryID() {
+        }
+
+        public DiaryEntryID(PatientProfile patientProfile, Instant commitedAt) {
+            this.patientProfile = patientProfile;
+            this.commitedAt = commitedAt;
+        }
+
         public Instant getCommitedAt() {
             return commitedAt;
         }

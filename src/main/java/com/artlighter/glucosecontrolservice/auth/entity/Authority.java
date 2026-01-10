@@ -10,5 +10,5 @@ public enum Authority {
     GLUCOSE_SHOW_ALL,
     GLUCOSE_ADD_OWN,
     GLUCOSE_ADD_ATTACHED,
-    GLUCOSE_ADD_ALL
+    GLUCOSE_ADD_ALL;
 }

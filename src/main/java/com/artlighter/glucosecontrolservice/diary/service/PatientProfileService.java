@@ -13,6 +13,7 @@ public class PatientProfileService {
     }
 
     public PatientProfile getByUserId(int userId) {
+        //TODO а что если по каким-то причинам у больного не создался его профиль?
         return patientProfileRepository.getPatientProfileByUserId(userId);
     }
 }

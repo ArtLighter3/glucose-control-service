@@ -3,11 +3,15 @@ package com.artlighter.glucosecontrolservice.diary;
 import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.repository.*;
+import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class DiaryEntryService {
@@ -20,17 +24,26 @@ public class DiaryEntryService {
     }
 
     public DiaryEntry addDiaryEntry(DiaryEntry diaryEntry) {
+        //TODO как-то обозначать, что уже существует
         return commonDiaryEntryDAO.save(diaryEntry);
     }
 
-    public List<DiaryEntry> getAllPatientEntries(PatientProfile patientProfile) {
+    public List<DiaryEntry> getAllDiaryEntries(PatientProfile patientProfile,
+                                                            Instant from, Instant to) {
+        return getDiaryEntriesOfType(null, patientProfile, from, to);
+    }
+
+    public List<DiaryEntry> getDiaryEntriesOfType(DiaryEntryType entryType, PatientProfile patientProfile,
+                                                  Instant from, Instant to) {
         if (patientProfile == null) return Collections.emptyList();
 
-        List<DiaryEntry> measurements =
-                commonDiaryEntryDAO.getAllByPatientProfileOrderByCommitedAtDesc(patientProfile);
+        List<? extends DiaryEntry> entries = commonDiaryEntryDAO.getAllOfTypeBetweenDates(entryType,
+                patientProfile, from, to, Sort.by("commitedAt").descending());
 
-        if (measurements == null) return Collections.emptyList();
-        return measurements;
+        if (entries == null) return Collections.emptyList();
+
+        return entries.stream().map((entry) -> (DiaryEntry) entry)
+                .collect(Collectors.toList());
     }
 
 //    public List<DiaryEntry> getUserMeasurementsFromPeriod(UserDTO user, Date from, Date to) {

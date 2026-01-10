@@ -13,6 +13,14 @@ public class GlucoseEntry extends DiaryEntry {
     @Enumerated(EnumType.STRING)
     private MeasurementType measurementType;
 
+//    public GlucoseEntry() {
+//        super();
+//    }
+//
+//    public GlucoseEntry(Float value, MeasurementType measurementType, Instant co) {
+//        this.value = value;
+//    }
+
     @Override
     public Float getValue() {
         return value;

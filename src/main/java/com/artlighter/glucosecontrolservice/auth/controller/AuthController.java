@@ -4,6 +4,8 @@ import com.artlighter.glucosecontrolservice.auth.dto.UserRegistrationDTO;
 import com.artlighter.glucosecontrolservice.auth.entity.Role;
 import com.artlighter.glucosecontrolservice.auth.entity.User;
 import com.artlighter.glucosecontrolservice.auth.util.convert.DTOConvertUtils;
+import com.artlighter.glucosecontrolservice.auth.util.exception.ExceptionDTO;
+import com.artlighter.glucosecontrolservice.auth.util.exception.ValidationIsFailedException;
 import com.artlighter.glucosecontrolservice.user.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -31,12 +33,17 @@ public class AuthController {
     public ResponseEntity<Object> register(@RequestBody @Valid UserRegistrationDTO userRegistrationDTO,
                                    BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return ResponseEntity.badRequest().body(DTOConvertUtils.createValidationException(bindingResult));
+            throw new ValidationIsFailedException(bindingResult, "Validation of request body failed");
         }
 
         User addedUser = userService.addUser(DTOConvertUtils.convertToUserFromRegistrationForm(userRegistrationDTO),
                 Role.ROLE_PATIENT);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(null);
+    }
+
+    @ExceptionHandler(ValidationIsFailedException.class)
+    public ResponseEntity<ExceptionDTO> validationIsFailedException(ValidationIsFailedException ex) {
+        return ResponseEntity.badRequest().body(DTOConvertUtils.createValidationException(ex));
     }
 }

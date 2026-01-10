@@ -1,5 +1,6 @@
 package com.artlighter.glucosecontrolservice.diary.util;
 
+import com.artlighter.glucosecontrolservice.auth.util.exception.NoRepositoryForEntryTypeException;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.repository.ParticularDiaryEntryRepository;
 
@@ -19,9 +20,30 @@ public class InMapByTypeNameDiaryEntryRepositoryCollection implements DiaryEntry
 
     @Override
     public ParticularDiaryEntryRepository getRepositoryForEntity(DiaryEntry entry) {
-        if (repositories == null || entry == null) return null;
+        if (entry == null)
+            throw new IllegalArgumentException("DiaryEntry cannot be null");
 
-        return repositories.get(entry.getClass().getSimpleName());
+        ParticularDiaryEntryRepository repository = repositories.get(entry.getClass().getSimpleName());
+        if (repository == null) {
+            throw new NoRepositoryForEntryTypeException(entry.getClass().getSimpleName(),
+                    String.format("No repository for entry type %s", entry.getClass().getSimpleName()));
+        }
+
+        return repository;
+    }
+
+    @Override
+    public ParticularDiaryEntryRepository getRepositoryForType(DiaryEntryType entryType) {
+        if (entryType == null)
+            throw new IllegalArgumentException("DiaryEntryType cannot be null");
+
+        ParticularDiaryEntryRepository repository = repositories.get(entryType.getEntryClass().getSimpleName());
+        if (repository == null) {
+            throw new NoRepositoryForEntryTypeException(entryType.name(),
+                    String.format("No repository for entry type %s", entryType.name()));
+        }
+
+        return repository;
     }
 
     @Override
