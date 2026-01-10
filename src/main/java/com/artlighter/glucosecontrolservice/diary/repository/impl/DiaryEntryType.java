@@ -8,13 +8,13 @@ enum DiaryEntryType {
         MEAL_ENTRY(MealEntryRepository.class),
         MEDICATION_ENTRY(MedicationEntryRepository.class);
 
-        private Class<? extends DiaryEntryJpaRepository> repositoryClass;
+        private Class<? extends ParticularDiaryEntryRepository> repositoryClass;
 
-        DiaryEntryType(Class<? extends DiaryEntryJpaRepository> repositoryClass) {
+        DiaryEntryType(Class<? extends ParticularDiaryEntryRepository> repositoryClass) {
             this.repositoryClass = repositoryClass;
         }
 
-        Class<? extends DiaryEntryJpaRepository> getRepositoryClass() {
+        Class<? extends ParticularDiaryEntryRepository> getRepositoryClass() {
             return repositoryClass;
         }
 }

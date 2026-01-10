@@ -8,27 +8,26 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class DiaryEntryService {
    // private Map<DiaryEntryType, DiaryEntryJpaRepository<? extends DiaryEntry>> repositories;
-    private DiaryEntryRepository diaryEntryRepository;
+    private CommonDiaryEntryDAO commonDiaryEntryDAO;
 
     @Autowired
-    public DiaryEntryService(@Qualifier("diaryEntryRepository") DiaryEntryRepository diaryEntryRepository) {
-        this.diaryEntryRepository = diaryEntryRepository;
+    public DiaryEntryService(CommonDiaryEntryDAO commonDiaryEntryDAO) {
+        this.commonDiaryEntryDAO = commonDiaryEntryDAO;
     }
 
-//    public DiaryEntry addDiaryEntry(DiaryEntry diaryEntry) {
-//        return diaryEntryRepository.save(diaryEntry);
-//    }
+    public DiaryEntry addDiaryEntry(DiaryEntry diaryEntry) {
+        return commonDiaryEntryDAO.save(diaryEntry);
+    }
 
     public List<DiaryEntry> getAllPatientEntries(PatientProfile patientProfile) {
         if (patientProfile == null) return Collections.emptyList();
 
         List<DiaryEntry> measurements =
-                diaryEntryRepository.getAllByPatientProfileOrderByCommitedAtDesc(patientProfile);
+                commonDiaryEntryDAO.getAllByPatientProfileOrderByCommitedAtDesc(patientProfile);
 
         if (measurements == null) return Collections.emptyList();
         return measurements;

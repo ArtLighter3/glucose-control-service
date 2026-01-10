@@ -46,8 +46,8 @@ public class DiaryController {
                                               @AuthenticationPrincipal ServiceUserDetails userDetails) {
         if (userId != userDetails.getId())
             throw new NotCurrentUsersInfoException("You don't have access to this user's info");
-        return diaryEntryService.getAllPatientEntries(patientProfileService.getByUserId(userId));
 
+        return diaryEntryService.getAllPatientEntries(patientProfileService.getByUserId(userId));
     }
 
     @ExceptionHandler(NotCurrentUsersInfoException.class)

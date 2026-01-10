@@ -4,5 +4,5 @@ import com.artlighter.glucosecontrolservice.diary.entity.entry.InsulinEntry;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface InsulinEntryRepository extends DiaryEntryJpaRepository<InsulinEntry> {
+public interface InsulinEntryRepository extends ParticularDiaryEntryRepository<InsulinEntry> {
 }
