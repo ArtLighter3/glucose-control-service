@@ -1,11 +1,12 @@
 package com.artlighter.glucosecontrolservice.diary;
 
+import com.artlighter.glucosecontrolservice.auth.util.exception.ResourceAlreadyExistsException;
+import com.artlighter.glucosecontrolservice.auth.util.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.repository.*;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +25,19 @@ public class DiaryEntryService {
     }
 
     public DiaryEntry addDiaryEntry(DiaryEntry diaryEntry) {
-        //TODO как-то обозначать, что уже существует
-        return commonDiaryEntryDAO.save(diaryEntry);
+        if (commonDiaryEntryDAO.exists(diaryEntry))
+            throw new ResourceAlreadyExistsException(diaryEntry,
+                    "Diary entry for this user and this timestamp already exists");
+
+        return commonDiaryEntryDAO.saveOrUpdate(diaryEntry);
+    }
+
+    public DiaryEntry updateDiaryEntry(DiaryEntry diaryEntry) {
+        if (!commonDiaryEntryDAO.exists(diaryEntry))
+            throw new ResourceNotFoundException(diaryEntry,
+                    "Diary entry for this user and this timestamp not found");
+
+        return commonDiaryEntryDAO.saveOrUpdate(diaryEntry);
     }
 
     public List<DiaryEntry> getAllDiaryEntries(PatientProfile patientProfile,
@@ -56,22 +68,5 @@ public class DiaryEntryService {
 
 //    public List<DiaryEntry> getAllMeasurements() {
 //        return diaryEntryRepository.getAllMeasurements();
-//    }
-
-//    private enum DiaryEntryType {
-//        GLUCOSE_ENTRY(GlucoseEntryRepository.class),
-//        INSULIN_ENTRY(InsulinEntryRepository.class),
-//        MEAL_ENTRY(MealEntryRepository.class),
-//        MEDICATION_ENTRY(MedicationEntryRepository.class);
-//
-//        private Class<? extends DiaryEntryRepository> repositoryClass;
-//
-//        DiaryEntryType(Class<? extends DiaryEntryRepository> repositoryClass) {
-//            this.repositoryClass = repositoryClass;
-//        }
-//
-//        Class<? extends DiaryEntryRepository> getRepositoryClass() {
-//            return repositoryClass;
-//        }
 //    }
 }

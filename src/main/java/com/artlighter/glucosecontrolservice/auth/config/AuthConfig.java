@@ -69,7 +69,7 @@ public class AuthConfig {
     public ApplicationRunner initAuthorities(AuthorityService authorityService) {
         return args -> {
             authorityService.addUndeletableAuthorities(Role.ROLE_PATIENT,
-                    Authority.GLUCOSE_SHOW_OWN, Authority.GLUCOSE_ADD_OWN);
+                    Authority.GLUCOSE_SHOW_OWN, Authority.GLUCOSE_ADD_OWN, Authority.GLUCOSE_UPDATE_OWN);
         };
     }
 }

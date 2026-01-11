@@ -2,10 +2,7 @@ package com.artlighter.glucosecontrolservice.diary.controller;
 
 import com.artlighter.glucosecontrolservice.auth.ServiceUserDetails;
 import com.artlighter.glucosecontrolservice.auth.util.convert.DTOConvertUtils;
-import com.artlighter.glucosecontrolservice.auth.util.exception.ExceptionDTO;
-import com.artlighter.glucosecontrolservice.auth.util.exception.NoRepositoryForEntryTypeException;
-import com.artlighter.glucosecontrolservice.auth.util.exception.NotCurrentUsersInfoException;
-import com.artlighter.glucosecontrolservice.auth.util.exception.ValidationIsFailedException;
+import com.artlighter.glucosecontrolservice.auth.util.exception.*;
 import com.artlighter.glucosecontrolservice.diary.dto.GlucoseEntryDTO;
 import com.artlighter.glucosecontrolservice.diary.DiaryEntryService;
 import com.artlighter.glucosecontrolservice.diary.dto.InsulinEntryDTO;
@@ -145,14 +142,70 @@ public class DiaryController {
         return addEntry(DTOConvertUtils.convertToEntry(entryDTO, patientProfileService.getByUserId(userId)));
     }
 
+    @PutMapping("/{userId}/entries/glucose")
+    @PreAuthorize("hasAuthority('GLUCOSE_UPDATE_OWN')")
+    public ResponseEntity<DiaryEntry> updateGlucoseEntry(@PathVariable int userId,
+                                                      @RequestBody @Valid GlucoseEntryDTO entryDTO,
+                                                      BindingResult bindingResult,
+                                                      @AuthenticationPrincipal ServiceUserDetails userDetails) {
+        checkValidationErrorsAndThrowException(bindingResult);
+        checkUserId(userId, userDetails);
+
+        return updateEntry(DTOConvertUtils.convertToEntry(entryDTO, patientProfileService.getByUserId(userId)));
+    }
+
+    @PutMapping("/{userId}/entries/insulin")
+    @PreAuthorize("hasAuthority('GLUCOSE_UPDATE_OWN')")
+    public ResponseEntity<DiaryEntry> updateInsulinEntry(@PathVariable int userId,
+                                                      @RequestBody @Valid InsulinEntryDTO entryDTO,
+                                                      BindingResult bindingResult,
+                                                      @AuthenticationPrincipal ServiceUserDetails userDetails) {
+        checkValidationErrorsAndThrowException(bindingResult);
+        checkUserId(userId, userDetails);
+
+        return updateEntry(DTOConvertUtils.convertToEntry(entryDTO, patientProfileService.getByUserId(userId)));
+    }
+
+    @PutMapping("/{userId}/entries/meal")
+    @PreAuthorize("hasAuthority('GLUCOSE_UPDATE_OWN')")
+    public ResponseEntity<DiaryEntry> updateMealEntry(@PathVariable int userId,
+                                                   @RequestBody @Valid MealEntryDTO entryDTO,
+                                                   BindingResult bindingResult,
+                                                   @AuthenticationPrincipal ServiceUserDetails userDetails) {
+        checkValidationErrorsAndThrowException(bindingResult);
+        checkUserId(userId, userDetails);
+
+        return updateEntry(DTOConvertUtils.convertToEntry(entryDTO, patientProfileService.getByUserId(userId)));
+    }
+
+    @PutMapping("/{userId}/entries/medication")
+    @PreAuthorize("hasAuthority('GLUCOSE_UPDATE_OWN')")
+    public ResponseEntity<DiaryEntry> updateMedicationEntry(@PathVariable int userId,
+                                                         @RequestBody @Valid MedicationEntryDTO entryDTO,
+                                                         BindingResult bindingResult,
+                                                         @AuthenticationPrincipal ServiceUserDetails userDetails) {
+        checkValidationErrorsAndThrowException(bindingResult);
+        checkUserId(userId, userDetails);
+
+        return updateEntry(DTOConvertUtils.convertToEntry(entryDTO, patientProfileService.getByUserId(userId)));
+    }
+
     private void checkValidationErrorsAndThrowException(BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new ValidationIsFailedException(bindingResult, "Validation of request body failed");
         }
     }
+
     private ResponseEntity<DiaryEntry> addEntry(DiaryEntry entry) {
         DiaryEntry added = diaryEntryService.addDiaryEntry(entry);
         if (added != null) return ResponseEntity.status(HttpStatus.CREATED).body(added);
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+
+    private ResponseEntity<DiaryEntry> updateEntry(DiaryEntry entry) {
+        DiaryEntry updated = diaryEntryService.updateDiaryEntry(entry);
+        if (updated != null) return ResponseEntity.status(HttpStatus.OK).body(updated);
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
@@ -184,6 +237,24 @@ public class DiaryController {
     public ResponseEntity<ExceptionDTO> noRepositoryForEntryTypeException(NoRepositoryForEntryTypeException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(DTOConvertUtils.createOutputException(HttpStatus.INTERNAL_SERVER_ERROR, ex, true));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ExceptionDTO> illegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(DTOConvertUtils.createOutputException(HttpStatus.INTERNAL_SERVER_ERROR, ex, true));
+    }
+
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<ExceptionDTO> resourceAlreadyExistsException(ResourceAlreadyExistsException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(DTOConvertUtils.createOutputException(HttpStatus.CONFLICT, ex, false));
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ExceptionDTO> resourceNotFoundException(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(DTOConvertUtils.createOutputException(HttpStatus.NOT_FOUND, ex, false));
     }
 
 //    private DiaryEntry convertFromDTO(DiaryEntryDTO dto) {

@@ -40,16 +40,28 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
     }
 
     @Override
-    public DiaryEntry save(DiaryEntry entry) {
+    public DiaryEntry saveOrUpdate(DiaryEntry entry) {
+        checkArguments(entry);
+
         ParticularDiaryEntryRepository repository = repositories.getRepositoryForEntity(entry);
         return (DiaryEntry) repository.save(entry);
     }
 
     @Override
-    public DiaryEntry remove(PatientProfile patientProfile, DiaryEntry entry) {
+    public DiaryEntry remove(DiaryEntry entry) {
+        checkArguments(entry);
+
         ParticularDiaryEntryRepository repository = repositories.getRepositoryForEntity(entry);
-        repository.deleteById(new DiaryEntry.DiaryEntryID(patientProfile, entry.getCommitedAt()));
+        repository.deleteById(new DiaryEntry.DiaryEntryID(entry.getPatientProfile(), entry.getCommitedAt()));
         return entry;
+    }
+
+    @Override
+    public boolean exists(DiaryEntry entry) {
+        checkArguments(entry);
+
+        ParticularDiaryEntryRepository repository = repositories.getRepositoryForEntity(entry);
+        return repository.existsById(new DiaryEntry.DiaryEntryID(entry.getPatientProfile(), entry.getCommitedAt()));
     }
 
     private List<DiaryEntry> collectAllBetweenDates(PatientProfile patientProfile, Instant from, Instant to,
@@ -59,10 +71,16 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
         for (ParticularDiaryEntryRepository repository : repositories.getAllRepositories()) {
             diaryEntries.addAll(repository.getAllByPatientProfileIdAndCommitedAtBetween(patientProfile.getId(), from, to));
         }
-
+        //TODO реализовать сортировку по Sort
         diaryEntries.sort((entry1, entry2) ->
                 entry2.getCommitedAt().compareTo(entry1.getCommitedAt()));
         return diaryEntries;
+    }
+
+    private void checkArguments(DiaryEntry entry) {
+        if (entry == null) throw new IllegalArgumentException("DiaryEntry must not be null");
+        if (entry.getPatientProfile() == null)
+            throw new IllegalArgumentException("DiaryEntry must have a patientProfile");
     }
 
 }
