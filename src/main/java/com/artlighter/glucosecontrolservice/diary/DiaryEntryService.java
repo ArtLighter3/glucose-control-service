@@ -49,13 +49,14 @@ public class DiaryEntryService {
                                                   Instant from, Instant to) {
         if (patientProfile == null) return Collections.emptyList();
 
-        List<? extends DiaryEntry> entries = commonDiaryEntryDAO.getAllOfTypeBetweenDates(entryType,
+        List<DiaryEntry> entries = commonDiaryEntryDAO.getAllOfTypeBetweenDates(entryType,
                 patientProfile, from, to, Sort.by("commitedAt").descending());
 
         if (entries == null) return Collections.emptyList();
 
-        return entries.stream().map((entry) -> (DiaryEntry) entry)
-                .collect(Collectors.toList());
+        return entries;
+//        return entries.stream().map((entry) -> (DiaryEntry) entry)
+//                .collect(Collectors.toList());
     }
 
 //    public List<DiaryEntry> getUserMeasurementsFromPeriod(UserDTO user, Date from, Date to) {

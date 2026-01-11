@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
 
+//TODO МБ добавить поле DiaryEntryType?
 @MappedSuperclass
 @IdClass(DiaryEntry.DiaryEntryID.class)
 public abstract class DiaryEntry {
@@ -90,6 +91,19 @@ public abstract class DiaryEntry {
 //    public int hashCode() {
 //        return Objects.hashCode(id);
 //    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        DiaryEntry that = (DiaryEntry) o;
+        return Objects.equals(patientProfile, that.patientProfile) && Objects.equals(commitedAt, that.commitedAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(patientProfile, commitedAt);
+    }
 
     //@Embeddable
     public static class DiaryEntryID implements Serializable {

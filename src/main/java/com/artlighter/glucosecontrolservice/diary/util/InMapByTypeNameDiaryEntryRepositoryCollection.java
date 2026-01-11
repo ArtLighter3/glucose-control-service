@@ -18,6 +18,11 @@ public class InMapByTypeNameDiaryEntryRepositoryCollection implements DiaryEntry
         this.repositories = repositories;
     }
 
+    /**
+     * @throws IllegalArgumentException в случае, если передаваемый DiaryEntry равен null
+     * @throws com.artlighter.glucosecontrolservice.auth.util.exception.NoRepositoryForEntryTypeException в случае,
+     * если для передаваемого объекта репозиторий не был найден
+     */
     @Override
     public ParticularDiaryEntryRepository getRepositoryForEntity(DiaryEntry entry) {
         if (entry == null)
@@ -32,6 +37,11 @@ public class InMapByTypeNameDiaryEntryRepositoryCollection implements DiaryEntry
         return repository;
     }
 
+    /**
+     * @throws IllegalArgumentException в случае, если передаваемый DiaryEntryType равен null
+     * @throws com.artlighter.glucosecontrolservice.auth.util.exception.NoRepositoryForEntryTypeException в случае,
+     * если для передаваемого типа репозиторий не был найден
+     */
     @Override
     public ParticularDiaryEntryRepository getRepositoryForType(DiaryEntryType entryType) {
         if (entryType == null)

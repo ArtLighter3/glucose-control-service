@@ -29,16 +29,25 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
         this.repositories = repositories;
     }
 
+    /**
+     * @throws IllegalArgumentException если PatientProfile равен null
+     */
     @Override
-    public List<? extends DiaryEntry> getAllOfTypeBetweenDates(DiaryEntryType entryType,
+    public List<DiaryEntry> getAllOfTypeBetweenDates(DiaryEntryType entryType,
                                                                PatientProfile patientProfile, Instant from, Instant to,
                                                                Sort sort) {
+        if (patientProfile == null) throw new IllegalArgumentException("PatientProfile cannot be null");
+
         if (entryType == null) return collectAllBetweenDates(patientProfile, from, to, sort);
 
         ParticularDiaryEntryRepository repository = repositories.getRepositoryForType(entryType);
         return repository.getAllByPatientProfileIdAndCommitedAtBetween(patientProfile.getId(), from, to, sort);
     }
 
+    /**
+     * @throws IllegalArgumentException в случае, если DiaryEntry равен null, либо не содержит
+     * внутри идентифицирующих его полей patientProfile и/или commitedAt
+     */
     @Override
     public DiaryEntry saveOrUpdate(DiaryEntry entry) {
         checkArguments(entry);
@@ -47,18 +56,26 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
         return (DiaryEntry) repository.save(entry);
     }
 
+    /**
+     * @throws IllegalArgumentException в случае, если DiaryEntry равен null, либо не содержит
+     * внутри идентифицирующих его полей patientProfile и/или commitedAt
+     */
     @Override
-    public DiaryEntry remove(DiaryEntry entry) {
+    public void remove(DiaryEntry entry) {
         checkArguments(entry);
 
         ParticularDiaryEntryRepository repository = repositories.getRepositoryForEntity(entry);
         repository.deleteById(new DiaryEntry.DiaryEntryID(entry.getPatientProfile(), entry.getCommitedAt()));
-        return entry;
     }
 
+    /**
+     * @throws IllegalArgumentException в случае, если DiaryEntry равен null, либо не содержит
+     * внутри идентифицирующих его полей patientProfile и/или commitedAt
+     */
     @Override
     public boolean exists(DiaryEntry entry) {
         checkArguments(entry);
+       // if (entry == null || entry.getPatientProfile() == null) return false;
 
         ParticularDiaryEntryRepository repository = repositories.getRepositoryForEntity(entry);
         return repository.existsById(new DiaryEntry.DiaryEntryID(entry.getPatientProfile(), entry.getCommitedAt()));
@@ -79,8 +96,9 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
 
     private void checkArguments(DiaryEntry entry) {
         if (entry == null) throw new IllegalArgumentException("DiaryEntry must not be null");
-        if (entry.getPatientProfile() == null)
-            throw new IllegalArgumentException("DiaryEntry must have a patientProfile");
+        if (entry.getPatientProfile() == null || entry.getCommitedAt() == null)
+            throw new IllegalArgumentException("DiaryEntry must have an identification " +
+                    "fields patientProfile and commitedAt");
     }
 
 }

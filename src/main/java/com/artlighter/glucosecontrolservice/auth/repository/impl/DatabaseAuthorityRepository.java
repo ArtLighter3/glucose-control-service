@@ -28,6 +28,9 @@ public class DatabaseAuthorityRepository implements AuthorityRepository {
         this.entityManager = entityManager;
     }
 
+    /**
+     * @throws IllegalArgumentException в случае, если переданные роль и/или право являются null
+     */
     @Override
     public Authority addAuthority(Role role, Authority authority, boolean isDeletable) {
         if (role == null || authority == null)
@@ -46,6 +49,9 @@ public class DatabaseAuthorityRepository implements AuthorityRepository {
         return authority;
     }
 
+    /**
+     * @throws IllegalArgumentException в случае, если переданные роль и/или право являются null
+     */
     @Override
     public Authority removeAuthority(Role role, Authority authority) {
         if (role == null || authority == null)
