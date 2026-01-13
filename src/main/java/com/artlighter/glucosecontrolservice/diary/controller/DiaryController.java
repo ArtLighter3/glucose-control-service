@@ -3,11 +3,8 @@ package com.artlighter.glucosecontrolservice.diary.controller;
 import com.artlighter.glucosecontrolservice.auth.ServiceUserDetails;
 import com.artlighter.glucosecontrolservice.auth.util.convert.DTOConvertUtils;
 import com.artlighter.glucosecontrolservice.auth.util.exception.*;
-import com.artlighter.glucosecontrolservice.diary.dto.GlucoseEntryDTO;
+import com.artlighter.glucosecontrolservice.diary.dto.*;
 import com.artlighter.glucosecontrolservice.diary.DiaryEntryService;
-import com.artlighter.glucosecontrolservice.diary.dto.InsulinEntryDTO;
-import com.artlighter.glucosecontrolservice.diary.dto.MealEntryDTO;
-import com.artlighter.glucosecontrolservice.diary.dto.MedicationEntryDTO;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
@@ -100,8 +97,8 @@ public class DiaryController {
                                       @RequestBody @Valid GlucoseEntryDTO entryDTO,
                                       BindingResult bindingResult,
                                       @AuthenticationPrincipal ServiceUserDetails userDetails) {
-        checkValidationErrorsAndThrowException(bindingResult);
         checkUserId(userId, userDetails);
+        checkValidationErrorsAndThrowException(bindingResult);
 
         return addEntry(DTOConvertUtils.convertToEntry(entryDTO, patientProfileService.getByUserId(userId)));
     }
@@ -112,8 +109,8 @@ public class DiaryController {
                                                       @RequestBody @Valid InsulinEntryDTO entryDTO,
                                                       BindingResult bindingResult,
                                                       @AuthenticationPrincipal ServiceUserDetails userDetails) {
-        checkValidationErrorsAndThrowException(bindingResult);
         checkUserId(userId, userDetails);
+        checkValidationErrorsAndThrowException(bindingResult);
 
         return addEntry(DTOConvertUtils.convertToEntry(entryDTO, patientProfileService.getByUserId(userId)));
     }
@@ -124,8 +121,8 @@ public class DiaryController {
                                                       @RequestBody @Valid MealEntryDTO entryDTO,
                                                       BindingResult bindingResult,
                                                       @AuthenticationPrincipal ServiceUserDetails userDetails) {
-        checkValidationErrorsAndThrowException(bindingResult);
         checkUserId(userId, userDetails);
+        checkValidationErrorsAndThrowException(bindingResult);
 
         return addEntry(DTOConvertUtils.convertToEntry(entryDTO, patientProfileService.getByUserId(userId)));
     }
@@ -136,8 +133,8 @@ public class DiaryController {
                                                       @RequestBody @Valid MedicationEntryDTO entryDTO,
                                                       BindingResult bindingResult,
                                                       @AuthenticationPrincipal ServiceUserDetails userDetails) {
-        checkValidationErrorsAndThrowException(bindingResult);
         checkUserId(userId, userDetails);
+        checkValidationErrorsAndThrowException(bindingResult);
 
         return addEntry(DTOConvertUtils.convertToEntry(entryDTO, patientProfileService.getByUserId(userId)));
     }
@@ -148,8 +145,8 @@ public class DiaryController {
                                                       @RequestBody @Valid GlucoseEntryDTO entryDTO,
                                                       BindingResult bindingResult,
                                                       @AuthenticationPrincipal ServiceUserDetails userDetails) {
-        checkValidationErrorsAndThrowException(bindingResult);
         checkUserId(userId, userDetails);
+        checkValidationErrorsAndThrowException(bindingResult);
 
         return updateEntry(DTOConvertUtils.convertToEntry(entryDTO, patientProfileService.getByUserId(userId)));
     }
@@ -160,8 +157,8 @@ public class DiaryController {
                                                       @RequestBody @Valid InsulinEntryDTO entryDTO,
                                                       BindingResult bindingResult,
                                                       @AuthenticationPrincipal ServiceUserDetails userDetails) {
-        checkValidationErrorsAndThrowException(bindingResult);
         checkUserId(userId, userDetails);
+        checkValidationErrorsAndThrowException(bindingResult);
 
         return updateEntry(DTOConvertUtils.convertToEntry(entryDTO, patientProfileService.getByUserId(userId)));
     }
@@ -172,8 +169,8 @@ public class DiaryController {
                                                    @RequestBody @Valid MealEntryDTO entryDTO,
                                                    BindingResult bindingResult,
                                                    @AuthenticationPrincipal ServiceUserDetails userDetails) {
-        checkValidationErrorsAndThrowException(bindingResult);
         checkUserId(userId, userDetails);
+        checkValidationErrorsAndThrowException(bindingResult);
 
         return updateEntry(DTOConvertUtils.convertToEntry(entryDTO, patientProfileService.getByUserId(userId)));
     }
@@ -184,10 +181,70 @@ public class DiaryController {
                                                          @RequestBody @Valid MedicationEntryDTO entryDTO,
                                                          BindingResult bindingResult,
                                                          @AuthenticationPrincipal ServiceUserDetails userDetails) {
-        checkValidationErrorsAndThrowException(bindingResult);
         checkUserId(userId, userDetails);
+        checkValidationErrorsAndThrowException(bindingResult);
 
         return updateEntry(DTOConvertUtils.convertToEntry(entryDTO, patientProfileService.getByUserId(userId)));
+    }
+
+    @DeleteMapping("/{userId}/entries/glucose")
+    @PreAuthorize("hasAuthority('GLUCOSE_DELETE_OWN')")
+    public DiaryEntryDeleteDTO deleteGlucoseEntry(@PathVariable int userId,
+                                                         @RequestBody @Valid DiaryEntryDeleteDTO entryDTO,
+                                                         BindingResult bindingResult,
+                                                         @AuthenticationPrincipal ServiceUserDetails userDetails) {
+        checkUserId(userId, userDetails);
+        checkValidationErrorsAndThrowException(bindingResult);
+
+        diaryEntryService.deleteDiaryEntry(DTOConvertUtils.convertToEntry(entryDTO,
+                patientProfileService.getByUserId(userId), DiaryEntryType.GLUCOSE_ENTRY));
+
+        return entryDTO;
+    }
+
+    @DeleteMapping("/{userId}/entries/insulin")
+    @PreAuthorize("hasAuthority('GLUCOSE_DELETE_OWN')")
+    public DiaryEntryDeleteDTO deleteInsulinEntry(@PathVariable int userId,
+                                                         @RequestBody @Valid DiaryEntryDeleteDTO entryDTO,
+                                                         BindingResult bindingResult,
+                                                         @AuthenticationPrincipal ServiceUserDetails userDetails) {
+        checkUserId(userId, userDetails);
+        checkValidationErrorsAndThrowException(bindingResult);
+
+        diaryEntryService.deleteDiaryEntry(DTOConvertUtils.convertToEntry(entryDTO,
+                patientProfileService.getByUserId(userId), DiaryEntryType.INSULIN_ENTRY));
+
+        return entryDTO;
+    }
+
+    @DeleteMapping("/{userId}/entries/meal")
+    @PreAuthorize("hasAuthority('GLUCOSE_DELETE_OWN')")
+    public DiaryEntryDeleteDTO deleteMealEntry(@PathVariable int userId,
+                                                      @RequestBody @Valid DiaryEntryDeleteDTO entryDTO,
+                                                      BindingResult bindingResult,
+                                                      @AuthenticationPrincipal ServiceUserDetails userDetails) {
+        checkUserId(userId, userDetails);
+        checkValidationErrorsAndThrowException(bindingResult);
+
+        diaryEntryService.deleteDiaryEntry(DTOConvertUtils.convertToEntry(entryDTO,
+                patientProfileService.getByUserId(userId), DiaryEntryType.MEAL_ENTRY));
+
+        return entryDTO;
+    }
+
+    @DeleteMapping("/{userId}/entries/medication")
+    @PreAuthorize("hasAuthority('GLUCOSE_DELETE_OWN')")
+    public DiaryEntryDeleteDTO deleteMedicationEntry(@PathVariable int userId,
+                                                            @RequestBody @Valid DiaryEntryDeleteDTO entryDTO,
+                                                            BindingResult bindingResult,
+                                                            @AuthenticationPrincipal ServiceUserDetails userDetails) {
+        checkUserId(userId, userDetails);
+        checkValidationErrorsAndThrowException(bindingResult);
+
+        diaryEntryService.deleteDiaryEntry(DTOConvertUtils.convertToEntry(entryDTO,
+                patientProfileService.getByUserId(userId), DiaryEntryType.MEDICATION_ENTRY));
+
+        return entryDTO;
     }
 
     private void checkValidationErrorsAndThrowException(BindingResult bindingResult) {

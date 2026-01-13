@@ -9,15 +9,10 @@ import com.artlighter.glucosecontrolservice.auth.util.exception.ExceptionDTO;
 import com.artlighter.glucosecontrolservice.auth.util.exception.NoSuchAuthorityException;
 import com.artlighter.glucosecontrolservice.auth.util.exception.NoSuchRoleException;
 import com.artlighter.glucosecontrolservice.auth.util.exception.ValidationIsFailedException;
-import com.artlighter.glucosecontrolservice.diary.dto.GlucoseEntryDTO;
-import com.artlighter.glucosecontrolservice.diary.dto.InsulinEntryDTO;
-import com.artlighter.glucosecontrolservice.diary.dto.MealEntryDTO;
-import com.artlighter.glucosecontrolservice.diary.dto.MedicationEntryDTO;
+import com.artlighter.glucosecontrolservice.diary.dto.*;
 import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
-import com.artlighter.glucosecontrolservice.diary.entity.entry.GlucoseEntry;
-import com.artlighter.glucosecontrolservice.diary.entity.entry.InsulinEntry;
-import com.artlighter.glucosecontrolservice.diary.entity.entry.MealEntry;
-import com.artlighter.glucosecontrolservice.diary.entity.entry.MedicationEntry;
+import com.artlighter.glucosecontrolservice.diary.entity.entry.*;
+import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.Errors;
@@ -117,6 +112,23 @@ public class DTOConvertUtils {
         entry.setNotes(entryDTO.notes());
 
         entry.setMedicationName(entryDTO.name());
+
+        return entry;
+    }
+
+    public static DiaryEntry convertToEntry(DiaryEntryDeleteDTO deleteDTO,
+                                            PatientProfile patientProfile, DiaryEntryType entryType) {
+        DiaryEntry entry = null;
+
+        switch (entryType) {
+            case GLUCOSE_ENTRY -> entry = new GlucoseEntry();
+            case INSULIN_ENTRY -> entry = new InsulinEntry();
+            case MEDICATION_ENTRY -> entry = new MedicationEntry();
+            case MEAL_ENTRY -> entry = new MealEntry();
+        }
+
+        entry.setPatientProfile(patientProfile);
+        entry.setCommitedAt(deleteDTO.commitedAt());
 
         return entry;
     }

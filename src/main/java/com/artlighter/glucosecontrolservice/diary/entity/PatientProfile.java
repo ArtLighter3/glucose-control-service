@@ -4,6 +4,8 @@ import com.artlighter.glucosecontrolservice.auth.entity.User;
 import com.artlighter.glucosecontrolservice.diary.entity.enumeration.CarbsUnit;
 import com.artlighter.glucosecontrolservice.diary.entity.enumeration.GlucoseUnit;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 
 @Entity
 @Table(name = "patient_profile")
@@ -11,9 +13,11 @@ public class PatientProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Enumerated(EnumType.STRING)
+    @Enumerated
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     private GlucoseUnit glucoseUnit;
-    @Enumerated(EnumType.STRING)
+    @Enumerated
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     private CarbsUnit carbsUnit;
     private int diabetesType;
     private int userId;

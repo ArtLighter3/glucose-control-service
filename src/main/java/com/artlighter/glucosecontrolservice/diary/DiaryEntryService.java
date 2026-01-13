@@ -6,6 +6,7 @@ import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.repository.*;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
+import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,10 @@ public class DiaryEntryService {
                     "Diary entry for this user and this timestamp not found");
 
         return commonDiaryEntryDAO.saveOrUpdate(diaryEntry);
+    }
+
+    public void deleteDiaryEntry(DiaryEntry diaryEntry) {
+        commonDiaryEntryDAO.remove(diaryEntry);
     }
 
     public List<DiaryEntry> getAllDiaryEntries(PatientProfile patientProfile,
