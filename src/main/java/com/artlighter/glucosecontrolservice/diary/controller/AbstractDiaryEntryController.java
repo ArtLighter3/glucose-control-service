@@ -1,30 +1,18 @@
 package com.artlighter.glucosecontrolservice.diary.controller;
 
-import com.artlighter.glucosecontrolservice.auth.ServiceUserDetails;
-import com.artlighter.glucosecontrolservice.auth.util.convert.DTOConvertUtils;
-import com.artlighter.glucosecontrolservice.auth.util.exception.NotCurrentUsersInfoException;
 import com.artlighter.glucosecontrolservice.auth.util.exception.ValidationIsFailedException;
 import com.artlighter.glucosecontrolservice.diary.DiaryEntryService;
 import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDeleteDTO;
-import com.artlighter.glucosecontrolservice.diary.dto.GlucoseEntryDTO;
-import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import com.artlighter.glucosecontrolservice.diary.util.mapper.EntryMapper;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.parameters.P;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
@@ -44,10 +32,8 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT> 
     }
 
     @GetMapping("/default")
-    @PreAuthorize("hasAuthority('GLUCOSE_SHOW_ALL') or " +
-            "(hasAuthority('GLUCOSE_SHOW_OWN') and " +
-            "@resourceAccessInspector.checkIfCurrentUserHasAccess(#userId, authentication)) or " +
-            "(hasAuthority('GLUCOSE_SHOW_ATTACHED') and @resourceAccessInspector.checkIfDoctorHasAccess())")
+    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_SHOW_ALL', 'GLUCOSE_SHOW_ATTACHED', " +
+            "'GLUCOSE_SHOW_OWN', #userId, authentication)")
     public List<EXT> getDiaryEntries(@PathVariable int userId,
                                          @RequestParam(required = false) Instant from,
                                          @RequestParam(required = false) Instant to) {
@@ -55,10 +41,8 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT> 
     }
 
     @PostMapping("/default")
-    @PreAuthorize("hasAuthority('GLUCOSE_ADD_ALL') or " +
-            "(hasAuthority('GLUCOSE_ADD_OWN') and " +
-            "@resourceAccessInspector.checkIfCurrentUserHasAccess(#userId, authentication)) or " +
-            "(hasAuthority('GLUCOSE_ADD_ATTACHED') and @resourceAccessInspector.checkIfDoctorHasAccess())")
+    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_ADD_ALL', 'GLUCOSE_ADD_ATTACHED', " +
+            "'GLUCOSE_ADD_OWN', #userId, authentication)")
     @ResponseStatus(HttpStatus.CREATED)
     public EXT postDiaryEntry(@PathVariable int userId, @RequestBody @Valid EXT entryDTO,
                                BindingResult bindingResult) {
@@ -66,20 +50,16 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT> 
     }
 
     @PutMapping("/default")
-    @PreAuthorize("hasAuthority('GLUCOSE_UPDATE_ALL') or " +
-            "(hasAuthority('GLUCOSE_UPDATE_OWN') and " +
-            "@resourceAccessInspector.checkIfCurrentUserHasAccess(#userId, authentication)) or " +
-            "(hasAuthority('GLUCOSE_UPDATE_ATTACHED') and @resourceAccessInspector.checkIfDoctorHasAccess())")
+    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_UPDATE_ALL', " +
+            "'GLUCOSE_UPDATE_ATTACHED','GLUCOSE_UPDATE_OWN', #userId, authentication)")
     public EXT putDiaryEntry(@PathVariable int userId, @RequestBody @Valid EXT entryDTO,
                                     BindingResult bindingResult) {
         return updateEntry(userId, entryDTO, bindingResult);
     }
 
     @DeleteMapping("/default")
-    @PreAuthorize("hasAuthority('GLUCOSE_DELETE_ALL') or " +
-            "(hasAuthority('GLUCOSE_DELETE_OWN') and " +
-            "@resourceAccessInspector.checkIfCurrentUserHasAccess(#userId, authentication)) or " +
-            "(hasAuthority('GLUCOSE_DELETE_ATTACHED') and @resourceAccessInspector.checkIfDoctorHasAccess())")
+    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_DELETE_ALL', " +
+            "'GLUCOSE_DELETE_ATTACHED','GLUCOSE_DELETE_OWN', #userId, authentication)")
     public DiaryEntryDeleteDTO deleteDiaryEntry(@PathVariable int userId,
                                                   @RequestBody @Valid DiaryEntryDeleteDTO entryDTO,
                                                   BindingResult bindingResult) {

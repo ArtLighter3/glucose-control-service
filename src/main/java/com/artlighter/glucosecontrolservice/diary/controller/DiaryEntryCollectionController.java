@@ -25,10 +25,8 @@ public class DiaryEntryCollectionController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('GLUCOSE_SHOW_ALL') or " +
-            "(hasAuthority('GLUCOSE_SHOW_OWN') and " +
-            "@resourceAccessInspector.checkIfCurrentUserHasAccess(#userId, authentication)) or " +
-            "(hasAuthority('GLUCOSE_SHOW_ATTACHED') and @resourceAccessInspector.checkIfDoctorHasAccess())")
+    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_SHOW_ALL', 'GLUCOSE_SHOW_ATTACHED', " +
+            "'GLUCOSE_SHOW_OWN', #userId, authentication)")
     public List<DiaryEntry> getAllEntries(@PathVariable int userId,
                                                  @RequestParam(required = false) Instant from,
                                                  @RequestParam(required = false) Instant to) {
