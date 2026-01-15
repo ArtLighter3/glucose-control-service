@@ -1,6 +1,7 @@
 package com.artlighter.glucosecontrolservice.auth.util;
 
 import com.artlighter.glucosecontrolservice.auth.ServiceUserDetails;
+import com.artlighter.glucosecontrolservice.user.service.DoctorProfileService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,6 +9,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ResourceAccessInspector {
+    private DoctorProfileService doctorProfileService;
+
+    public ResourceAccessInspector(DoctorProfileService doctorProfileService) {
+        this.doctorProfileService = doctorProfileService;
+    }
 
     public boolean hasPermissionForResource(String authorityToAccessAll, String authorityToAccessAttached,
                                             String authorityToAccessOnlyOwn, int resourceOwnerId,
@@ -22,7 +28,7 @@ public class ResourceAccessInspector {
             return checkIfUserIsResourceOwner(resourceOwnerId, currentUserDetails);
 
         if (hasAuthority(currentUserDetails, authorityToAccessAttached))
-            return checkIfResourceOwnerIsAttachedToDoctor(resourceOwnerId, currentUserDetails);
+            return checkIfResourceOwnerIsAttachedToCurrentUser(resourceOwnerId, currentUserDetails);
 
         return false;
     }
@@ -35,7 +41,10 @@ public class ResourceAccessInspector {
         return false;
     }
 
-    private boolean checkIfResourceOwnerIsAttachedToDoctor(int resourceOwnerId, UserDetails currentUserDetails) {
+    private boolean checkIfResourceOwnerIsAttachedToCurrentUser(int resourceOwnerId, UserDetails currentUserDetails) {
+        if (currentUserDetails instanceof ServiceUserDetails serviceUserDetails) {
+            return doctorProfileService.isPatientAttached(serviceUserDetails.getId(), resourceOwnerId);
+        }
         return false;
     }
 

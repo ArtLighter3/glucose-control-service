@@ -9,9 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@RestControllerAdvice("com.artlighter.glucosecontrolservice.diary.controller")
+@RestControllerAdvice({"com.artlighter.glucosecontrolservice.diary.controller",
+"com.artlighter.glucosecontrolservice.user.controller"})
 public class DiaryControllerAdvice {
-    private Logger logger = LoggerFactory.getLogger(DiaryControllerAdvice.class);
+    //private Logger log = LoggerFactory.getLogger(DiaryControllerAdvice.class);
 
     @ExceptionHandler(ValidationIsFailedException.class)
     public ResponseEntity<ExceptionDTO> validationIsFailedException(ValidationIsFailedException ex) {

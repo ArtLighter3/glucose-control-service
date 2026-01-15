@@ -70,6 +70,7 @@ public class AuthConfig {
         return args -> {
             authorityService.addUndeletableAuthorities(Role.ROLE_PATIENT,
                     Authority.GLUCOSE_SHOW_OWN, Authority.GLUCOSE_ADD_OWN, Authority.GLUCOSE_UPDATE_OWN);
+            authorityService.addUndeletableAuthorities(Role.ROLE_DOCTOR, Authority.GLUCOSE_SHOW_ATTACHED);
         };
     }
 }

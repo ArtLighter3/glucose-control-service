@@ -39,8 +39,7 @@ public class DiaryEntryService {
         fill(diaryEntry, patientProfile, commitedAt);
 
         if (!commonDiaryEntryDAO.exists(diaryEntry))
-            throw new ResourceNotFoundException(diaryEntry,
-                    "Diary entry for this user and this timestamp not found");
+            throw new ResourceNotFoundException("Diary entry for this user and this timestamp not found");
 
         return commonDiaryEntryDAO.saveOrUpdate(diaryEntry);
     }
