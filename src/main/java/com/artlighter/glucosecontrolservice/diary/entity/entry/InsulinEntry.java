@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 
@@ -17,7 +18,7 @@ public class InsulinEntry extends DiaryEntry {
     private InsulinType insulinType;
 
     @Override
-    public Number getValue() {
+    public Float getValue() {
         return value;
     }
 

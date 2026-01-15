@@ -66,10 +66,9 @@ public class DTOConvertUtils {
         return user;
     }
 
-    public static GlucoseEntry convertToEntry(GlucoseEntryDTO entryDTO, PatientProfile patientProfile) {
+    public static GlucoseEntry convertToEntry(GlucoseEntryDTO entryDTO) {
         GlucoseEntry entry = new GlucoseEntry();
 
-        entry.setPatientProfile(patientProfile);
         entry.setValue(entryDTO.value());
         entry.setCommitedAt(entryDTO.commitedAt());
         entry.setNotes(entryDTO.notes());
@@ -79,10 +78,9 @@ public class DTOConvertUtils {
         return entry;
     }
 
-    public static InsulinEntry convertToEntry(InsulinEntryDTO entryDTO, PatientProfile patientProfile) {
+    public static InsulinEntry convertToEntry(InsulinEntryDTO entryDTO) {
         InsulinEntry entry = new InsulinEntry();
 
-        entry.setPatientProfile(patientProfile);
         entry.setValue(entryDTO.value());
         entry.setCommitedAt(entryDTO.commitedAt());
         entry.setNotes(entryDTO.notes());
@@ -92,10 +90,9 @@ public class DTOConvertUtils {
         return entry;
     }
 
-    public static MealEntry convertToEntry(MealEntryDTO entryDTO, PatientProfile patientProfile) {
+    public static MealEntry convertToEntry(MealEntryDTO entryDTO) {
         MealEntry entry = new MealEntry();
 
-        entry.setPatientProfile(patientProfile);
         entry.setValue(entryDTO.value());
         entry.setCommitedAt(entryDTO.commitedAt());
         entry.setNotes(entryDTO.notes());
@@ -103,10 +100,9 @@ public class DTOConvertUtils {
         return entry;
     }
 
-    public static MedicationEntry convertToEntry(MedicationEntryDTO entryDTO, PatientProfile patientProfile) {
+    public static MedicationEntry convertToEntry(MedicationEntryDTO entryDTO) {
         MedicationEntry entry = new MedicationEntry();
 
-        entry.setPatientProfile(patientProfile);
         entry.setValue(entryDTO.value());
         entry.setCommitedAt(entryDTO.commitedAt());
         entry.setNotes(entryDTO.notes());
@@ -116,8 +112,7 @@ public class DTOConvertUtils {
         return entry;
     }
 
-    public static DiaryEntry convertToEntry(DiaryEntryDeleteDTO deleteDTO,
-                                            PatientProfile patientProfile, DiaryEntryType entryType) {
+    public static DiaryEntry convertToEntry(DiaryEntryDeleteDTO deleteDTO, DiaryEntryType entryType) {
         DiaryEntry entry = null;
 
         switch (entryType) {
@@ -127,7 +122,6 @@ public class DTOConvertUtils {
             case MEAL_ENTRY -> entry = new MealEntry();
         }
 
-        entry.setPatientProfile(patientProfile);
         entry.setCommitedAt(deleteDTO.commitedAt());
 
         return entry;

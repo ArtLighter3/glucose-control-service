@@ -84,7 +84,7 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
     private List<DiaryEntry> collectAllBetweenDates(PatientProfile patientProfile, Instant from, Instant to,
                                                     Sort sort) {
         List<DiaryEntry> diaryEntries = new ArrayList<>();
-
+        //TODO можно просто добавить отдельный DAO, в котором будет один запрос с UNION для получения всех записей
         for (ParticularDiaryEntryRepository repository : repositories.getAllRepositories()) {
             diaryEntries.addAll(repository.getAllByPatientProfileIdAndCommitedAtBetween(patientProfile.getId(), from, to));
         }

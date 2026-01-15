@@ -9,13 +9,13 @@ public enum DiaryEntryType {
         MEAL_ENTRY(MealEntry.class),
         MEDICATION_ENTRY(MedicationEntry.class);
 
-        private Class<? extends DiaryEntry> entryClass;
+        private final Class<? extends DiaryEntry> entryClass;
 
         DiaryEntryType(Class<? extends DiaryEntry> entryClass) {
             this.entryClass = entryClass;
         }
 
-        Class<? extends DiaryEntry> getEntryClass() {
+        public Class<? extends DiaryEntry> getEntryClass() {
             return entryClass;
         }
 }

@@ -11,13 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class DiaryEntryService {
-   // private Map<DiaryEntryType, DiaryEntryJpaRepository<? extends DiaryEntry>> repositories;
     private CommonDiaryEntryDAO commonDiaryEntryDAO;
 
     @Autowired
@@ -25,7 +25,9 @@ public class DiaryEntryService {
         this.commonDiaryEntryDAO = commonDiaryEntryDAO;
     }
 
-    public DiaryEntry addDiaryEntry(DiaryEntry diaryEntry) {
+    public DiaryEntry addDiaryEntry(DiaryEntry diaryEntry, PatientProfile patientProfile, Instant commitedAt) {
+        fill(diaryEntry, patientProfile, commitedAt);
+
         if (commonDiaryEntryDAO.exists(diaryEntry))
             throw new ResourceAlreadyExistsException(diaryEntry,
                     "Diary entry for this user and this timestamp already exists");
@@ -33,7 +35,9 @@ public class DiaryEntryService {
         return commonDiaryEntryDAO.saveOrUpdate(diaryEntry);
     }
 
-    public DiaryEntry updateDiaryEntry(DiaryEntry diaryEntry) {
+    public DiaryEntry updateDiaryEntry(DiaryEntry diaryEntry, PatientProfile patientProfile, Instant commitedAt) {
+        fill(diaryEntry, patientProfile, commitedAt);
+
         if (!commonDiaryEntryDAO.exists(diaryEntry))
             throw new ResourceNotFoundException(diaryEntry,
                     "Diary entry for this user and this timestamp not found");
@@ -41,7 +45,9 @@ public class DiaryEntryService {
         return commonDiaryEntryDAO.saveOrUpdate(diaryEntry);
     }
 
-    public void deleteDiaryEntry(DiaryEntry diaryEntry) {
+    public void deleteDiaryEntry(DiaryEntry diaryEntry, PatientProfile patientProfile, Instant commitedAt) {
+        fill(diaryEntry, patientProfile, commitedAt);
+
         commonDiaryEntryDAO.remove(diaryEntry);
     }
 
@@ -53,6 +59,8 @@ public class DiaryEntryService {
     public List<DiaryEntry> getDiaryEntriesOfType(DiaryEntryType entryType, PatientProfile patientProfile,
                                                   Instant from, Instant to) {
         if (patientProfile == null) return Collections.emptyList();
+        if (to == null) to = Instant.now();
+        if (from == null) from = to.minus(Duration.ofDays(30));
 
         List<DiaryEntry> entries = commonDiaryEntryDAO.getAllOfTypeBetweenDates(entryType,
                 patientProfile, from, to, Sort.by("commitedAt").descending());
@@ -62,6 +70,13 @@ public class DiaryEntryService {
         return entries;
 //        return entries.stream().map((entry) -> (DiaryEntry) entry)
 //                .collect(Collectors.toList());
+    }
+
+    private void fill(DiaryEntry diaryEntry, PatientProfile patientProfile, Instant commitedAt) {
+        if (diaryEntry != null) {
+            diaryEntry.setPatientProfile(patientProfile);
+            diaryEntry.setCommitedAt(commitedAt);
+        }
     }
 
 //    public List<DiaryEntry> getUserMeasurementsFromPeriod(UserDTO user, Date from, Date to) {
