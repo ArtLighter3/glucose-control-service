@@ -19,11 +19,11 @@ public class DiaryControllerAdvice {
         return ResponseEntity.badRequest().body(DTOConvertUtils.createValidationException(ex));
     }
 
-    @ExceptionHandler(NotCurrentUsersInfoException.class)
-    public ResponseEntity<ExceptionDTO> notCurrentUsersInfoException(NotCurrentUsersInfoException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(DTOConvertUtils.createOutputException(HttpStatus.FORBIDDEN, ex, false));
-    }
+//    @ExceptionHandler(NotCurrentUsersInfoException.class)
+//    public ResponseEntity<ExceptionDTO> notCurrentUsersInfoException(NotCurrentUsersInfoException ex) {
+//        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+//                .body(DTOConvertUtils.createOutputException(HttpStatus.FORBIDDEN, ex, false));
+//    }
 
     @ExceptionHandler(NoRepositoryForEntryTypeException.class)
     public ResponseEntity<ExceptionDTO> noRepositoryForEntryTypeException(NoRepositoryForEntryTypeException ex) {

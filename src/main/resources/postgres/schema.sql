@@ -6,7 +6,8 @@ CREATE TYPE measurement_type AS ENUM ('BEFORE_MEAL', 'AFTER_MEAL');
 CREATE TABLE Service_User (
     id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     username varchar(255) UNIQUE NOT NULL,
-    password varchar NOT NULL
+    password varchar NOT NULL,
+    email varchar
 );
 
 CREATE TABLE User_Role (
@@ -27,7 +28,11 @@ CREATE TABLE Patient_Profile (
     user_id int UNIQUE REFERENCES service_user(id) ON DELETE CASCADE,
     glucose_unit glucose_unit NOT NULL DEFAULT 'MILLIMOLES_PER_LITER',
     carbs_unit carbs_unit NOT NULL DEFAULT 'GRAMS',
-    diabetes_type smallint CHECK (diabetes_type IN (1, 2))
+    diabetes_type smallint CHECK (diabetes_type IN (1, 2)),
+    hyper_glucose real CHECK (hyper_glucose >= 1 AND hyper_glucose <= 40),
+    high_glucose real CHECK (high_glucose >= 1 AND high_glucose <= 40),
+    low_glucose real CHECK (low_glucose >= 1 AND low_glucose <= 40),
+    hypo_glucose real CHECK (hypo_glucose >= 1 AND hypo_glucose <= 40)
 );
 
 -- CREATE TABLE Diary_Entry (
@@ -82,4 +87,26 @@ CREATE TABLE Patient_Doctor (
     doctor_profile_id int REFERENCES Doctor_Profile(id),
     patient_profile_id int REFERENCES Patient_Profile(id),
     PRIMARY KEY (doctor_profile_id, patient_profile_id)
+);
+
+CREATE TABLE Insulin_Profile (
+    profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
+    default_icr real NOT NULL CHECK (default_icr >= 2 AND default_icr <= 100),
+    default_isf real NOT NULL CHECK (default_isf >= 0.2 AND default_isf <= 55.5),
+    dia int NOT NULL CHECK (dia >= 2 AND dia <= 9),
+    PRIMARY KEY (profile_id)
+);
+
+CREATE TABLE Insulin_To_Carb_Ratio (
+    insulin_profile_id int REFERENCES Insulin_Profile(profile_id) ON DELETE CASCADE,
+    time_of_day time(0) NOT NULL,
+    icr real NOT NULL CHECK (icr >= 2 AND icr <= 100),
+    PRIMARY KEY (insulin_profile_id, time_of_day)
+);
+
+CREATE TABLE Insulin_Sensitivity_Factor (
+    insulin_profile_id int REFERENCES Insulin_Profile(profile_id) ON DELETE CASCADE,
+    time_of_day time(0) NOT NULL,
+    isf real NOT NULL CHECK (isf >= 0.2 AND isf <= 55.5),
+    PRIMARY KEY (insulin_profile_id, time_of_day)
 );
