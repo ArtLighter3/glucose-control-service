@@ -1,17 +1,16 @@
-package com.artlighter.glucosecontrolservice.diary.controller;
+package com.artlighter.glucosecontrolservice.general;
 
 import com.artlighter.glucosecontrolservice.auth.util.convert.DTOConvertUtils;
 import com.artlighter.glucosecontrolservice.auth.util.exception.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice({"com.artlighter.glucosecontrolservice.diary.controller",
-"com.artlighter.glucosecontrolservice.user.controller"})
-public class DiaryControllerAdvice {
+        "com.artlighter.glucosecontrolservice.user.controller", "com.artlighter.glucosecontrolservice.auth.controller",
+        "com.artlighter.glucosecontrolservice.calculations.controller"})
+public class AppControllerAdvice {
     //private Logger log = LoggerFactory.getLogger(DiaryControllerAdvice.class);
 
     @ExceptionHandler(ValidationIsFailedException.class)
@@ -48,5 +47,18 @@ public class DiaryControllerAdvice {
     public ResponseEntity<ExceptionDTO> resourceNotFoundException(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(DTOConvertUtils.createOutputException(HttpStatus.NOT_FOUND, ex, false));
+    }
+
+
+    @ExceptionHandler(AuthoritiesException.class)
+    public ResponseEntity<ExceptionDTO> authoritiesException(AuthoritiesException ex) {
+        return ResponseEntity.badRequest()
+                .body(DTOConvertUtils.createOutputException(HttpStatus.BAD_REQUEST, ex, false));
+    }
+
+    @ExceptionHandler(NoSuchEnumerableConstantException.class)
+    public ResponseEntity<ExceptionDTO> noSuchEnum(NoSuchEnumerableConstantException ex) {
+        return ResponseEntity.badRequest()
+                .body(DTOConvertUtils.createOutputException(HttpStatus.BAD_REQUEST, ex, false));
     }
 }

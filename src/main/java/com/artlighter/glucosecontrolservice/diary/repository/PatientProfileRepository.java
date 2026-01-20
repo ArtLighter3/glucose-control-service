@@ -7,4 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PatientProfileRepository extends JpaRepository<PatientProfile, Integer> {
     PatientProfile getPatientProfileByUserId(int userId);
+    Integer getPatientProfileIdByUserId(int userId);
+    boolean existsByUserId(int userId);
+    void deleteByUserId(int userId);
 }

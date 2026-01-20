@@ -4,6 +4,8 @@ import com.artlighter.glucosecontrolservice.auth.service.AuthorityService;
 import com.artlighter.glucosecontrolservice.auth.entity.Authority;
 import com.artlighter.glucosecontrolservice.auth.entity.Role;
 import com.artlighter.glucosecontrolservice.auth.entity.User;
+import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
+import com.artlighter.glucosecontrolservice.diary.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,16 +25,16 @@ import java.util.stream.Collectors;
  */
 @Service
 public class UserService {
-    private AuthorityService authorityService;
+    private PatientProfileService patientProfileService;
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserService(UserRepository userRepository,
-                       AuthorityService authorityService,
+                       PatientProfileService patientProfileService,
                        PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.authorityService = authorityService;
+        this.patientProfileService = patientProfileService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -41,6 +43,10 @@ public class UserService {
 
         user.setRoles(Set.of(role));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        if (role == Role.ROLE_PATIENT) {
+            patientProfileService.createDefaultProfileForPatient(user.getId());
+        }
 
         return userRepository.save(user);
     }

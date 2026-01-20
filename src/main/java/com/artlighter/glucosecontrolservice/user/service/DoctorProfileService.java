@@ -47,13 +47,13 @@ public class DoctorProfileService {
 
     private PatientProfile getPatientProfileOrThrowException(int patientId) {
         PatientProfile patientProfile = patientProfileService.getByUserId(patientId);
-        if (patientProfile == null) throw new ResourceNotFoundException("Patient profile with this user ID not found");
+        if (patientProfile == null) throw new ResourceNotFoundException("Patient profile for this user ID not found");
         return patientProfile;
     }
 
     private DoctorProfile getDoctorProfileOrThrowException(int doctorId) {
         DoctorProfile doctorProfile = doctorProfileRepository.findByUserId(doctorId);
-        if (doctorProfile == null) throw new ResourceNotFoundException("Doctor profile with this user ID not found");
+        if (doctorProfile == null) throw new ResourceNotFoundException("Doctor profile for this user ID not found");
         return doctorProfile;
     }
 }

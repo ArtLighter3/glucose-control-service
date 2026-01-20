@@ -1,6 +1,7 @@
 package com.artlighter.glucosecontrolservice.calculations.entity;
 
 import jakarta.persistence.*;
+import org.springframework.core.annotation.Order;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -18,9 +19,11 @@ public class InsulinProfile {
     private float defaultInsulinSensitivityFactor;
     @Column(name = "dia")
     private int durationOfInsulinAction;
-    @OneToMany(mappedBy = "insulinProfile", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "insulinProfile", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OrderBy("timeOfDay")
     private List<InsulinSensitivityFactor> factorsByTime;
-    @OneToMany(mappedBy = "insulinProfile", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "insulinProfile", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OrderBy("timeOfDay")
     private List<InsulinToCarbsRatio> ratiosByTime;
 
     public InsulinProfile() {

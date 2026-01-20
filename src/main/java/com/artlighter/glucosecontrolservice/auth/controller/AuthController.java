@@ -41,9 +41,4 @@ public class AuthController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
-
-    @ExceptionHandler(ValidationIsFailedException.class)
-    public ResponseEntity<ExceptionDTO> validationIsFailedException(ValidationIsFailedException ex) {
-        return ResponseEntity.badRequest().body(DTOConvertUtils.createValidationException(ex));
-    }
 }
