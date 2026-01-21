@@ -1,12 +1,11 @@
 package com.artlighter.glucosecontrolservice.diary.entity.entry;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "meal_entry")
-public class MealEntry extends DiaryEntry {
+@Table(name = "carbs_entry")
+public class CarbsEntry extends DiaryEntry {
     private Float value;
 
     @Override

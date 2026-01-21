@@ -1,10 +1,12 @@
 package com.artlighter.glucosecontrolservice.calculations.util;
 
-import com.artlighter.glucosecontrolservice.calculations.entity.InsulinProfile;
-import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
-
+/**
+ * Общий интерфейс для калькуляторов инсулиновых доз, вычисляющих результат только из необходимых числовых данных
+ * (без классов профилей и т.д.)
+ */
 public interface InsulinCalculator {
-    float calculateInsulin(float activeCompensatingInsulin, float activeCorrectiveInsulin,
-                           float currentGlucose, float targetGlucose, float carbs,
-                           float insulinSensitivityFactor, float insulinToCarbsRatio);
+    float calculateCarbDose(float carbs, float insulinToCarbsRatio);
+
+    float calculateCorrectionDose(float currentGlucose, float targetGlucose, float insulinSensitivityFactor,
+                                  float activeCompensatingInsulin, float activeCorrectiveInsulin);
 }

@@ -21,13 +21,13 @@ public class ResourceAccessInspector {
         UserDetails currentUserDetails = (UserDetails) actualCurrentUserAuthentication.getPrincipal();
         if (currentUserDetails == null) return false;
 
-        if (hasAuthority(currentUserDetails, authorityToAccessAll))
+        if (authorityToAccessAll != null && hasAuthority(currentUserDetails, authorityToAccessAll))
             return true;
 
-        if (hasAuthority(currentUserDetails, authorityToAccessOnlyOwn))
+        if (authorityToAccessOnlyOwn != null && hasAuthority(currentUserDetails, authorityToAccessOnlyOwn))
             return checkIfUserIsResourceOwner(resourceOwnerId, currentUserDetails);
 
-        if (hasAuthority(currentUserDetails, authorityToAccessAttached))
+        if (authorityToAccessAttached != null && hasAuthority(currentUserDetails, authorityToAccessAttached))
             return checkIfResourceOwnerIsAttachedToCurrentUser(resourceOwnerId, currentUserDetails);
 
         return false;

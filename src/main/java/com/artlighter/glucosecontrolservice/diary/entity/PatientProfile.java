@@ -1,6 +1,5 @@
 package com.artlighter.glucosecontrolservice.diary.entity;
 
-import com.artlighter.glucosecontrolservice.auth.entity.User;
 import com.artlighter.glucosecontrolservice.diary.entity.enumeration.CarbsUnit;
 import com.artlighter.glucosecontrolservice.diary.entity.enumeration.GlucoseUnit;
 import jakarta.persistence.*;
@@ -21,10 +20,10 @@ public class PatientProfile {
     private CarbsUnit carbsUnit;
     private int diabetesType;
     private int userId;
-    private float hyperGlucose;
-    private float highGlucose;
-    private float lowGlucose;
-    private float hypoGlucose;
+    private Float hyperGlucose;
+    private Float highGlucose;
+    private Float lowGlucose;
+    private Float hypoGlucose;
 
     public PatientProfile(int id, GlucoseUnit glucoseUnit, CarbsUnit carbsUnit, int diabetesType, int userId,
                           float hyperGlucose, float highGlucose, float lowGlucose, float hypoGlucose) {
@@ -82,35 +81,35 @@ public class PatientProfile {
         this.userId = userId;
     }
 
-    public float getHyperGlucose() {
+    public Float getHyperGlucose() {
         return hyperGlucose;
     }
 
-    public void setHyperGlucose(float hyperGlucose) {
+    public void setHyperGlucose(Float hyperGlucose) {
         this.hyperGlucose = hyperGlucose;
     }
 
-    public float getHighGlucose() {
+    public Float getHighGlucose() {
         return highGlucose;
     }
 
-    public void setHighGlucose(float highGlucose) {
+    public void setHighGlucose(Float highGlucose) {
         this.highGlucose = highGlucose;
     }
 
-    public float getLowGlucose() {
+    public Float getLowGlucose() {
         return lowGlucose;
     }
 
-    public void setLowGlucose(float lowGlucose) {
+    public void setLowGlucose(Float lowGlucose) {
         this.lowGlucose = lowGlucose;
     }
 
-    public float getHypoGlucose() {
+    public Float getHypoGlucose() {
         return hypoGlucose;
     }
 
-    public void setHypoGlucose(float hypoGlucose) {
+    public void setHypoGlucose(Float hypoGlucose) {
         this.hypoGlucose = hypoGlucose;
     }
 }

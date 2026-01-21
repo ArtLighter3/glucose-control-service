@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Collection;
@@ -24,13 +23,13 @@ public class InMapByTypeNameDiaryEntryRepositoryCollectionTests {
     public void setUp() {
         GlucoseEntryRepository glucoseEntryRepository = Mockito.mock(GlucoseEntryRepository.class);
         InsulinEntryRepository insulinEntryRepository = Mockito.mock(InsulinEntryRepository.class);
-        MealEntryRepository mealEntryRepository = Mockito.mock(MealEntryRepository.class);
+        CarbsEntryRepository carbsEntryRepository = Mockito.mock(CarbsEntryRepository.class);
         //MedicationEntryRepository medicationEntryRepository = Mockito.mock(MedicationEntryRepository.class);
 
         repositoryMap = new HashMap<>();
         repositoryMap.put("GlucoseEntry", glucoseEntryRepository);
         repositoryMap.put("InsulinEntry", insulinEntryRepository);
-        repositoryMap.put("MealEntry", mealEntryRepository);
+        repositoryMap.put("MealEntry", carbsEntryRepository);
         //repositoryMap.put("MedicationEntry", medicationEntryRepository);
 
         collection = new InMapByTypeNameDiaryEntryRepositoryCollection(repositoryMap);
@@ -41,12 +40,12 @@ public class InMapByTypeNameDiaryEntryRepositoryCollectionTests {
         GlucoseEntry glucoseEntry = new GlucoseEntry();
         InsulinEntry insulinEntry = new InsulinEntry();
        // MedicationEntry medicationEntry = new MedicationEntry();
-        MealEntry mealEntry = new MealEntry();
+        CarbsEntry carbsEntry = new CarbsEntry();
 
         ParticularDiaryEntryRepository glucoseEntryRepository = collection.getRepositoryForEntity(glucoseEntry);
         ParticularDiaryEntryRepository insulinEntryRepository = collection.getRepositoryForEntity(insulinEntry);
         //ParticularDiaryEntryRepository medicationEntryRepository = collection.getRepositoryForEntity(medicationEntry);
-        ParticularDiaryEntryRepository mealEntryRepository = collection.getRepositoryForEntity(mealEntry);
+        ParticularDiaryEntryRepository mealEntryRepository = collection.getRepositoryForEntity(carbsEntry);
 
         assertNotNull(glucoseEntryRepository);
         assertNotNull(insulinEntryRepository);
@@ -55,7 +54,7 @@ public class InMapByTypeNameDiaryEntryRepositoryCollectionTests {
         assertTrue(glucoseEntryRepository instanceof GlucoseEntryRepository);
         assertTrue(insulinEntryRepository instanceof InsulinEntryRepository);
         //assertTrue(medicationEntryRepository instanceof MedicationEntryRepository);
-        assertTrue(mealEntryRepository instanceof MealEntryRepository);
+        assertTrue(mealEntryRepository instanceof CarbsEntryRepository);
     }
 
     @Test
@@ -79,7 +78,7 @@ public class InMapByTypeNameDiaryEntryRepositoryCollectionTests {
 //        ParticularDiaryEntryRepository medicationEntryRepository =
 //                collection.getRepositoryForType(DiaryEntryType.MEDICATION_ENTRY);
         ParticularDiaryEntryRepository mealEntryRepository =
-                collection.getRepositoryForType(DiaryEntryType.MEAL_ENTRY);
+                collection.getRepositoryForType(DiaryEntryType.CARBS_ENTRY);
 
         assertNotNull(glucoseEntryRepository);
         assertNotNull(insulinEntryRepository);
@@ -88,7 +87,7 @@ public class InMapByTypeNameDiaryEntryRepositoryCollectionTests {
         assertTrue(glucoseEntryRepository instanceof GlucoseEntryRepository);
         assertTrue(insulinEntryRepository instanceof InsulinEntryRepository);
        // assertTrue(medicationEntryRepository instanceof MedicationEntryRepository);
-        assertTrue(mealEntryRepository instanceof MealEntryRepository);
+        assertTrue(mealEntryRepository instanceof CarbsEntryRepository);
     }
 
     @Test
