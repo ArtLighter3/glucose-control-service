@@ -50,10 +50,12 @@ public class PatientProfileService {
     }
 
     public PatientProfile updateProfileForPatient(PatientProfile patientProfile, int userId) {
-        if (!patientProfileRepository.existsByUserId(userId))
+        PatientProfile existingProfile = patientProfileRepository.getPatientProfileByUserId(userId);
+        if (existingProfile == null)
             throw new ResourceNotFoundException("Patient profile for this user does not exist");
 
         patientProfile.setUserId(userId);
+        patientProfile.setId(existingProfile.getId());
         return patientProfileRepository.save(patientProfile);
     }
 

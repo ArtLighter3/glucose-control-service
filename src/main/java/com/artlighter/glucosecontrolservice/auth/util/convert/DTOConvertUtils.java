@@ -10,13 +10,11 @@ import com.artlighter.glucosecontrolservice.auth.util.exception.NoSuchAuthorityE
 import com.artlighter.glucosecontrolservice.auth.util.exception.NoSuchRoleException;
 import com.artlighter.glucosecontrolservice.auth.util.exception.ValidationIsFailedException;
 import com.artlighter.glucosecontrolservice.diary.dto.*;
-import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.*;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.Errors;
-import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 import java.time.Instant;
@@ -90,8 +88,8 @@ public class DTOConvertUtils {
         return entry;
     }
 
-    public static MealEntry convertToEntry(MealEntryDTO entryDTO) {
-        MealEntry entry = new MealEntry();
+    public static CarbsEntry convertToEntry(CarbsEntryDTO entryDTO) {
+        CarbsEntry entry = new CarbsEntry();
 
         entry.setValue(entryDTO.value());
         entry.setCommitedAt(entryDTO.commitedAt());
@@ -119,7 +117,7 @@ public class DTOConvertUtils {
             case GLUCOSE_ENTRY -> entry = new GlucoseEntry();
             case INSULIN_ENTRY -> entry = new InsulinEntry();
             case MEDICATION_ENTRY -> entry = new MedicationEntry();
-            case MEAL_ENTRY -> entry = new MealEntry();
+            case CARBS_ENTRY -> entry = new CarbsEntry();
         }
 
         entry.setCommitedAt(deleteDTO.commitedAt());

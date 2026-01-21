@@ -1,10 +1,7 @@
 package com.artlighter.glucosecontrolservice.diary.entity.entry;
 
 import com.artlighter.glucosecontrolservice.diary.entity.enumeration.InsulinType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;

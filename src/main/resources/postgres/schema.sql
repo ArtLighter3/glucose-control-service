@@ -1,6 +1,6 @@
 CREATE TYPE glucose_unit AS ENUM ('MILLIMOLES_PER_LITER', 'MILLIGRAMS_PER_DECILITER');
 CREATE TYPE carbs_unit AS ENUM ('GRAMS', 'BREAD_UNITS_10', 'BREAD_UNITS_12', 'BREAD_UNITS_15');
-CREATE TYPE insulin_type AS ENUM ('SHORT', 'LONG');
+CREATE TYPE insulin_type AS ENUM ('LONG', 'SHORT_CARBS', 'SHORT_CORRECTION');
 CREATE TYPE measurement_type AS ENUM ('BEFORE_MEAL', 'AFTER_MEAL');
 
 CREATE TABLE Service_User (
@@ -29,9 +29,9 @@ CREATE TABLE Patient_Profile (
     glucose_unit glucose_unit NOT NULL DEFAULT 'MILLIMOLES_PER_LITER',
     carbs_unit carbs_unit NOT NULL DEFAULT 'GRAMS',
     diabetes_type smallint CHECK (diabetes_type IN (1, 2)),
-    hyper_glucose real CHECK (hyper_glucose >= 1 AND hyper_glucose <= 40),
-    high_glucose real CHECK (high_glucose >= 1 AND high_glucose <= 40),
-    low_glucose real CHECK (low_glucose >= 1 AND low_glucose <= 40),
+    hyper_glucose real CHECK (hyper_glucose >= 1 AND hyper_glucose <= 40 AND hyper_glucose >= high_glucose),
+    high_glucose real CHECK (high_glucose >= 1 AND high_glucose <= 40 AND high_glucose >= low_glucose),
+    low_glucose real CHECK (low_glucose >= 1 AND low_glucose <= 40 AND low_glucose >= hypo_glucose),
     hypo_glucose real CHECK (hypo_glucose >= 1 AND hypo_glucose <= 40)
 );
 
@@ -70,7 +70,7 @@ CREATE TABLE Medication_Entry (
     PRIMARY KEY (profile_id, commited_at)
 );
 
-CREATE TABLE Meal_Entry (
+CREATE TABLE Carbs_Entry (
     profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
     value real NOT NULL CHECK (value >= 0 AND value <= 300),
     commited_at timestamptz(0) NOT NULL,

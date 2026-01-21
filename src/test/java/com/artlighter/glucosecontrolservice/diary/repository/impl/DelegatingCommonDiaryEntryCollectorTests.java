@@ -6,16 +6,12 @@ import com.artlighter.glucosecontrolservice.diary.entity.enumeration.Measurement
 import com.artlighter.glucosecontrolservice.diary.repository.ParticularDiaryEntryRepository;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryRepositoryCollection;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatcher;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.parameters.P;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -23,7 +19,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -306,7 +301,7 @@ public class DelegatingCommonDiaryEntryCollectorTests {
         switch (type) {
             case GLUCOSE_ENTRY -> entry = new GlucoseEntry();
             case INSULIN_ENTRY -> entry = new InsulinEntry();
-            case MEAL_ENTRY -> entry = new MealEntry();
+            case CARBS_ENTRY -> entry = new CarbsEntry();
             case MEDICATION_ENTRY -> entry = new MedicationEntry();
         }
 
