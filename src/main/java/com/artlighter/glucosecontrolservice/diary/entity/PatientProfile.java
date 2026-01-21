@@ -20,10 +20,10 @@ public class PatientProfile {
     private CarbsUnit carbsUnit;
     private int diabetesType;
     private int userId;
-    private Float hyperGlucose;
-    private Float highGlucose;
-    private Float lowGlucose;
-    private Float hypoGlucose;
+    private float hyperGlucose;
+    private float highGlucose;
+    private float lowGlucose;
+    private float hypoGlucose;
 
     public PatientProfile(int id, GlucoseUnit glucoseUnit, CarbsUnit carbsUnit, int diabetesType, int userId,
                           float hyperGlucose, float highGlucose, float lowGlucose, float hypoGlucose) {
@@ -81,35 +81,35 @@ public class PatientProfile {
         this.userId = userId;
     }
 
-    public Float getHyperGlucose() {
+    public float getHyperGlucose() {
         return hyperGlucose;
     }
 
-    public void setHyperGlucose(Float hyperGlucose) {
+    public void setHyperGlucose(float hyperGlucose) {
         this.hyperGlucose = hyperGlucose;
     }
 
-    public Float getHighGlucose() {
+    public float getHighGlucose() {
         return highGlucose;
     }
 
-    public void setHighGlucose(Float highGlucose) {
+    public void setHighGlucose(float highGlucose) {
         this.highGlucose = highGlucose;
     }
 
-    public Float getLowGlucose() {
+    public float getLowGlucose() {
         return lowGlucose;
     }
 
-    public void setLowGlucose(Float lowGlucose) {
+    public void setLowGlucose(float lowGlucose) {
         this.lowGlucose = lowGlucose;
     }
 
-    public Float getHypoGlucose() {
+    public float getHypoGlucose() {
         return hypoGlucose;
     }
 
-    public void setHypoGlucose(Float hypoGlucose) {
+    public void setHypoGlucose(float hypoGlucose) {
         this.hypoGlucose = hypoGlucose;
     }
 }

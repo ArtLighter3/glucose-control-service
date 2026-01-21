@@ -11,7 +11,8 @@ import java.time.Instant;
 public record GlucoseEntryDTO(
         @DecimalMin(value = "0.5", message = "Glucose value should be greater than or equal 0.5")
         @DecimalMax(value = "40.0", message = "Glucose value should be lesser than or equal 40.0")
-        float value,
+        @NotNull
+        Float value,
         @NotNull(message = "Timestamp of measurement must be provided")
         Instant commitedAt,
         MeasurementType type,

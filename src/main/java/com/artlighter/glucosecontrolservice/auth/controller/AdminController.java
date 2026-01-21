@@ -3,17 +3,11 @@ package com.artlighter.glucosecontrolservice.auth.controller;
 import com.artlighter.glucosecontrolservice.auth.service.AuthorityService;
 import com.artlighter.glucosecontrolservice.auth.dto.RoleAuthorityDTO;
 import com.artlighter.glucosecontrolservice.auth.entity.Authority;
-import com.artlighter.glucosecontrolservice.auth.entity.Role;
 import com.artlighter.glucosecontrolservice.auth.util.SessionManager;
-import com.artlighter.glucosecontrolservice.auth.util.convert.DTOConvertUtils;
-import com.artlighter.glucosecontrolservice.auth.util.exception.AuthoritiesException;
-import com.artlighter.glucosecontrolservice.auth.util.exception.ExceptionDTO;
-import com.artlighter.glucosecontrolservice.auth.util.exception.NoSuchEnumerableConstantException;
-import com.artlighter.glucosecontrolservice.user.UserService;
-import org.springframework.data.util.Pair;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.artlighter.glucosecontrolservice.auth.util.exception.ValidationIsFailedException;
+import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,30 +24,30 @@ public class AdminController {
     }
 
     @PostMapping("/roles/revoke-authority")
-    @PreAuthorize("hasRole('ADMIN')")
-    public RoleAuthorityDTO revokeAuthority(@RequestBody RoleAuthorityDTO roleAuthorityDTO) {
-        Pair<Role, Authority> pair = DTOConvertUtils.convertToRoleAndAuthority(roleAuthorityDTO);
-        Role role = pair.getFirst();
-        Authority authority = pair.getSecond();
+    @PreAuthorize("hasAuthority('AUTHORITY_GRANT_REVOKE')")
+    public RoleAuthorityDTO revokeAuthority(@RequestBody @Valid RoleAuthorityDTO roleAuthorityDTO,
+                                            BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) throw new ValidationIsFailedException(bindingResult, "");
 
-        Authority revokedAuthority = authorityService.removeAuthority(role, authority);
-        if (revokedAuthority != null) sessionManager.expireAllUsersWithRole(role);
+        Authority revokedAuthority = authorityService.removeAuthority(roleAuthorityDTO.role(),
+                roleAuthorityDTO.authority());
+        if (revokedAuthority != null) sessionManager.expireAllUsersWithRole(roleAuthorityDTO.role());
 
         return roleAuthorityDTO;
     }
 
     @PostMapping("/roles/add-authority")
-    @PreAuthorize("hasRole('ADMIN')")
-    public RoleAuthorityDTO addAuthority(@RequestBody RoleAuthorityDTO roleAuthorityDTO) {
+    @PreAuthorize("hasAuthority('AUTHORITY_GRANT_REVOKE')")
+    public RoleAuthorityDTO addAuthority(@RequestBody @Valid RoleAuthorityDTO roleAuthorityDTO,
+                                         BindingResult bindingResult) {
         //TODO Сделать так, чтобы можно было передавать массив ролей и прав, иначе админов после первого
         //запроса выкинет из сессии, и последующие запросы по одной паре на добавление не пройдут (или мб
         // переделать логику и не выкидывать из сессии, а обновлять права?).
-        Pair<Role, Authority> pair = DTOConvertUtils.convertToRoleAndAuthority(roleAuthorityDTO);
-        Role role = pair.getFirst();
-        Authority authority = pair.getSecond();
+        if (bindingResult.hasErrors()) throw new ValidationIsFailedException(bindingResult, "");
 
-        Authority addedAuthority = authorityService.addDeletableAuthority(role, authority);
-        if (addedAuthority != null) sessionManager.expireAllUsersWithRole(role);
+        Authority addedAuthority = authorityService.addDeletableAuthority(roleAuthorityDTO.role(),
+                roleAuthorityDTO.authority());
+        if (addedAuthority != null) sessionManager.expireAllUsersWithRole(roleAuthorityDTO.role());
 
         return roleAuthorityDTO;
     }

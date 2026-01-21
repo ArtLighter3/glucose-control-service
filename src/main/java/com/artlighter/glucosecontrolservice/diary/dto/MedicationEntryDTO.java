@@ -10,7 +10,8 @@ import java.time.Instant;
 public record MedicationEntryDTO(
         @DecimalMin(value = "0", message = "Medication value should be greater than or equal 0")
         @DecimalMax(value = "1000", message = "Medication value should be lesser than or equal 1000")
-        float value,
+        @NotNull
+        Float value,
         @NotNull(message = "Timestamp of medication taking must be provided")
         Instant commitedAt,
         @NotNull(message = "Name of medication must be provided")

@@ -7,29 +7,31 @@ import com.artlighter.glucosecontrolservice.diary.util.validation.CorrectGlucose
 import com.artlighter.glucosecontrolservice.diary.util.validation.TypeGroup;
 import jakarta.validation.GroupSequence;
 import jakarta.validation.constraints.*;
+import jakarta.validation.groups.Default;
 
-//@GroupSequence({ArgumentsGroup.class, TypeGroup.class})
+@GroupSequence({PatientProfileDTO.class, TypeGroup.class})
 @CorrectGlucoseIntervals(groups = {TypeGroup.class})
 public record PatientProfileDTO(
         GlucoseUnit glucoseUnit,
         CarbsUnit carbsUnit,
-        @Min(value = 1, groups = {ArgumentsGroup.class})
-        @Max(value = 2, groups = {ArgumentsGroup.class})
-        int diabetesType,
-        @DecimalMin(value = "1", groups = {ArgumentsGroup.class})
-        @DecimalMax(value = "40", groups = {ArgumentsGroup.class})
+        @Min(1)
+        @Max(2)
+        @NotNull
+        Integer diabetesType,
+        @DecimalMin("1")
+        @DecimalMax("40")
         @NotNull
         Float hyperGlucose,
-        @DecimalMin(value = "1", groups = {ArgumentsGroup.class})
-        @DecimalMax(value = "40", groups = {ArgumentsGroup.class})
+        @DecimalMin("1")
+        @DecimalMax("40")
         @NotNull
         Float highGlucose,
-        @DecimalMin(value = "1", groups = {ArgumentsGroup.class})
-        @DecimalMax(value = "40", groups = {ArgumentsGroup.class})
+        @DecimalMin("1")
+        @DecimalMax("40")
         @NotNull
         Float lowGlucose,
-        @DecimalMin(value = "1", groups = {ArgumentsGroup.class})
-        @DecimalMax(value = "40", groups = {ArgumentsGroup.class})
+        @DecimalMin("1")
+        @DecimalMax("40")
         @NotNull
         Float hypoGlucose
 ) {

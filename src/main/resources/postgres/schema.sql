@@ -28,11 +28,14 @@ CREATE TABLE Patient_Profile (
     user_id int UNIQUE REFERENCES service_user(id) ON DELETE CASCADE,
     glucose_unit glucose_unit NOT NULL DEFAULT 'MILLIMOLES_PER_LITER',
     carbs_unit carbs_unit NOT NULL DEFAULT 'GRAMS',
-    diabetes_type smallint CHECK (diabetes_type IN (1, 2)),
-    hyper_glucose real CHECK (hyper_glucose >= 1 AND hyper_glucose <= 40 AND hyper_glucose >= high_glucose),
-    high_glucose real CHECK (high_glucose >= 1 AND high_glucose <= 40 AND high_glucose >= low_glucose),
-    low_glucose real CHECK (low_glucose >= 1 AND low_glucose <= 40 AND low_glucose >= hypo_glucose),
-    hypo_glucose real CHECK (hypo_glucose >= 1 AND hypo_glucose <= 40)
+    diabetes_type smallint NOT NULL CHECK (diabetes_type IN (1, 2)) DEFAULT 1,
+    hyper_glucose real NOT NULL CHECK (hyper_glucose >= 1 AND hyper_glucose <= 40 AND hyper_glucose >= high_glucose)
+                             DEFAULT 15,
+    high_glucose real NOT NULL CHECK (high_glucose >= 1 AND high_glucose <= 40 AND high_glucose >= low_glucose)
+                             DEFAULT 8,
+    low_glucose real NOT NULL CHECK (low_glucose >= 1 AND low_glucose <= 40 AND low_glucose >= hypo_glucose)
+                             DEFAULT 4,
+    hypo_glucose real NOT NULL CHECK (hypo_glucose >= 1 AND hypo_glucose <= 40) DEFAULT 2
 );
 
 -- CREATE TABLE Diary_Entry (

@@ -1,6 +1,6 @@
 package com.artlighter.glucosecontrolservice.general;
 
-import com.artlighter.glucosecontrolservice.auth.util.convert.DTOConvertUtils;
+import com.artlighter.glucosecontrolservice.auth.util.mapper.DTOConvertUtils;
 import com.artlighter.glucosecontrolservice.auth.util.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
