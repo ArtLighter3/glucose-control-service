@@ -16,6 +16,22 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 import java.util.List;
 
+/**
+ * Общий абстрактный класс для контроллеров, обслуживающих точки доступа к определенному
+ * типу записи дневника самоконтроля. Нужен для того, чтобы для каждого типа записи дневника (глюкоза, инсулин и т.д.)
+ * не переписывать одинаковую логику доступа и проверки доступа.
+ * Содержит методы для добавления (POST), обновления (PUT), получения (GET), удаления (DELETE).
+ * <p>
+ * Реализации могут не специфицировать авторизацию, она здесь уже объявлена
+ * для каждого метода, но они должны указывать аннотации @RequestMapping с передачей имени типа
+ * записи дневника (например, @GetMapping("/glucose")),
+ * по которому будет производиться доступ. Без указания будет использоваться "/default".
+ * Для перечисленных методов реализации могут просто вызвать метод родителя.
+ * @param <INT> внутренний класс сущности, представляющей тип записи дневника (наследник DiaryEntry),
+ *             к которому относится реализация.
+ * @param <EXT> внешний класс сущности (DTO) определенного типа записи дневника
+ *             для передачи вовне или приема извне.
+ */
 @RequestMapping("api/patients/{userId}/entries")
 public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT> {
     protected DiaryEntryService diaryEntryService;
@@ -23,6 +39,12 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT> 
     protected EntryMapper<INT, EXT> entryMapper;
     //protected Logger log = LoggerFactory.getLogger(AbstractDiaryEntryController.class);
 
+    /**
+     *
+     * @param diaryEntryService сервис для доступа к самим записям дневника
+     * @param patientProfileService сервис для доступа к профилям больных
+     * @param entryMapper маппер сущностей из внутренних (INT) во внешние DTO (EXT) и наоборот
+     */
     public AbstractDiaryEntryController(DiaryEntryService diaryEntryService,
                                         PatientProfileService patientProfileService,
                                         EntryMapper<INT, EXT> entryMapper) {
@@ -109,8 +131,11 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT> 
         return entries.stream().map((entry) -> entryMapper.mapToDTO((INT) entry)).toList();
     }
 
+    /**
+     * Функция возвращает тип записи дневника DiaryEntryType, с которым работает контроллер.
+     * @return экземпляр перечисления DiaryEntryType.
+     */
     protected abstract DiaryEntryType getEntryType();
-
 
     private void checkValidationErrorsAndThrowException(BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {

@@ -9,6 +9,12 @@ import java.time.Instant;
 import java.util.Objects;
 
 //TODO МБ добавить поле DiaryEntryType?
+
+/**
+ * Общий класс для записи дневника самоконтроля. Определенные типы (измерение глюкозы, ввод инсулина и т.д.)
+ * должны быть реализациями. Содержит общие для любого типа поля, а именно численное значение, временную отметку
+ * совершения, профиль пользователя, к которому относится, и текстовый комментарий.
+ */
 @MappedSuperclass
 @IdClass(DiaryEntry.DiaryEntryID.class)
 public abstract class DiaryEntry {

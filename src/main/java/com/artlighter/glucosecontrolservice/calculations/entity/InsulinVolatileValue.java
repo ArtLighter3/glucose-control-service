@@ -5,6 +5,10 @@ import jakarta.persistence.*;
 import java.time.LocalTime;
 import java.util.Objects;
 
+/**
+ * Общий абстрактный класс для сущностей, представляющих параметры для инсулинового профиля, значения которых
+ * зависят от времени суток.
+ */
 @MappedSuperclass
 @IdClass(InsulinVolatileValue.InsulinVolatileValueID.class)
 public abstract class InsulinVolatileValue {

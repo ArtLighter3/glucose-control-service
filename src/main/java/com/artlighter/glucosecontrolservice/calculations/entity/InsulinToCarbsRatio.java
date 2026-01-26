@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 
 import java.time.LocalTime;
 
+/**
+ * Сущность, представляющая значение углеводного коэффициента в определенное время суток.
+ */
 @Entity
 @Table(name = "insulin_to_carb_ratio")
 public class InsulinToCarbsRatio extends InsulinVolatileValue {

@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 
 import java.time.LocalTime;
 
+/**
+ * Сущность, представляющая значение чувствительности к инсулину в определенное время суток.
+ */
 @Entity
 @Table(name = "insulin_sensitivity_factor")
 public class InsulinSensitivityFactor extends InsulinVolatileValue {
