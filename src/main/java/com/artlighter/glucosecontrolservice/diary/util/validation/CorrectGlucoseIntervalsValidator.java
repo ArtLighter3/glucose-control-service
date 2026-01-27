@@ -16,6 +16,9 @@ public class CorrectGlucoseIntervalsValidator
         Float high = value.highGlucose(), low = value.lowGlucose(),
                 hyper = value.hyperGlucose(), hypo = value.hypoGlucose();
 
+        //Хотя это и не цель проверки, но в случае, если каким-то образом они null, то на вывод REST API пойдет
+        //ошибка сервера, а не BadRequest. А так, хоть и с не совсем верным сообщением,
+        // но клиенту будет ясно, что ошибка в запросе
         if (high == null || low == null || hyper == null || hypo == null) return false;
 
         if (hyper < high) return false;
