@@ -8,12 +8,15 @@ import com.artlighter.glucosecontrolservice.diary.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import com.artlighter.glucosecontrolservice.diary.util.mapper.EntryMapper;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 
 /**
@@ -37,7 +40,7 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT> 
     protected DiaryEntryService diaryEntryService;
     protected PatientProfileService patientProfileService;
     protected EntryMapper<INT, EXT> entryMapper;
-    //protected Logger log = LoggerFactory.getLogger(AbstractDiaryEntryController.class);
+    protected Logger log = LoggerFactory.getLogger(AbstractDiaryEntryController.class);
 
     /**
      *
@@ -57,9 +60,10 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT> 
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_SHOW_ALL', 'GLUCOSE_SHOW_ATTACHED', " +
             "'GLUCOSE_SHOW_OWN', #userId, authentication)")
     public List<EXT> getDiaryEntries(@PathVariable int userId,
-                                         @RequestParam(required = false) Instant from,
-                                         @RequestParam(required = false) Instant to) {
-        return getEntries(getEntryType(), userId, from, to);
+                                     @RequestParam(required = false) Instant from,
+                                     @RequestParam(required = false) Instant to,
+                                     @RequestParam(required = false) ZoneOffset outputZoneOffset) {
+        return getEntries(getEntryType(), userId, from, to, outputZoneOffset);
     }
 
     @PostMapping("/default")
@@ -92,6 +96,7 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT> 
         checkValidationErrorsAndThrowException(bindingResult);
 
         INT entryToAdd = entryMapper.mapToInternal(entryDTO);
+        //log.info("timestamp of entry = {}", entryToAdd.getCommitedAt());
         diaryEntryService.addDiaryEntry(entryToAdd,
                 patientProfileService.getByUserId(userId), entryToAdd.getCommitedAt());
 
@@ -124,11 +129,15 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT> 
 //            throw new NotCurrentUsersInfoException("You don't have access to this user's info");
 //    }
 
-    private List<EXT> getEntries(DiaryEntryType entryType, int userId, Instant from, Instant to) {
+    private List<EXT> getEntries(DiaryEntryType entryType, int userId,
+                                 Instant from, Instant to, ZoneOffset outputZoneOffset) {
         List<DiaryEntry> entries =
                 diaryEntryService.getDiaryEntriesOfType(entryType, patientProfileService.getByUserId(userId), from, to);
 
-        return entries.stream().map((entry) -> entryMapper.mapToDTO((INT) entry)).toList();
+        return entries.stream().map((entry) -> {
+            return outputZoneOffset == null ? entryMapper.mapToDTO((INT) entry) :
+                    entryMapper.mapToDTO((INT) entry, outputZoneOffset);
+        }).toList();
     }
 
     /**

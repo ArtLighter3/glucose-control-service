@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @RestController
@@ -26,8 +27,8 @@ public class GlucoseEntryController extends AbstractDiaryEntryController<Glucose
 
     @Override
     @GetMapping("/glucose")
-    public List<GlucoseEntryDTO> getDiaryEntries(int userId, Instant from, Instant to) {
-        return super.getDiaryEntries(userId, from, to);
+    public List<GlucoseEntryDTO> getDiaryEntries(int userId, Instant from, Instant to, ZoneOffset outputZoneOffset) {
+        return super.getDiaryEntries(userId, from, to, outputZoneOffset);
     }
 
     @Override

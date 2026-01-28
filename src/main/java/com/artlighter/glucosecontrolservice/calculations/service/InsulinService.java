@@ -11,8 +11,10 @@ import com.artlighter.glucosecontrolservice.diary.entity.enumeration.InsulinType
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -63,12 +65,15 @@ public class InsulinService {
         //Map<Instant, Float> insulinByTimestamp = new TreeMap<>();
 
         for (InsulinEntry insulinEntry : insulinEntries) {
-            if (insulinEntry.getInsulinType() == InsulinType.LONG ||
-                    insulinEntry.getCommitedAt().isBefore(now.minusMillis(durationOfInsulinAction)))
+            if (insulinEntry.getInsulinType() == InsulinType.LONG)
+                continue;
+
+            Instant commitedAt = insulinEntry.getCommitedAt();
+            if (commitedAt.isBefore(now.minus(Duration.ofHours(durationOfInsulinAction))))
                 continue;
 
             int minutesPassedFromAdministration = (int)
-                (now.minusMillis(insulinEntry.getCommitedAt().toEpochMilli()).toEpochMilli() / 1000L / 60L);
+                (now.minusMillis(commitedAt.toEpochMilli()).toEpochMilli() / 1000L / 60L);
             double activeInsulin = decayCurveStrategy.getCurrentActiveInsulin(insulinEntry.getValue(),
                     minutesPassedFromAdministration, durationOfInsulinAction);
 

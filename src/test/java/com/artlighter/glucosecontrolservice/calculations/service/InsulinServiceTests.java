@@ -23,16 +23,15 @@ public class InsulinServiceTests {
 
     @Test
     public void calculateInsulinDose_NoInsulinEntriesProvided_ReturnsCorrectResultWithOnlyCarbsInsulinDose() {
-        testCarbsDose(10f, 0.7f, 50f, 0f, 5);
-        testCarbsDose(10f, 0.7f, 65.4f, 0f, 6.54);
+        testCarbsDose(10f, 50f, 0f, 5);
+        testCarbsDose(10f, 65.4f, 0f, 6.54);
     }
 
-    private void testCarbsDose(float icr, float isf,
-                      float carbs, float correction, double expectedCarbsDose) {
+    private void testCarbsDose(float icr, float carbs, float correction, double expectedCarbsDose) {
         PatientProfile patientProfile = new PatientProfile(0, GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS,
                 1, 0, 40f, 5.5f, 0.1f, 0f);
-        InsulinProfile insulinProfile = new InsulinProfile(0, icr, isf, 3, null, null);
-        InsulinResult expected = new InsulinResult(6f, isf, 0.0, 0.0,
+        InsulinProfile insulinProfile = new InsulinProfile(0, icr, 1f, 3, null, null);
+        InsulinResult expected = new InsulinResult(6f, 1f, 0.0, 0.0,
                 carbs, icr, expectedCarbsDose, correction, expectedCarbsDose);
 
         InsulinResult actual = insulinService.calculateInsulinDose(patientProfile, insulinProfile, null,

@@ -2,12 +2,10 @@ package com.artlighter.glucosecontrolservice.diary.dto;
 
 import com.artlighter.glucosecontrolservice.diary.entity.enumeration.CarbsUnit;
 import com.artlighter.glucosecontrolservice.diary.entity.enumeration.GlucoseUnit;
-import com.artlighter.glucosecontrolservice.diary.util.validation.ArgumentsGroup;
 import com.artlighter.glucosecontrolservice.diary.util.validation.CorrectGlucoseIntervals;
 import com.artlighter.glucosecontrolservice.diary.util.validation.TypeGroup;
 import jakarta.validation.GroupSequence;
 import jakarta.validation.constraints.*;
-import jakarta.validation.groups.Default;
 
 @GroupSequence({PatientProfileDTO.class, TypeGroup.class})
 @CorrectGlucoseIntervals(groups = {TypeGroup.class})

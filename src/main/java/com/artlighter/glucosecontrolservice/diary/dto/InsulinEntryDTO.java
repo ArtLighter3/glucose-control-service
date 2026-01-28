@@ -8,16 +8,18 @@ import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 
 public record InsulinEntryDTO(
-        @DecimalMin(value = "1", message = "Insulin value should be greater than or equal 1")
-        @DecimalMax(value = "100", message = "Insulin value should be lesser than or equal 100")
+        @DecimalMin("1")
+        @DecimalMax("100")
         @NotNull
         Float value,
-        @NotNull(message = "Timestamp of insulin administration must be provided")
-        Instant commitedAt,
-        @NotNull(message = "Insulin type must be provided")
+        @NotNull
+        OffsetDateTime commitedAt,
+        @NotNull
         InsulinType type,
-        @Length(max = 500, message = "Notes should be less than 500 characters long")
+        @Length(max = 500)
         String notes) {
 }

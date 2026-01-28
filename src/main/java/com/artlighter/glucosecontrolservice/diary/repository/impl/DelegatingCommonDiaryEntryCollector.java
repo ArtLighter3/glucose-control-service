@@ -87,7 +87,8 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
         List<DiaryEntry> diaryEntries = new ArrayList<>();
         //TODO можно просто добавить отдельный DAO, в котором будет один запрос с UNION для получения всех записей
         for (ParticularDiaryEntryRepository repository : repositories.getAllRepositories()) {
-            diaryEntries.addAll(repository.getAllByPatientProfileIdAndCommitedAtBetween(patientProfile.getId(), from, to));
+            diaryEntries.addAll(repository.getAllByPatientProfileIdAndCommitedAtBetween(patientProfile.getId(),
+                    from, to));
         }
         //TODO реализовать сортировку по Sort
         diaryEntries.sort((entry1, entry2) ->

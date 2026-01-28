@@ -6,17 +6,19 @@ import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 
 public record MedicationEntryDTO(
-        @DecimalMin(value = "0", message = "Medication value should be greater than or equal 0")
-        @DecimalMax(value = "1000", message = "Medication value should be lesser than or equal 1000")
+        @DecimalMin("0")
+        @DecimalMax("1000")
         @NotNull
         Float value,
-        @NotNull(message = "Timestamp of medication taking must be provided")
-        Instant commitedAt,
-        @NotNull(message = "Name of medication must be provided")
-        @Length(max = 100, message = "Name of medication should be less than 100 characters long")
+        @NotNull
+        OffsetDateTime commitedAt,
+        @NotNull
+        @Length(max = 100)
         String name,
-        @Length(max = 500, message = "Notes should be less than 500 characters long")
+        @Length(max = 500)
         String notes) {
 }
