@@ -4,35 +4,45 @@ import com.artlighter.glucosecontrolservice.calculations.entity.InsulinProfile;
 import com.artlighter.glucosecontrolservice.calculations.entity.InsulinResult;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.InsulinCalculator;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.InsulinDecayCurveStrategy;
-import com.artlighter.glucosecontrolservice.diary.DiaryEntryService;
 import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
+import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.InsulinEntry;
 import com.artlighter.glucosecontrolservice.diary.entity.enumeration.InsulinType;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Component
-public class InsulinService {
+public class InsulinCalculationService {
     private InsulinCalculator insulinCalculator;
     private InsulinDecayCurveStrategy decayCurveStrategy;
+
+    private DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.US));
     //private DiaryEntryService diaryEntryService;
 
-    public InsulinService(InsulinCalculator insulinCalculator, InsulinDecayCurveStrategy decayCurveStrategy) {
+    public InsulinCalculationService(InsulinCalculator insulinCalculator, InsulinDecayCurveStrategy decayCurveStrategy) {
         this.insulinCalculator = insulinCalculator;
         //this.diaryEntryService = diaryEntryService;
         this.decayCurveStrategy = decayCurveStrategy;
     }
+//    public InsulinResult calculateInsulinWithoutGlucoseCorrection(PatientProfile patientProfile,
+//                                                                  InsulinProfile insulinProfile,
+//                                                                  List<InsulinEntry> insulinEntries,
+//                                                                  LocalTime timeOfDay,
+//                                                                  float carbs, float correction) {
+//
+//    }
 
     public InsulinResult calculateInsulinDose(PatientProfile patientProfile, InsulinProfile insulinProfile,
-                                              List<InsulinEntry> insulinEntries, LocalTime timeOfDay,
+                                              List<? extends DiaryEntry> entriesToConsider, LocalTime timeOfDay,
                                               float carbs, float glucose, float correction) {
         float currentIsf = insulinProfile.getDefaultInsulinSensitivityFactor();
         float currentIcr = insulinProfile.getDefaultInsulinToCarbsRatio();
@@ -41,7 +51,11 @@ public class InsulinService {
         double correctionInsulin = 0.0;
 
         double activeInsulin = 0.0;
-        if (insulinEntries != null) {
+        if (entriesToConsider != null) {
+            List<InsulinEntry> insulinEntries = entriesToConsider.stream()
+                    .filter((entry) -> entry instanceof InsulinEntry)
+                    .map((entry -> (InsulinEntry) entry)).toList();
+
             Pair<Double, Double> activeInsulinPair =
                     extractActiveInsulin(insulinEntries, insulinProfile.getDurationOfInsulinAction());
             correctionInsulin = insulinCalculator.calculateCorrectionDose(glucose,
@@ -52,8 +66,15 @@ public class InsulinService {
 
         double result = carbsInsulin + correctionInsulin;
 
-        return new InsulinResult(glucose, currentIsf, correctionInsulin, activeInsulin, carbs, currentIcr,
-                carbsInsulin, correction, result);
+        return new InsulinResult(glucose,
+                currentIsf,
+                Float.valueOf(df.format(correctionInsulin)),
+                Float.valueOf(df.format(activeInsulin)),
+                carbs,
+                currentIcr,
+                Float.valueOf(df.format(carbsInsulin)),
+                correction,
+                Float.valueOf(df.format(result)));
     }
 
     //public float getActive

@@ -5,23 +5,23 @@ import java.util.Objects;
 public class InsulinResult {
     private Float glucose;
     private Float insulinSensitivityFactor;
-    private Double correctionInsulin;
+    private Float correctionInsulin;
 
-    private Double activeInsulin;
+    private Float activeInsulin;
 
     private Float carbs;
     private Float insulinToCarbsRatio;
-    private Double carbsInsulin;
+    private Float carbsInsulin;
 
     private Float correction;
 
-    private Double result;
+    private Float result;
 
-    public InsulinResult(Float glucose, Float insulinSensitivityFactor, Double correctionInsulin,
-                         Double activeInsulin,
-                         Float carbs, Float insulinToCarbsRatio, Double carbsInsulin,
+    public InsulinResult(Float glucose, Float insulinSensitivityFactor, Float correctionInsulin,
+                         Float activeInsulin,
+                         Float carbs, Float insulinToCarbsRatio, Float carbsInsulin,
                          Float correction,
-                         Double result) {
+                         Float result) {
         this.glucose = glucose;
         this.insulinSensitivityFactor = insulinSensitivityFactor;
         this.correctionInsulin = correctionInsulin;
@@ -41,11 +41,11 @@ public class InsulinResult {
         return insulinSensitivityFactor;
     }
 
-    public Double getCorrectionInsulin() {
+    public Float getCorrectionInsulin() {
         return correctionInsulin;
     }
 
-    public Double getActiveInsulin() {
+    public Float getActiveInsulin() {
         return activeInsulin;
     }
 
@@ -57,7 +57,7 @@ public class InsulinResult {
         return insulinToCarbsRatio;
     }
 
-    public Double getCarbsInsulin() {
+    public Float getCarbsInsulin() {
         return carbsInsulin;
     }
 
@@ -65,7 +65,7 @@ public class InsulinResult {
         return correction;
     }
 
-    public Double getResult() {
+    public Float getResult() {
         return result;
     }
 
