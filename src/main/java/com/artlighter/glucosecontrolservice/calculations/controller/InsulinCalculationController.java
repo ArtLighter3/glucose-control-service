@@ -15,6 +15,7 @@ import com.artlighter.glucosecontrolservice.diary.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +42,8 @@ public class InsulinCalculationController {
     }
 
     @GetMapping("/calculate")
+    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'INSULIN_CALCULATE'," +
+            "#userId, authentication)")
     public InsulinResult calculate(@Valid InsulinCalculationRequestDTO calculationRequest, BindingResult bindingResult,
                                    @PathVariable int userId) {
         if (bindingResult.hasErrors()) throw new ValidationIsFailedException(bindingResult, "request body is invalid");
