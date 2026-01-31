@@ -96,4 +96,19 @@ public class InsulinResult {
                 correction,
                 result);
     }
+
+    @Override
+    public String toString() {
+        return "InsulinResult{" +
+                "glucose=" + glucose +
+                ", insulinSensitivityFactor=" + insulinSensitivityFactor +
+                ", correctionInsulin=" + correctionInsulin +
+                ", activeInsulin=" + activeInsulin +
+                ", carbs=" + carbs +
+                ", insulinToCarbsRatio=" + insulinToCarbsRatio +
+                ", carbsInsulin=" + carbsInsulin +
+                ", correction=" + correction +
+                ", result=" + result +
+                '}';
+    }
 }

@@ -2,6 +2,7 @@ package com.artlighter.glucosecontrolservice.calculations.service;
 
 import com.artlighter.glucosecontrolservice.calculations.entity.InsulinProfile;
 import com.artlighter.glucosecontrolservice.calculations.entity.InsulinResult;
+import com.artlighter.glucosecontrolservice.calculations.entity.InsulinVolatileValue;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.InsulinCalculator;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.InsulinDecayCurveStrategy;
 import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
@@ -16,9 +17,9 @@ import java.text.DecimalFormatSymbols;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 @Component
 public class InsulinCalculationService {
@@ -44,8 +45,10 @@ public class InsulinCalculationService {
     public InsulinResult calculateInsulinDose(PatientProfile patientProfile, InsulinProfile insulinProfile,
                                               List<? extends DiaryEntry> entriesToConsider, LocalTime timeOfDay,
                                               float carbs, float glucose, float correction) {
-        float currentIsf = insulinProfile.getDefaultInsulinSensitivityFactor();
-        float currentIcr = insulinProfile.getDefaultInsulinToCarbsRatio();
+        float currentIsf = extractVolatileValue(insulinProfile.getFactorsByTime(), timeOfDay,
+                insulinProfile.getDefaultInsulinSensitivityFactor());
+        float currentIcr = extractVolatileValue(insulinProfile.getRatiosByTime(), timeOfDay,
+                insulinProfile.getDefaultInsulinToCarbsRatio());
 
         double carbsInsulin = insulinCalculator.calculateCarbDose(carbs, currentIcr);
         double correctionInsulin = 0.0;
@@ -81,7 +84,7 @@ public class InsulinCalculationService {
     private Pair<Double, Double> extractActiveInsulin(List<InsulinEntry> insulinEntries, int durationOfInsulinAction) {
         if (insulinEntries == null) return Pair.of(0.0, 0.0);
 
-        double correctionInsulin = 0f, carbsInsulin = 0f;
+        double correctionInsulin = 0.0, carbsInsulin = 0.0;
         Instant now = Instant.now();
         //Map<Instant, Float> insulinByTimestamp = new TreeMap<>();
 
@@ -103,6 +106,25 @@ public class InsulinCalculationService {
         }
 
         return Pair.of(carbsInsulin, correctionInsulin);
+    }
+
+    private float extractVolatileValue(List<? extends InsulinVolatileValue> valuesByTime, LocalTime timeToFindFor,
+                                       float defaultValue) {
+        if (valuesByTime == null || valuesByTime.isEmpty()) return defaultValue;
+
+        // Хотя загрузка из БД уже отсортирована по времени суток, на всякий случай делается это снова
+        // (да и функция о предварительной сортировке знать не должна),
+        // тем более, как заявляется, при уже отсортированном списке сложность будет почти O(n).
+        valuesByTime.sort(Comparator.comparing((InsulinVolatileValue value) -> value.getTimeOfDay()));
+
+        for (int i = valuesByTime.size() - 1; i >= 0; i--) {
+            InsulinVolatileValue insulinVolatileValue = valuesByTime.get(i);
+            if (timeToFindFor.isAfter(insulinVolatileValue.getTimeOfDay()) ||
+                    timeToFindFor.equals(insulinVolatileValue.getTimeOfDay()))
+                return insulinVolatileValue.getValue();
+        }
+
+        return defaultValue;
     }
 
 }
