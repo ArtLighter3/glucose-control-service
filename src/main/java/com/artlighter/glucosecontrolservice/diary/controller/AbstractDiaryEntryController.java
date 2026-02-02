@@ -1,8 +1,10 @@
 package com.artlighter.glucosecontrolservice.diary.controller;
 
+import com.artlighter.glucosecontrolservice.auth.util.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.auth.util.exception.ValidationIsFailedException;
 import com.artlighter.glucosecontrolservice.diary.DiaryEntryService;
 import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDeleteDTO;
+import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
@@ -93,33 +95,39 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT> 
     }
 
     private EXT addEntry(int userId, EXT entryDTO, BindingResult bindingResult) {
+        PatientProfile patientProfile = patientProfileService.getByUserId(userId);
+        if (patientProfile == null) throw new ResourceNotFoundException("patient not found");
+
         checkValidationErrorsAndThrowException(bindingResult);
 
-        INT entryToAdd = entryMapper.mapToInternal(entryDTO);
+        INT entryToAdd = entryMapper.mapToInternalWithUnitConversion(entryDTO, patientProfile);
         //log.info("timestamp of entry = {}", entryToAdd.getCommitedAt());
-        diaryEntryService.addDiaryEntry(entryToAdd,
-                patientProfileService.getByUserId(userId), entryToAdd.getCommitedAt());
+        diaryEntryService.addDiaryEntry(entryToAdd, patientProfile, entryToAdd.getCommitedAt());
 
         return entryDTO;
     }
 
     private EXT updateEntry(int userId, EXT entryDTO, BindingResult bindingResult) {
+        PatientProfile patientProfile = patientProfileService.getByUserId(userId);
+        if (patientProfile == null) throw new ResourceNotFoundException("patient not found");
+
         checkValidationErrorsAndThrowException(bindingResult);
 
-        INT entryToUpdate = entryMapper.mapToInternal(entryDTO);
-        diaryEntryService.updateDiaryEntry(entryToUpdate,
-                patientProfileService.getByUserId(userId), entryToUpdate.getCommitedAt());
+        INT entryToUpdate = entryMapper.mapToInternalWithUnitConversion(entryDTO, patientProfile);
+        diaryEntryService.updateDiaryEntry(entryToUpdate, patientProfile, entryToUpdate.getCommitedAt());
 
         return entryDTO;
     }
 
     private DiaryEntryDeleteDTO deleteEntry(int userId, DiaryEntryDeleteDTO entryDeleteDTO,
                                               BindingResult bindingResult) {
+        PatientProfile patientProfile = patientProfileService.getByUserId(userId);
+        if (patientProfile == null) throw new ResourceNotFoundException("patient not found");
+
         checkValidationErrorsAndThrowException(bindingResult);
 
         DiaryEntry entryToDelete = entryMapper.mapToInternal(entryDeleteDTO);
-        diaryEntryService.deleteDiaryEntry(entryToDelete, patientProfileService.getByUserId(userId),
-                entryToDelete.getCommitedAt());
+        diaryEntryService.deleteDiaryEntry(entryToDelete, patientProfile, entryToDelete.getCommitedAt());
 
         return entryDeleteDTO;
     }
@@ -131,12 +139,15 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT> 
 
     private List<EXT> getEntries(DiaryEntryType entryType, int userId,
                                  Instant from, Instant to, ZoneOffset outputZoneOffset) {
-        List<DiaryEntry> entries =
-                diaryEntryService.getDiaryEntriesOfType(entryType, patientProfileService.getByUserId(userId), from, to);
+        PatientProfile patientProfile = patientProfileService.getByUserId(userId);
+        if (patientProfile == null) throw new ResourceNotFoundException("patient not found");
+
+        List<DiaryEntry> entries = diaryEntryService.getDiaryEntriesOfType(entryType, patientProfile, from, to);
 
         return entries.stream().map((entry) -> {
-            return outputZoneOffset == null ? entryMapper.mapToDTO((INT) entry) :
-                    entryMapper.mapToDTO((INT) entry, outputZoneOffset);
+            return outputZoneOffset == null ?
+                    entryMapper.mapToDtoWithUnitConversion((INT) entry, patientProfile, ZoneOffset.UTC) :
+                    entryMapper.mapToDtoWithUnitConversion((INT) entry, patientProfile, outputZoneOffset);
         }).toList();
     }
 

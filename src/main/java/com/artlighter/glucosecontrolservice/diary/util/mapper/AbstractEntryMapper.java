@@ -1,26 +1,38 @@
 package com.artlighter.glucosecontrolservice.diary.util.mapper;
 
 import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDeleteDTO;
-import com.artlighter.glucosecontrolservice.diary.dto.GlucoseEntryDTO;
+import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
-import com.artlighter.glucosecontrolservice.diary.entity.entry.GlucoseEntry;
+import com.artlighter.glucosecontrolservice.diary.entity.enumeration.CarbsUnit;
+import com.artlighter.glucosecontrolservice.diary.entity.enumeration.GlucoseUnit;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.util.Locale;
 
 public abstract class AbstractEntryMapper<INT extends DiaryEntry, EXT> implements EntryMapper<INT, EXT> {
+    private DecimalFormat decimalFormat = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.US));
 
     @Override
-    public INT mapToInternal(EXT entryDTO) {
+    public INT mapToInternalWithUnitConversion(EXT entryDTO, PatientProfile patientProfile) {
         INT entry = createEntry();
-        fillFields(entry, entryDTO);
+        fillFieldsOfInternalWithUnitConversion(entry, entryDTO, patientProfile);
         entry.setCommitedAt(entry.getCommitedAt().truncatedTo(ChronoUnit.MINUTES));
+        //entry.setValue(round(entry.getValue()));
         return entry;
     }
 
     @Override
+    public INT mapToInternal(EXT entryDTO) {
+        return mapToInternalWithUnitConversion(entryDTO, createDefaultPatientProfile());
+    }
+
+    @Override
     public EXT mapToDTO(INT internal) {
-        return mapToDTO(internal, ZoneOffset.UTC);
+        return mapToDtoWithUnitConversion(internal, createDefaultPatientProfile(), ZoneOffset.UTC);
     }
 
     @Override
@@ -33,12 +45,28 @@ public abstract class AbstractEntryMapper<INT extends DiaryEntry, EXT> implement
         return entry;
     }
 
+    private PatientProfile createDefaultPatientProfile() {
+        return new PatientProfile(0, GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS,
+                1, 0, 12f, 10f, 4f, 2f);
+    }
+
+//    protected DecimalFormat getDecimalFormat() {
+//        return decimalFormat;
+//    }
+
+    protected float round(Number value) {
+        return Float.parseFloat(decimalFormat.format(value));
+    }
+
     /**
-     * Функция должна заполнять поля записи дневника INT, используя поля EXT
+     * Функция должна заполнять поля записи дневника INT, используя поля EXT, и конвертировать единицы
+     * измерения значений при необходимости.
      * @param entry
      * @param entryDTO
+     * @param patientProfile
      */
-    protected abstract void fillFields(INT entry, EXT entryDTO);
+    protected abstract void fillFieldsOfInternalWithUnitConversion(INT entry, EXT entryDTO,
+                                                                   PatientProfile patientProfile);
 
     /**
      * Функция должна создавать экземпляр записи дневника INT

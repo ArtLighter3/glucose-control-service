@@ -1,5 +1,6 @@
 package com.artlighter.glucosecontrolservice.diary.dto;
 
+import com.artlighter.glucosecontrolservice.diary.entity.enumeration.CarbsUnit;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
@@ -17,5 +18,6 @@ public record CarbsEntryDTO(
         @NotNull
         OffsetDateTime commitedAt,
         @Length(max = 500)
-        String notes) {
+        String notes,
+        String carbsUnits) {
 }
