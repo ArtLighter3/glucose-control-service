@@ -5,6 +5,7 @@ import com.artlighter.glucosecontrolservice.calculations.entity.InsulinResult;
 import com.artlighter.glucosecontrolservice.calculations.entity.InsulinVolatileValue;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.InsulinCalculator;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.InsulinDecayCurveStrategy;
+import com.artlighter.glucosecontrolservice.calculations.util.calc.VolatileValueExtractor;
 import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.InsulinEntry;
@@ -25,14 +26,18 @@ import java.util.Locale;
 public class InsulinCalculationService {
     private InsulinCalculator insulinCalculator;
     private InsulinDecayCurveStrategy decayCurveStrategy;
+    private VolatileValueExtractor volatileValueExtractor;
 
     private DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.US));
     //private DiaryEntryService diaryEntryService;
 
-    public InsulinCalculationService(InsulinCalculator insulinCalculator, InsulinDecayCurveStrategy decayCurveStrategy) {
+    public InsulinCalculationService(InsulinCalculator insulinCalculator,
+                                     InsulinDecayCurveStrategy decayCurveStrategy,
+                                     VolatileValueExtractor volatileValueExtractor) {
         this.insulinCalculator = insulinCalculator;
         //this.diaryEntryService = diaryEntryService;
         this.decayCurveStrategy = decayCurveStrategy;
+        this.volatileValueExtractor = volatileValueExtractor;
     }
 //    public InsulinResult calculateInsulinWithoutGlucoseCorrection(PatientProfile patientProfile,
 //                                                                  InsulinProfile insulinProfile,
@@ -45,9 +50,9 @@ public class InsulinCalculationService {
     public InsulinResult calculateInsulinDose(PatientProfile patientProfile, InsulinProfile insulinProfile,
                                               List<? extends DiaryEntry> entriesToConsider, LocalTime timeOfDay,
                                               float carbs, float glucose, float correction) {
-        float currentIsf = extractVolatileValue(insulinProfile.getFactorsByTime(), timeOfDay,
+        float currentIsf = volatileValueExtractor.extractVolatileValue(insulinProfile.getFactorsByTime(), timeOfDay,
                 insulinProfile.getDefaultInsulinSensitivityFactor());
-        float currentIcr = extractVolatileValue(insulinProfile.getRatiosByTime(), timeOfDay,
+        float currentIcr = volatileValueExtractor.extractVolatileValue(insulinProfile.getRatiosByTime(), timeOfDay,
                 insulinProfile.getDefaultInsulinToCarbsRatio());
 
         double carbsInsulin = insulinCalculator.calculateCarbDose(carbs, currentIcr);
@@ -106,25 +111,6 @@ public class InsulinCalculationService {
         }
 
         return Pair.of(carbsInsulin, correctionInsulin);
-    }
-
-    private float extractVolatileValue(List<? extends InsulinVolatileValue> valuesByTime, LocalTime timeToFindFor,
-                                       float defaultValue) {
-        if (valuesByTime == null || valuesByTime.isEmpty()) return defaultValue;
-
-        // Хотя загрузка из БД уже отсортирована по времени суток, на всякий случай делается это снова
-        // (да и функция о предварительной сортировке знать не должна),
-        // тем более, как заявляется, при уже отсортированном списке сложность будет почти O(n).
-        valuesByTime.sort(Comparator.comparing((InsulinVolatileValue value) -> value.getTimeOfDay()));
-
-        for (int i = valuesByTime.size() - 1; i >= 0; i--) {
-            InsulinVolatileValue insulinVolatileValue = valuesByTime.get(i);
-            if (timeToFindFor.isAfter(insulinVolatileValue.getTimeOfDay()) ||
-                    timeToFindFor.equals(insulinVolatileValue.getTimeOfDay()))
-                return insulinVolatileValue.getValue();
-        }
-
-        return defaultValue;
     }
 
 }

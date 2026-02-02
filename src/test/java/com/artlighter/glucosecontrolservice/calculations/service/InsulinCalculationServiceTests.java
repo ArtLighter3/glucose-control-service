@@ -2,6 +2,7 @@ package com.artlighter.glucosecontrolservice.calculations.service;
 
 import com.artlighter.glucosecontrolservice.calculations.entity.*;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.BilinearInsulinDecayCurveStrategy;
+import com.artlighter.glucosecontrolservice.calculations.util.calc.BySortVolatileValueExtractor;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.InsulinCalculatorImpl;
 import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.enumeration.CarbsUnit;
@@ -20,7 +21,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
-@Import({InsulinCalculationService.class, BilinearInsulinDecayCurveStrategy.class, InsulinCalculatorImpl.class})
+@Import({InsulinCalculationService.class, BilinearInsulinDecayCurveStrategy.class, InsulinCalculatorImpl.class,
+         BySortVolatileValueExtractor.class})
 public class InsulinCalculationServiceTests {
     @Autowired
     private InsulinCalculationService insulinCalculationService;
