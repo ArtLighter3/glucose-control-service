@@ -1,15 +1,19 @@
 package com.artlighter.glucosecontrolservice.diary.controller;
 
 import com.artlighter.glucosecontrolservice.auth.ServiceUserDetails;
+import com.artlighter.glucosecontrolservice.auth.util.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.diary.DiaryEntryService;
+import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDTO;
 import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.service.PatientProfileService;
+import com.artlighter.glucosecontrolservice.diary.util.mapper.DiaryEntryCollectionMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @RestController
@@ -17,21 +21,28 @@ import java.util.List;
 public class DiaryEntryCollectionController {
     private DiaryEntryService diaryEntryService;
     private PatientProfileService patientProfileService;
+    private DiaryEntryCollectionMapper collectionMapper;
 
     public DiaryEntryCollectionController(DiaryEntryService diaryEntryService,
-                                          PatientProfileService patientProfileService) {
+                                          PatientProfileService patientProfileService,
+                                          DiaryEntryCollectionMapper collectionMapper) {
         this.diaryEntryService = diaryEntryService;
         this.patientProfileService = patientProfileService;
+        this.collectionMapper = collectionMapper;
     }
 
     @GetMapping
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_SHOW_ALL', 'GLUCOSE_SHOW_ATTACHED', " +
             "'GLUCOSE_SHOW_OWN', #userId, authentication)")
-    public List<DiaryEntry> getAllEntries(@PathVariable int userId,
-                                                 @RequestParam(required = false) Instant from,
-                                                 @RequestParam(required = false) Instant to) {
+    public List<DiaryEntryDTO> getAllEntries(@PathVariable int userId,
+                                             @RequestParam(required = false) Instant from,
+                                             @RequestParam(required = false) Instant to,
+                                             @RequestParam(required = false) ZoneOffset outputZoneOffset) {
+        PatientProfile patientProfile = patientProfileService.getByUserId(userId);
+        if (patientProfile == null) throw new ResourceNotFoundException("patient not found");
 
-        return diaryEntryService.getDiaryEntriesOfType(null,
-                patientProfileService.getByUserId(userId), from, to);
+        List<DiaryEntry> entries = diaryEntryService.getDiaryEntriesOfType(null, patientProfile, from, to);
+
+        return collectionMapper.mapToDTO(entries, patientProfile, outputZoneOffset);
     }
 }

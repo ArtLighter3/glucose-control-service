@@ -12,7 +12,10 @@ import java.text.DecimalFormatSymbols;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Locale;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Абстрактная реализация EntryMapper, реализующая шаблонный для каждого отдельного типа записи дневника код и
@@ -82,6 +85,16 @@ public abstract class AbstractEntryMapper<INT extends DiaryEntry, EXT extends Di
         // срезанных секунд не будет равна отметке с секундами, запись не будет найдена)
         entry.setCommitedAt(entryDeletionDTO.commitedAt());
         return entry;
+    }
+
+    @Override
+    public List<EXT> mapToDtoCollectionWithUnitConversion(List<DiaryEntry> internalEntries,
+                                                          PatientProfile patientProfile,
+                                                          ZoneOffset outputZoneOffset) {
+        ZoneOffset actualOffset = outputZoneOffset == null ? ZoneOffset.UTC : outputZoneOffset;
+
+        return internalEntries.stream().map((entry) ->
+                mapToDtoWithUnitConversion((INT) entry, patientProfile, actualOffset)).toList();
     }
 
     private PatientProfile createDefaultPatientProfile() {

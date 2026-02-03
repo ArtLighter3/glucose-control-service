@@ -9,6 +9,7 @@ import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
+import com.artlighter.glucosecontrolservice.diary.util.mapper.DiaryEntryCollectionMapper;
 import com.artlighter.glucosecontrolservice.diary.util.mapper.EntryMapper;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -145,11 +146,7 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
 
         List<DiaryEntry> entries = diaryEntryService.getDiaryEntriesOfType(entryType, patientProfile, from, to);
 
-        return entries.stream().map((entry) -> {
-            return outputZoneOffset == null ?
-                    entryMapper.mapToDtoWithUnitConversion((INT) entry, patientProfile, ZoneOffset.UTC) :
-                    entryMapper.mapToDtoWithUnitConversion((INT) entry, patientProfile, outputZoneOffset);
-        }).toList();
+        return entryMapper.mapToDtoCollectionWithUnitConversion(entries, patientProfile, outputZoneOffset);
     }
 
     /**

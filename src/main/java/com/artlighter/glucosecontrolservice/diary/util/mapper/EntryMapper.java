@@ -7,6 +7,7 @@ import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.general.DTOMapper;
 
 import java.time.ZoneOffset;
+import java.util.List;
 
 /**
  * Общий интерфейс для мапперов, конвертирующих определенный тип записи дневника из внешних DTO-объектов во
@@ -45,4 +46,7 @@ public interface EntryMapper<INT extends DiaryEntry, EXT extends DiaryEntryDTO> 
      * @return DiaryEntryDTO с полностью заполненными данными;
      */
     EXT mapToDtoWithUnitConversion(INT internal, PatientProfile patientProfile, ZoneOffset outputZoneOffset);
+
+    List<EXT> mapToDtoCollectionWithUnitConversion(List<DiaryEntry> internal, PatientProfile patientProfile,
+                                                   ZoneOffset outputZoneOffset);
 }
