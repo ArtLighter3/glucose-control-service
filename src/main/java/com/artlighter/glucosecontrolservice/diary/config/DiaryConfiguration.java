@@ -10,10 +10,17 @@ import com.artlighter.glucosecontrolservice.diary.util.InMapByTypeNameDiaryEntry
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.*;
 
 @Configuration
 public class DiaryConfiguration {
+    @Bean
+    public DecimalFormat diaryEntryFloatValueOutputFormat() {
+        return new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.US));
+    }
+
     @Bean
     public DiaryEntryRepositoryCollection diaryEntryRepositoryCollection(List<ParticularDiaryEntryRepository>
                                                                                      repositoryList) {

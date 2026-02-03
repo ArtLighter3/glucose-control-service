@@ -5,9 +5,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
-import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 
 public record MedicationEntryDTO(
         @DecimalMin("0")
@@ -20,5 +18,7 @@ public record MedicationEntryDTO(
         @Length(max = 100)
         String name,
         @Length(max = 500)
-        String notes) {
+        String notes)
+
+        implements DiaryEntryDTO {
 }

@@ -1,16 +1,19 @@
 package com.artlighter.glucosecontrolservice.diary.util.mapper;
 
-import com.artlighter.glucosecontrolservice.diary.dto.InsulinEntryDTO;
 import com.artlighter.glucosecontrolservice.diary.dto.MedicationEntryDTO;
 import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
-import com.artlighter.glucosecontrolservice.diary.entity.entry.InsulinEntry;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.MedicationEntry;
 import org.springframework.stereotype.Component;
 
+import java.text.DecimalFormat;
 import java.time.ZoneOffset;
 
 @Component
 public class MedicationEntryMapper extends AbstractEntryMapper<MedicationEntry, MedicationEntryDTO> {
+
+    public MedicationEntryMapper(DecimalFormat diaryEntryFloatValueOutputFormat) {
+        super(diaryEntryFloatValueOutputFormat);
+    }
 
     @Override
     public MedicationEntryDTO mapToDtoWithUnitConversion(MedicationEntry entry, PatientProfile patientProfile,
@@ -22,10 +25,6 @@ public class MedicationEntryMapper extends AbstractEntryMapper<MedicationEntry, 
     @Override
     protected void fillFieldsOfInternalWithUnitConversion(MedicationEntry entry, MedicationEntryDTO entryDTO,
                                                           PatientProfile patientProfile) {
-        entry.setValue(entryDTO.value());
-        entry.setCommitedAt(entryDTO.commitedAt().toInstant());
-        entry.setNotes(entryDTO.notes());
-
         entry.setMedicationName(entryDTO.name());
     }
 

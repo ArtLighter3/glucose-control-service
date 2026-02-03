@@ -3,6 +3,7 @@ package com.artlighter.glucosecontrolservice.diary.controller;
 import com.artlighter.glucosecontrolservice.auth.util.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.auth.util.exception.ValidationIsFailedException;
 import com.artlighter.glucosecontrolservice.diary.DiaryEntryService;
+import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDTO;
 import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDeleteDTO;
 import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
@@ -38,7 +39,7 @@ import java.util.List;
  *             для передачи вовне или приема извне.
  */
 @RequestMapping("api/patients/{userId}/entries")
-public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT> {
+public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT extends DiaryEntryDTO> {
     protected DiaryEntryService diaryEntryService;
     protected PatientProfileService patientProfileService;
     protected EntryMapper<INT, EXT> entryMapper;

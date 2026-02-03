@@ -3,14 +3,17 @@ package com.artlighter.glucosecontrolservice.diary.util.mapper;
 import com.artlighter.glucosecontrolservice.diary.dto.CarbsEntryDTO;
 import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.CarbsEntry;
-import com.artlighter.glucosecontrolservice.diary.entity.enumeration.CarbsUnit;
 import org.springframework.stereotype.Component;
 
+import java.text.DecimalFormat;
 import java.time.ZoneOffset;
-import java.util.Locale;
 
 @Component
 public class CarbsEntryMapper extends AbstractEntryMapper<CarbsEntry, CarbsEntryDTO> {
+
+    public CarbsEntryMapper(DecimalFormat diaryEntryFloatValueOutputFormat) {
+        super(diaryEntryFloatValueOutputFormat);
+    }
 
     @Override
     public CarbsEntryDTO mapToDtoWithUnitConversion(CarbsEntry entry, PatientProfile patientProfile,
@@ -25,8 +28,6 @@ public class CarbsEntryMapper extends AbstractEntryMapper<CarbsEntry, CarbsEntry
     protected void fillFieldsOfInternalWithUnitConversion(CarbsEntry entry, CarbsEntryDTO entryDTO,
                                                           PatientProfile patientProfile) {
         entry.setValue(patientProfile.getCarbsUnit().convertToGrams(entryDTO.value()));
-        entry.setCommitedAt(entryDTO.commitedAt().toInstant());
-        entry.setNotes(entryDTO.notes());
     }
 
     @Override

@@ -1,14 +1,11 @@
 package com.artlighter.glucosecontrolservice.diary.dto;
 
-import com.artlighter.glucosecontrolservice.diary.entity.enumeration.CarbsUnit;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
-import java.time.Instant;
 import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 
 public record CarbsEntryDTO(
         @DecimalMin("0")
@@ -19,5 +16,7 @@ public record CarbsEntryDTO(
         OffsetDateTime commitedAt,
         @Length(max = 500)
         String notes,
-        String carbsUnits) {
+        String carbsUnits)
+
+        implements DiaryEntryDTO {
 }
