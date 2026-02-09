@@ -47,9 +47,9 @@ public class InsulinCalculationService {
 //
 //    }
 
-    public InsulinResult calculateInsulinDose(PatientProfile patientProfile, InsulinProfile insulinProfile,
+    public InsulinResult calculateInsulinDose(InsulinProfile insulinProfile,
                                               List<? extends DiaryEntry> entriesToConsider, LocalTime timeOfDay,
-                                              float carbs, float glucose, float correction) {
+                                              float carbs, float glucose, float correction, float targetGlucose) {
         float currentIsf = volatileValueExtractor.extractVolatileValue(insulinProfile.getFactorsByTime(), timeOfDay,
                 insulinProfile.getDefaultInsulinSensitivityFactor());
         float currentIcr = volatileValueExtractor.extractVolatileValue(insulinProfile.getRatiosByTime(), timeOfDay,
@@ -67,7 +67,7 @@ public class InsulinCalculationService {
             Pair<Double, Double> activeInsulinPair =
                     extractActiveInsulin(insulinEntries, insulinProfile.getDurationOfInsulinAction());
             correctionInsulin = insulinCalculator.calculateCorrectionDose(glucose,
-                    patientProfile.getHighGlucose(), currentIsf,
+                    targetGlucose, currentIsf,
                     activeInsulinPair.getFirst(), activeInsulinPair.getSecond());
             activeInsulin = activeInsulinPair.getFirst() + activeInsulinPair.getSecond();
         }

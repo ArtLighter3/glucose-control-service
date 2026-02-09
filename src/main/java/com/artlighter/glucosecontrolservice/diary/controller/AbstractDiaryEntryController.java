@@ -41,6 +41,7 @@ import java.util.List;
  */
 @RequestMapping("api/patients/{userId}/entries")
 public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT extends DiaryEntryDTO> {
+    //TODO мб убрать зависимости из абстрактного класса и просто сделать абстрактные геттеры, как в модуле templates?
     protected DiaryEntryService diaryEntryService;
     protected PatientProfileService patientProfileService;
     protected EntryMapper<INT, EXT> entryMapper;

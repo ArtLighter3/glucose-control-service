@@ -132,8 +132,8 @@ public class InsulinCalculationServiceTests {
         InsulinResult expected = new InsulinResult(6f, 1f, 0.0f, 0.0f,
                 carbs, icr, expectedCarbsDose, correction, expectedCarbsDose);
 
-        InsulinResult actual = insulinCalculationService.calculateInsulinDose(patientProfile, insulinProfile,
-                null, null, carbs, 6f, correction);
+        InsulinResult actual = insulinCalculationService.calculateInsulinDose(insulinProfile,
+                null, null, carbs, 6f, correction, patientProfile.getHighGlucose());
 
         assertEquals(expected, actual);
     }
@@ -147,8 +147,8 @@ public class InsulinCalculationServiceTests {
         InsulinResult expected = new InsulinResult(6f, 1f, 0.0f, 0.0f,
                 carbs, expectedIcr, expectedCarbsDose, correction, expectedCarbsDose);
 
-        InsulinResult actual = insulinCalculationService.calculateInsulinDose(patientProfile, insulinProfile,
-                null, timeOfDay, carbs, 6f, correction);
+        InsulinResult actual = insulinCalculationService.calculateInsulinDose(insulinProfile,
+                null, timeOfDay, carbs, 6f, correction, patientProfile.getHighGlucose());
 
         assertEquals(expected, actual);
     }

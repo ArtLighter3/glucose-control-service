@@ -42,7 +42,7 @@ public class InsulinCalculationController {
     }
 
     @GetMapping("/calculate")
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'INSULIN_CALCULATE'," +
+    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'INSULIN_CALCULATE_OWN'," +
             "#userId, authentication)")
     public InsulinResult calculate(@Valid InsulinCalculationRequestDTO calculationRequest, BindingResult bindingResult,
                                    @PathVariable int userId) {
@@ -58,9 +58,10 @@ public class InsulinCalculationController {
         List<DiaryEntry> insulinEntries = diaryEntryService.getDiaryEntriesOfType(DiaryEntryType.INSULIN_ENTRY,
                 patientProfile, now.minus(Duration.ofHours(12)), now);
 
-        return insulinCalculationService.calculateInsulinDose(patientProfile, insulinProfile, null,
+        return insulinCalculationService.calculateInsulinDose(insulinProfile, null,
                 calculationRequest.localTimeOfDay(), calculationRequest.carbs(),
                 calculationRequest.glucose() != null ? calculationRequest.glucose() : 0f,
-                calculationRequest.correction() != null ? calculationRequest.correction() : 0f);
+                calculationRequest.correction() != null ? calculationRequest.correction() : 0f,
+                patientProfile.getHighGlucose());
     }
 }

@@ -66,7 +66,7 @@ CREATE TABLE Insulin_Entry (
 
 CREATE TABLE Medication_Entry (
     profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
-    name varchar(100) NOT NULL,
+    name varchar(200) NOT NULL,
     value real NOT NULL CHECK (value >= 0 AND value <= 1000),
     commited_at timestamptz(0) NOT NULL,
     notes varchar(500),
@@ -112,4 +112,19 @@ CREATE TABLE Insulin_Sensitivity_Factor (
     time_of_day time(0) NOT NULL,
     isf real NOT NULL CHECK (isf >= 0.2 AND isf <= 55.5),
     PRIMARY KEY (insulin_profile_id, time_of_day)
+);
+
+CREATE TABLE Patient_Meal (
+    profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
+    name varchar(200) NOT NULL,
+    carbs_per_100_grams real NOT NULL CHECK (carbs_per_100_grams >= 0 AND carbs_per_100_grams <= 300),
+    PRIMARY KEY (profile_id, name)
+);
+
+CREATE TABLE Patient_Medication (
+    profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
+    name varchar(200) NOT NULL,
+    milligrams_in_portion real NOT NULL CHECK (milligrams_in_portion >= 0 AND milligrams_in_portion <= 1000),
+    default_portions int NOT NULL CHECK (default_portions >= 1 AND default_portions <= 20) DEFAULT 1,
+    PRIMARY KEY (profile_id, name)
 );

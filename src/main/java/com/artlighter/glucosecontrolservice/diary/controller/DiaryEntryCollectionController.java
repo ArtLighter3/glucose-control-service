@@ -1,6 +1,5 @@
 package com.artlighter.glucosecontrolservice.diary.controller;
 
-import com.artlighter.glucosecontrolservice.auth.ServiceUserDetails;
 import com.artlighter.glucosecontrolservice.auth.util.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.diary.DiaryEntryService;
 import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDTO;
@@ -9,7 +8,6 @@ import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.diary.util.mapper.DiaryEntryCollectionMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;

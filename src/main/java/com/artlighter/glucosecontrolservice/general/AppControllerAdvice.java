@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice({"com.artlighter.glucosecontrolservice.diary.controller",
         "com.artlighter.glucosecontrolservice.user.controller", "com.artlighter.glucosecontrolservice.auth.controller",
-        "com.artlighter.glucosecontrolservice.calculations.controller"})
+        "com.artlighter.glucosecontrolservice.calculations.controller",
+        "com.artlighter.glucosecontrolservice.templates.controller"})
 public class AppControllerAdvice {
     //private Logger log = LoggerFactory.getLogger(DiaryControllerAdvice.class);
 
