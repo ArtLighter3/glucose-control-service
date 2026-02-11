@@ -1,13 +1,14 @@
 package com.artlighter.glucosecontrolservice.templates.service;
 
-import com.artlighter.glucosecontrolservice.auth.util.exception.ResourceAlreadyExistsException;
-import com.artlighter.glucosecontrolservice.auth.util.exception.ResourceNotFoundException;
+import com.artlighter.glucosecontrolservice.general.exception.ResourceAlreadyExistsException;
+import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.templates.entity.PatientTemplateEntity;
 import com.artlighter.glucosecontrolservice.templates.repository.PatientTemplateEntityRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -22,7 +23,7 @@ public abstract class TemplateService<T extends PatientTemplateEntity> {
 
     @Transactional(readOnly = true)
     public Page<T> getAllByPatientProfileId(int patientProfileId, Pageable pageable) {
-        if (pageable == null) pageable = PageRequest.of(0, 10);
+        if (pageable == null) pageable = PageRequest.of(0, 10, Sort.by("id.name"));
         if (pageable.getPageSize() > maxPageSize)
             pageable = PageRequest.of(pageable.getPageNumber(), maxPageSize, pageable.getSort());
 

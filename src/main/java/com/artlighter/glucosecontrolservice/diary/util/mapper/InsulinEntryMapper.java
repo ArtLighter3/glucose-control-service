@@ -1,7 +1,7 @@
 package com.artlighter.glucosecontrolservice.diary.util.mapper;
 
 import com.artlighter.glucosecontrolservice.diary.dto.InsulinEntryDTO;
-import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
+import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.InsulinEntry;
 import org.springframework.stereotype.Component;
 

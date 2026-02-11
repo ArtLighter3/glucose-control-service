@@ -1,9 +1,8 @@
 package com.artlighter.glucosecontrolservice.diary.util.mapper;
 
 import com.artlighter.glucosecontrolservice.diary.dto.*;
-import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
+import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.*;
-import com.artlighter.glucosecontrolservice.general.DTOMapper;
 import org.springframework.stereotype.Component;
 
 import java.time.ZoneOffset;

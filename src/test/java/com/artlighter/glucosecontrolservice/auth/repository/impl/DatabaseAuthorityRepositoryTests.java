@@ -1,7 +1,7 @@
 package com.artlighter.glucosecontrolservice.auth.repository.impl;
 
-import com.artlighter.glucosecontrolservice.auth.entity.Authority;
-import com.artlighter.glucosecontrolservice.auth.entity.Role;
+import com.artlighter.glucosecontrolservice.user.entity.Authority;
+import com.artlighter.glucosecontrolservice.user.entity.Role;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -11,13 +11,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.io.Serializable;
 import java.util.*;

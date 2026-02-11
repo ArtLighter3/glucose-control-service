@@ -1,9 +1,8 @@
 package com.artlighter.glucosecontrolservice.auth.repository.impl;
 
-import com.artlighter.glucosecontrolservice.auth.entity.Authority;
-import com.artlighter.glucosecontrolservice.auth.entity.Role;
+import com.artlighter.glucosecontrolservice.user.entity.Authority;
+import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.auth.repository.AuthorityRepository;
-import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;

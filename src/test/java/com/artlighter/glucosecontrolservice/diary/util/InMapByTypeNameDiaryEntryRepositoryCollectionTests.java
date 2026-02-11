@@ -1,6 +1,6 @@
 package com.artlighter.glucosecontrolservice.diary.util;
 
-import com.artlighter.glucosecontrolservice.auth.util.exception.NoRepositoryForEntryTypeException;
+import com.artlighter.glucosecontrolservice.diary.util.exception.NoRepositoryForEntryTypeException;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.*;
 import com.artlighter.glucosecontrolservice.diary.repository.*;
 import static org.junit.jupiter.api.Assertions.*;

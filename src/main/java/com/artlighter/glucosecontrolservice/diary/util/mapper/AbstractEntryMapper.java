@@ -2,20 +2,15 @@ package com.artlighter.glucosecontrolservice.diary.util.mapper;
 
 import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDTO;
 import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDeleteDTO;
-import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
+import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
-import com.artlighter.glucosecontrolservice.diary.entity.enumeration.CarbsUnit;
-import com.artlighter.glucosecontrolservice.diary.entity.enumeration.GlucoseUnit;
+import com.artlighter.glucosecontrolservice.user.entity.CarbsUnit;
+import com.artlighter.glucosecontrolservice.user.entity.GlucoseUnit;
 
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Locale;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * Абстрактная реализация EntryMapper, реализующая шаблонный для каждого отдельного типа записи дневника код и

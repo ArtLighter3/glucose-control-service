@@ -1,7 +1,6 @@
 package com.artlighter.glucosecontrolservice.calculations.util.validation;
 
 import com.artlighter.glucosecontrolservice.calculations.dto.InsulinCalculationRequestDTO;
-import com.artlighter.glucosecontrolservice.diary.dto.PatientProfileDTO;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

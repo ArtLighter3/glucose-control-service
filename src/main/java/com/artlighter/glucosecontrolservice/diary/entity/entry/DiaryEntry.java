@@ -1,6 +1,6 @@
 package com.artlighter.glucosecontrolservice.diary.entity.entry;
 
-import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
+import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 

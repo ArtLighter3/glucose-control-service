@@ -2,6 +2,7 @@ package com.artlighter.glucosecontrolservice.diary.util;
 
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.repository.ParticularDiaryEntryRepository;
+import com.artlighter.glucosecontrolservice.diary.util.exception.NoRepositoryForEntryTypeException;
 
 import java.util.Collection;
 /**
@@ -17,7 +18,7 @@ public interface DiaryEntryRepositoryCollection {
      * @param entry DiaryEntry, объект записи дневника
      * @return объект репозитория, подходящий переданному объекту DiaryEntry
      * @throws IllegalArgumentException в случае, если передаваемый DiaryEntry равен null
-     * @throws com.artlighter.glucosecontrolservice.auth.util.exception.NoRepositoryForEntryTypeException в случае,
+     * @throws NoRepositoryForEntryTypeException в случае,
      * если для передаваемого объекта репозиторий не был найден
      */
     ParticularDiaryEntryRepository getRepositoryForEntity(DiaryEntry entry);
@@ -26,7 +27,7 @@ public interface DiaryEntryRepositoryCollection {
      * @param entryType тип записи дневника из перечисления
      * @return объект репозитория, подходящий переданному типу записи дневника DiaryEntryType
      * @throws IllegalArgumentException в случае, если передаваемый DiaryEntryType равен null
-     * @throws com.artlighter.glucosecontrolservice.auth.util.exception.NoRepositoryForEntryTypeException в случае,
+     * @throws NoRepositoryForEntryTypeException в случае,
      * если для передаваемого типа репозиторий не был найден
      */
     ParticularDiaryEntryRepository getRepositoryForType(DiaryEntryType entryType);

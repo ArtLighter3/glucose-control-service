@@ -1,7 +1,6 @@
 package com.artlighter.glucosecontrolservice.templates.util.mapper;
 
-import com.artlighter.glucosecontrolservice.diary.entity.enumeration.CarbsUnit;
-import com.artlighter.glucosecontrolservice.templates.dto.CarbsResult;
+import com.artlighter.glucosecontrolservice.user.entity.CarbsUnit;
 import com.artlighter.glucosecontrolservice.templates.dto.MealDTO;
 import com.artlighter.glucosecontrolservice.templates.entity.Meal;
 import com.artlighter.glucosecontrolservice.templates.entity.PatientTemplateEntity;

@@ -2,7 +2,6 @@ package com.artlighter.glucosecontrolservice.diary.entity.entry;
 
 import com.artlighter.glucosecontrolservice.diary.entity.enumeration.MeasurementType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.JdbcType;

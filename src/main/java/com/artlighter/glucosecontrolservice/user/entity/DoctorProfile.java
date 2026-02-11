@@ -1,9 +1,9 @@
 package com.artlighter.glucosecontrolservice.user.entity;
 
-import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
 import jakarta.persistence.*;
 
-import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "doctor_profile")
@@ -12,12 +12,13 @@ public class DoctorProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private int userId;
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     @JoinTable(name = "patient_doctor",
             joinColumns = @JoinColumn(name = "doctor_profile_id"),
             inverseJoinColumns = @JoinColumn(name = "patient_profile_id"))
-    @MapKey(name = "userId")
-    private Map<Integer, PatientProfile> attachedPatients;
+//    @MapKey(name = "userId")
+//    private Map<Integer, PatientProfile> attachedPatients;
+    private Set<PatientProfile> attachedPatients;
 
     public int getId() {
         return id;
@@ -35,11 +36,32 @@ public class DoctorProfile {
         this.userId = userId;
     }
 
-    public Map<Integer, PatientProfile> getAttachedPatients() {
+//    public Map<Integer, PatientProfile> getAttachedPatients() {
+//        return attachedPatients;
+//    }
+//
+//    public void setAttachedPatients(Map<Integer, PatientProfile> attachedPatients) {
+//        this.attachedPatients = attachedPatients;
+//    }
+
+
+    public Set<PatientProfile> getAttachedPatients() {
         return attachedPatients;
     }
 
-    public void setAttachedPatients(Map<Integer, PatientProfile> attachedPatients) {
+    public void setAttachedPatients(Set<PatientProfile> attachedPatients) {
         this.attachedPatients = attachedPatients;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        DoctorProfile that = (DoctorProfile) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

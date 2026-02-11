@@ -1,6 +1,6 @@
 package com.artlighter.glucosecontrolservice.diary.util;
 
-import com.artlighter.glucosecontrolservice.auth.util.exception.NoRepositoryForEntryTypeException;
+import com.artlighter.glucosecontrolservice.diary.util.exception.NoRepositoryForEntryTypeException;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.repository.ParticularDiaryEntryRepository;
 
@@ -20,7 +20,7 @@ public class InMapByTypeNameDiaryEntryRepositoryCollection implements DiaryEntry
 
     /**
      * @throws IllegalArgumentException в случае, если передаваемый DiaryEntry равен null
-     * @throws com.artlighter.glucosecontrolservice.auth.util.exception.NoRepositoryForEntryTypeException в случае,
+     * @throws NoRepositoryForEntryTypeException в случае,
      * если для передаваемого объекта репозиторий не был найден
      */
     @Override
@@ -39,7 +39,7 @@ public class InMapByTypeNameDiaryEntryRepositoryCollection implements DiaryEntry
 
     /**
      * @throws IllegalArgumentException в случае, если передаваемый DiaryEntryType равен null
-     * @throws com.artlighter.glucosecontrolservice.auth.util.exception.NoRepositoryForEntryTypeException в случае,
+     * @throws NoRepositoryForEntryTypeException в случае,
      * если для передаваемого типа репозиторий не был найден
      */
     @Override

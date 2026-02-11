@@ -1,7 +1,7 @@
 package com.artlighter.glucosecontrolservice.auth.repository;
 
-import com.artlighter.glucosecontrolservice.auth.entity.Authority;
-import com.artlighter.glucosecontrolservice.auth.entity.Role;
+import com.artlighter.glucosecontrolservice.user.entity.Authority;
+import com.artlighter.glucosecontrolservice.user.entity.Role;
 
 import java.util.Map;
 

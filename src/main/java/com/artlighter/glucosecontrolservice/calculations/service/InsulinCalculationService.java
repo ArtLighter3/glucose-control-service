@@ -2,11 +2,9 @@ package com.artlighter.glucosecontrolservice.calculations.service;
 
 import com.artlighter.glucosecontrolservice.calculations.entity.InsulinProfile;
 import com.artlighter.glucosecontrolservice.calculations.entity.InsulinResult;
-import com.artlighter.glucosecontrolservice.calculations.entity.InsulinVolatileValue;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.InsulinCalculator;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.InsulinDecayCurveStrategy;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.VolatileValueExtractor;
-import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.InsulinEntry;
 import com.artlighter.glucosecontrolservice.diary.entity.enumeration.InsulinType;
@@ -18,7 +16,6 @@ import java.text.DecimalFormatSymbols;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 

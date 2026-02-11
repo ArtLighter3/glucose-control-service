@@ -1,7 +1,7 @@
 package com.artlighter.glucosecontrolservice.calculations.service;
 
-import com.artlighter.glucosecontrolservice.auth.util.exception.ResourceAlreadyExistsException;
-import com.artlighter.glucosecontrolservice.auth.util.exception.ResourceNotFoundException;
+import com.artlighter.glucosecontrolservice.general.exception.ResourceAlreadyExistsException;
+import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.calculations.entity.InsulinProfile;
 import com.artlighter.glucosecontrolservice.calculations.repository.InsulinProfileRepository;
 import org.springframework.stereotype.Service;

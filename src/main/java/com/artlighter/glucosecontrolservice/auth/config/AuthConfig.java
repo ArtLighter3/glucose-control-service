@@ -1,8 +1,8 @@
 package com.artlighter.glucosecontrolservice.auth.config;
 
 import com.artlighter.glucosecontrolservice.auth.service.AuthorityService;
-import com.artlighter.glucosecontrolservice.auth.entity.Authority;
-import com.artlighter.glucosecontrolservice.auth.entity.Role;
+import com.artlighter.glucosecontrolservice.user.entity.Authority;
+import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.auth.service.UserDetailsFromUserService;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;

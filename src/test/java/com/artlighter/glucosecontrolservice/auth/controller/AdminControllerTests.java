@@ -1,5 +1,6 @@
 package com.artlighter.glucosecontrolservice.auth.controller;
 
+import com.artlighter.glucosecontrolservice.auth.controller.auth.AdminController;
 import com.artlighter.glucosecontrolservice.auth.service.AuthorityService;
 import com.artlighter.glucosecontrolservice.auth.util.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;

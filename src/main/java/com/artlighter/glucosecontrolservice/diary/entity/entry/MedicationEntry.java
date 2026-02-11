@@ -1,6 +1,5 @@
 package com.artlighter.glucosecontrolservice.diary.entity.entry;
 
-import com.artlighter.glucosecontrolservice.diary.entity.enumeration.MeasurementType;
 import jakarta.persistence.*;
 
 @Entity

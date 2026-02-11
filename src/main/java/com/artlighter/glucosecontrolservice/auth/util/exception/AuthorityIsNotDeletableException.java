@@ -1,7 +1,7 @@
 package com.artlighter.glucosecontrolservice.auth.util.exception;
 
-import com.artlighter.glucosecontrolservice.auth.entity.Authority;
-import com.artlighter.glucosecontrolservice.auth.entity.Role;
+import com.artlighter.glucosecontrolservice.user.entity.Authority;
+import com.artlighter.glucosecontrolservice.user.entity.Role;
 
 /**
  * Исключение выбрасывается тогда, когда была попытка отозвать право у определенной роли в том случае, если

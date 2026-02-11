@@ -1,14 +1,12 @@
 package com.artlighter.glucosecontrolservice.auth.repository.impl;
 
-import com.artlighter.glucosecontrolservice.auth.entity.Authority;
-import com.artlighter.glucosecontrolservice.auth.entity.Role;
+import com.artlighter.glucosecontrolservice.user.entity.Authority;
+import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.auth.repository.AuthorityRepository;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.CriteriaSelect;
 import jakarta.persistence.criteria.Root;
-import org.hibernate.query.criteria.spi.CriteriaBuilderExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

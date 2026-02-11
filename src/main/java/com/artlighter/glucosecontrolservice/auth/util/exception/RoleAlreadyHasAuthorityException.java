@@ -1,7 +1,7 @@
 package com.artlighter.glucosecontrolservice.auth.util.exception;
 
-import com.artlighter.glucosecontrolservice.auth.entity.Authority;
-import com.artlighter.glucosecontrolservice.auth.entity.Role;
+import com.artlighter.glucosecontrolservice.user.entity.Authority;
+import com.artlighter.glucosecontrolservice.user.entity.Role;
 
 /**
  * Исключение, выбрасываемое, если при добавлении права к роли оказывается, что это право уже есть у роли

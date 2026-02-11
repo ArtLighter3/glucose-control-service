@@ -1,8 +1,8 @@
 package com.artlighter.glucosecontrolservice.auth.util.mapper;
 
 import com.artlighter.glucosecontrolservice.auth.dto.UserRegistrationDTO;
-import com.artlighter.glucosecontrolservice.auth.entity.Role;
-import com.artlighter.glucosecontrolservice.auth.entity.User;
+import com.artlighter.glucosecontrolservice.user.entity.Role;
+import com.artlighter.glucosecontrolservice.user.entity.User;
 import com.artlighter.glucosecontrolservice.auth.util.exception.ExceptionDTO;
 import com.artlighter.glucosecontrolservice.auth.util.exception.ValidationIsFailedException;
 import org.springframework.http.HttpStatus;

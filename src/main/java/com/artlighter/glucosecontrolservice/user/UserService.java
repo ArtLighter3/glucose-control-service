@@ -1,24 +1,14 @@
 package com.artlighter.glucosecontrolservice.user;
 
-import com.artlighter.glucosecontrolservice.auth.service.AuthorityService;
-import com.artlighter.glucosecontrolservice.auth.entity.Authority;
-import com.artlighter.glucosecontrolservice.auth.entity.Role;
-import com.artlighter.glucosecontrolservice.auth.entity.User;
-import com.artlighter.glucosecontrolservice.diary.entity.PatientProfile;
-import com.artlighter.glucosecontrolservice.diary.service.PatientProfileService;
+import com.artlighter.glucosecontrolservice.user.entity.Role;
+import com.artlighter.glucosecontrolservice.user.entity.User;
+import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Сервис для сбора, добавления, удаления... пользователей системы

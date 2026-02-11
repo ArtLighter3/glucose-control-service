@@ -1,7 +1,7 @@
 package com.artlighter.glucosecontrolservice.auth.service;
 
-import com.artlighter.glucosecontrolservice.auth.entity.Authority;
-import com.artlighter.glucosecontrolservice.auth.entity.Role;
+import com.artlighter.glucosecontrolservice.user.entity.Authority;
+import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.auth.util.exception.AuthorityIsNotDeletableException;
 import com.artlighter.glucosecontrolservice.auth.repository.AuthorityRepository;
 import com.artlighter.glucosecontrolservice.auth.util.exception.RoleAlreadyHasAuthorityException;
