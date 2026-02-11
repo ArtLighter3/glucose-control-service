@@ -25,8 +25,10 @@ public enum Authority {
     GLUCOSE_DELETE_ATTACHED,
     GLUCOSE_DELETE_ALL,
 
-    //Права для прикрепления/открепления больных к врачам/от врачей
-    PATIENT_ATTACH_DETACH,
+    //Права для прикрепления/открепления больных к врачам/от врачей и их просмотра
+    ATTACHED_PATIENT_ATTACH_DETACH,
+    ATTACHED_PATIENT_SHOW_OWN,
+    ATTACHED_PATIENT_SHOW_ALL,
 
     //Права для чтения инсулинового профиля (собственных, прикрепленных больных, всех пользователей)
     INSULIN_PROFILE_SHOW_OWN,

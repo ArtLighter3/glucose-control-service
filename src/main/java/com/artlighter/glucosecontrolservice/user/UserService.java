@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -35,7 +36,8 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         if (role == Role.ROLE_PATIENT) {
-            patientProfileService.createDefaultProfileForPatient(user.getId());
+            //patientProfileService.createDefaultProfileForPatient(user.getId());
+            patientProfileService.createDefaultProfileForPatient(user);
         }
 
         return userRepository.save(user);
@@ -47,7 +49,7 @@ public class UserService {
      * @return объект пользователя, если был найден; null в случае невозможности достать пользователя
      */
     public User getUserByUsername(String username) {
-        User user = userRepository.findByUsername(username);
+        User user = userRepository.findByUsernameWithRoles(username);
         return user;
     }
 }

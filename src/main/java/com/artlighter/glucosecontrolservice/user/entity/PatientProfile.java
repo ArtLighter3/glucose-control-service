@@ -13,6 +13,9 @@ public class PatientProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
     @Enumerated
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private GlucoseUnit glucoseUnit;
@@ -20,25 +23,36 @@ public class PatientProfile {
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private CarbsUnit carbsUnit;
     private int diabetesType;
-    private int userId;
+//    @Column(name = "user_id")
+//    private int userId;
     private float hyperGlucose;
     private float highGlucose;
     private float lowGlucose;
     private float hypoGlucose;
 
-//    @OneToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "user_id", referencedColumnName = "id")
-//    private User user;
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "attachedPatients")
     Set<DoctorProfile> doctors;
+//
+//    public PatientProfile(int id, GlucoseUnit glucoseUnit, CarbsUnit carbsUnit, int diabetesType, int userId,
+//                          float hyperGlucose, float highGlucose, float lowGlucose, float hypoGlucose) {
+//        this.id = id;
+//        this.glucoseUnit = glucoseUnit;
+//        this.carbsUnit = carbsUnit;
+//        this.diabetesType = diabetesType;
+//        this.userId = userId;
+//        this.hyperGlucose = hyperGlucose;
+//        this.highGlucose = highGlucose;
+//        this.lowGlucose = lowGlucose;
+//        this.hypoGlucose = hypoGlucose;
+//    }
 
-    public PatientProfile(int id, GlucoseUnit glucoseUnit, CarbsUnit carbsUnit, int diabetesType, int userId,
+    public PatientProfile(int id, User user, GlucoseUnit glucoseUnit, CarbsUnit carbsUnit, int diabetesType,
                           float hyperGlucose, float highGlucose, float lowGlucose, float hypoGlucose) {
         this.id = id;
+        this.user = user;
         this.glucoseUnit = glucoseUnit;
         this.carbsUnit = carbsUnit;
         this.diabetesType = diabetesType;
-        this.userId = userId;
         this.hyperGlucose = hyperGlucose;
         this.highGlucose = highGlucose;
         this.lowGlucose = lowGlucose;
@@ -80,13 +94,13 @@ public class PatientProfile {
         this.diabetesType = diabetesType;
     }
 
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
+//    public int getUserId() {
+//        return userId;
+//    }
+//
+//    public void setUserId(int userId) {
+//        this.userId = userId;
+//    }
 
     public float getHyperGlucose() {
         return hyperGlucose;
@@ -120,13 +134,13 @@ public class PatientProfile {
         this.hypoGlucose = hypoGlucose;
     }
 //
-//    public User getUser() {
-//        return user;
-//    }
-//
-//    public void setUser(User user) {
-//        this.user = user;
-//    }
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     public Set<DoctorProfile> getDoctors() {
         return doctors;

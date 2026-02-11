@@ -74,7 +74,8 @@ public class AuthConfig {
                     Authority.INSULIN_CALCULATE_OWN, Authority.TEMPLATE_ADD_OWN, Authority.TEMPLATE_SHOW_OWN,
                     Authority.TEMPLATE_DELETE_OWN, Authority.TEMPLATE_UPDATE_OWN);
 
-            authorityService.addUndeletableAuthorities(Role.ROLE_DOCTOR, Authority.GLUCOSE_SHOW_ATTACHED);
+            authorityService.addUndeletableAuthorities(Role.ROLE_DOCTOR, Authority.GLUCOSE_SHOW_ATTACHED,
+                    Authority.ATTACHED_PATIENT_SHOW_OWN);
         };
     }
 }

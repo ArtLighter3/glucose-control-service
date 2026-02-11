@@ -7,6 +7,7 @@ import com.artlighter.glucosecontrolservice.calculations.util.calc.InsulinCalcul
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.user.entity.CarbsUnit;
 import com.artlighter.glucosecontrolservice.user.entity.GlucoseUnit;
+import com.artlighter.glucosecontrolservice.user.entity.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,8 +126,9 @@ public class InsulinCalculationServiceTests {
     }
 
     private void testCarbsDose(float icr, float carbs, float correction, float expectedCarbsDose) {
-        PatientProfile patientProfile = new PatientProfile(0, GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS,
-                1, 0, 40f, 5.5f, 0.1f, 0f);
+        PatientProfile patientProfile = new PatientProfile(0, new User(0),
+                GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS, 1,
+                40f, 5.5f, 0.1f, 0f);
         InsulinProfile insulinProfile = new InsulinProfile(0, icr, 1f,
                 3, null, null);
         InsulinResult expected = new InsulinResult(6f, 1f, 0.0f, 0.0f,
@@ -140,8 +142,9 @@ public class InsulinCalculationServiceTests {
 
     private void testCarbsDose(float defaultIcr, List<InsulinToCarbsRatio> ratios, LocalTime timeOfDay,
                                float carbs, float correction, float expectedCarbsDose, float expectedIcr) {
-        PatientProfile patientProfile = new PatientProfile(0, GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS,
-                1, 0, 40f, 5.5f, 0.1f, 0f);
+        PatientProfile patientProfile = new PatientProfile(0, new User(0),
+                GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS, 1,
+                40f, 5.5f, 0.1f, 0f);
         InsulinProfile insulinProfile = new InsulinProfile(0, defaultIcr, 1f,
                 3, null, ratios);
         InsulinResult expected = new InsulinResult(6f, 1f, 0.0f, 0.0f,

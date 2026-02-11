@@ -6,6 +6,7 @@ import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.user.entity.CarbsUnit;
 import com.artlighter.glucosecontrolservice.user.entity.GlucoseUnit;
+import com.artlighter.glucosecontrolservice.user.entity.User;
 
 import java.text.DecimalFormat;
 import java.time.ZoneOffset;
@@ -93,8 +94,8 @@ public abstract class AbstractEntryMapper<INT extends DiaryEntry, EXT extends Di
     }
 
     private PatientProfile createDefaultPatientProfile() {
-        return new PatientProfile(0, GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS,
-                1, 0, 12f, 10f, 4f, 2f);
+        return new PatientProfile(0, new User(0), GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS,
+                1, 12f, 10f, 4f, 2f);
     }
 
     /**

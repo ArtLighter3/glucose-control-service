@@ -5,7 +5,13 @@ import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundEx
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.user.entity.CarbsUnit;
 import com.artlighter.glucosecontrolservice.user.entity.GlucoseUnit;
+import com.artlighter.glucosecontrolservice.user.entity.User;
 import com.artlighter.glucosecontrolservice.user.repository.PatientProfileRepository;
+import jakarta.annotation.Nullable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,23 +27,25 @@ public class PatientProfileService {
     @Transactional(readOnly = true)
     public PatientProfile getByUserId(int userId) {
         //TODO а что если по каким-то причинам у больного не создался его профиль?
-        return patientProfileRepository.getPatientProfileByUserId(userId);
+        return patientProfileRepository.getByUserId(userId);
     }
 
-    public PatientProfile createProfileForPatient(PatientProfile patientProfile, int userId) {
-        if (patientProfileRepository.existsByUserId(userId))
+    public PatientProfile createProfileForPatient(PatientProfile patientProfile, User user) {
+        if (patientProfileRepository.existsByUserId(user.getId()))
             throw new ResourceAlreadyExistsException(patientProfile, "Patient profile for this user already exists");
 
-        patientProfile.setUserId(userId);
+        //patientProfile.setUserId(userId);
+        patientProfile.setUser(user);
         return patientProfileRepository.save(patientProfile);
     }
 
-    public PatientProfile createDefaultProfileForPatient(int userId) {
+    public PatientProfile createDefaultProfileForPatient(User user) {
         PatientProfile patientProfile = null;
 
-        if (!patientProfileRepository.existsByUserId(userId)) {
+        if (!patientProfileRepository.existsByUserId(user.getId())) {
             patientProfile = new PatientProfile();
-            patientProfile.setUserId(userId);
+           // patientProfile.setUserId(userId);
+            patientProfile.setUser(user);
             patientProfile.setCarbsUnit(CarbsUnit.GRAMS);
             patientProfile.setDiabetesType(1);
             patientProfile.setGlucoseUnit(GlucoseUnit.MILLIMOLES_PER_LITER);
@@ -49,14 +57,36 @@ public class PatientProfileService {
     }
 
     public PatientProfile updateProfileForPatient(PatientProfile patientProfile, int userId) {
-        PatientProfile existingProfile = patientProfileRepository.getPatientProfileByUserId(userId);
+        PatientProfile existingProfile = patientProfileRepository.getByUserId(userId);
         if (existingProfile == null)
             throw new ResourceNotFoundException("Patient profile for this user does not exist");
 
-        patientProfile.setUserId(userId);
+        //patientProfile.setUserId(userId);
+        patientProfile.setUser(new User(userId));
         patientProfile.setId(existingProfile.getId());
         return patientProfileRepository.save(patientProfile);
     }
+
+    public Page<PatientProfile> getPatientsAttachedToDoctor(int doctorProfileId, Pageable pageable) {
+        return getPatientsAttachedToDoctor(doctorProfileId, null, pageable);
+    }
+
+    public Page<PatientProfile> getPatientsAttachedToDoctor(int doctorProfileId, @Nullable String searchQuery,
+                                                            Pageable pageable) {
+        if (pageable == null)
+            pageable = PageRequest.of(0, 10, Sort.by("user.username"));
+        if (pageable.getPageSize() > 20)
+            pageable = PageRequest.of(pageable.getPageNumber(), 20, pageable.getSort());
+
+        Page<PatientProfile> patientProfiles = searchQuery == null ?
+                patientProfileRepository.getPatientsAttachedToDoctorByDoctorId(doctorProfileId, pageable) :
+                patientProfileRepository.searchPatientsAttachedToDoctorByDoctorId(doctorProfileId,
+                        "%" + searchQuery + "%", pageable);
+        if (patientProfiles == null) return Page.empty(pageable);
+
+        return patientProfiles;
+    }
+
 
     public void deletePatientProfile(int userId) {
         patientProfileRepository.deleteByUserId(userId);

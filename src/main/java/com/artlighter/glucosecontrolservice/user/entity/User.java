@@ -16,12 +16,26 @@ public class User {
     private int id;
     private String username;
     private String password;
-    @ElementCollection(fetch = FetchType.EAGER, targetClass = Role.class)
+    @ElementCollection(fetch = FetchType.LAZY, targetClass = Role.class)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
    // @Transient
     private Set<Role> roles;
+
+    public User() {
+    }
+
+    public User(int id) {
+        this.id = id;
+    }
+
+    public User(int id, String username, String password, Set<Role> roles) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.roles = roles;
+    }
 
     public @Nullable String getPassword() {
         return password;

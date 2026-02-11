@@ -5,6 +5,8 @@ import com.artlighter.glucosecontrolservice.user.entity.DoctorProfile;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.user.repository.DoctorProfileRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +65,18 @@ public class DoctorProfileService {
         attachedPatients.remove(patientProfile);
 
         return doctorProfileRepository.save(doctorProfile);
+    }
+
+    public Page<PatientProfile> getAttachedPatients(int doctorId, Pageable pageable) {
+        DoctorProfile doctorProfile = getDoctorProfileOrThrowException(doctorId);
+
+        return patientProfileService.getPatientsAttachedToDoctor(doctorProfile.getId(), pageable);
+    }
+
+    public Page<PatientProfile> searchAttachedPatients(int doctorId, String searchQuery, Pageable pageable) {
+        DoctorProfile doctorProfile = getDoctorProfileOrThrowException(doctorId);
+
+        return patientProfileService.getPatientsAttachedToDoctor(doctorProfile.getId(), searchQuery, pageable);
     }
 
     private PatientProfile getPatientProfileOrThrowException(int patientId) {
