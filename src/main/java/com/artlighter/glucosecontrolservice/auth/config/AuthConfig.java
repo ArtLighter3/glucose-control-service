@@ -30,7 +30,10 @@ public class AuthConfig {
         return http
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((requests) ->
-                                requests.requestMatchers("/api/auth/register").permitAll()
+                                requests.requestMatchers("/api/auth/register",
+                                                //TODO временно
+                                                "/api-docs",
+                                                "/swagger-ui/index.html").permitAll()
                                         .anyRequest().authenticated())
                         //        .requestMatchers("/api/auth/process-login").permitAll()
                 .exceptionHandling(exception ->

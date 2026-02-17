@@ -2,6 +2,7 @@ package com.artlighter.glucosecontrolservice.user.dto;
 
 import com.artlighter.glucosecontrolservice.user.entity.CarbsUnit;
 import com.artlighter.glucosecontrolservice.user.entity.GlucoseUnit;
+import com.artlighter.glucosecontrolservice.user.util.validation.CorrectApiSettings;
 import com.artlighter.glucosecontrolservice.user.util.validation.CorrectGlucoseIntervals;
 import com.artlighter.glucosecontrolservice.general.TypeGroup;
 import jakarta.validation.GroupSequence;
@@ -9,6 +10,7 @@ import jakarta.validation.constraints.*;
 
 @GroupSequence({PatientProfileDTO.class, TypeGroup.class})
 @CorrectGlucoseIntervals(groups = {TypeGroup.class})
+@CorrectApiSettings(groups = {TypeGroup.class})
 public record PatientProfileDTO(
         GlucoseUnit glucoseUnit,
         CarbsUnit carbsUnit,
@@ -31,6 +33,9 @@ public record PatientProfileDTO(
         @DecimalMin("1")
         @DecimalMax("40")
         @NotNull
-        Float hypoGlucose
+        Float hypoGlucose,
+        @NotNull
+        Boolean isNightscoutEnabled,
+        String nightscoutApiSecret
 ) {
 }

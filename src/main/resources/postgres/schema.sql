@@ -38,7 +38,10 @@ CREATE TABLE Patient_Profile (
                              DEFAULT 8,
     low_glucose real NOT NULL CHECK (low_glucose >= 1 AND low_glucose <= 40 AND low_glucose >= hypo_glucose)
                              DEFAULT 4,
-    hypo_glucose real NOT NULL CHECK (hypo_glucose >= 1 AND hypo_glucose <= 40) DEFAULT 2
+    hypo_glucose real NOT NULL CHECK (hypo_glucose >= 1 AND hypo_glucose <= 40) DEFAULT 2,
+    is_nightscout_enabled bool NOT NULL DEFAULT false,
+    nightscout_api_secret varchar CHECK (nightscout_api_secret IS NOT NULL
+                                                       OR is_nightscout_enabled = false)
 );
 
 -- CREATE TABLE Diary_Entry (

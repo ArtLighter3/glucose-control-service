@@ -87,6 +87,12 @@ public class PatientProfileService {
         return patientProfiles;
     }
 
+    public String getNightscoutApiSecretIfEnabled(String patientUsername) {
+        PatientProfile patientProfile = patientProfileRepository.getByUserUsername(patientUsername);
+        if (patientProfile == null || !patientProfile.isNightscoutEnabled()) return null;
+
+        return patientProfile.getNightscoutApiSecret();
+    }
 
     public void deletePatientProfile(int userId) {
         patientProfileRepository.deleteByUserId(userId);
