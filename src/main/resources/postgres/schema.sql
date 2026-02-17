@@ -7,7 +7,10 @@ CREATE TABLE Service_User (
     id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     username varchar(255) UNIQUE NOT NULL,
     password varchar NOT NULL,
-    email varchar
+    first_name varchar(255) NOT NULL,
+    middle_name varchar(255),
+    last_name varchar(255) NOT NULL,
+    email varchar(255)
 );
 
 CREATE TABLE User_Role (
