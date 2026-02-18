@@ -9,12 +9,14 @@ import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
 @Service
+@Transactional
 public class DiaryEntryService {
     private CommonDiaryEntryDAO commonDiaryEntryDAO;
 
@@ -33,6 +35,24 @@ public class DiaryEntryService {
         return commonDiaryEntryDAO.saveOrUpdate(diaryEntry);
     }
 
+    public List<DiaryEntry> addDiaryEntries(List<DiaryEntry> entries, PatientProfile patientProfile,
+                                            boolean updateIfExists) {
+        List<DiaryEntry> savedEntries = new ArrayList<>();
+
+        for (DiaryEntry entry : entries) {
+            entry.setPatientProfile(patientProfile);
+
+            try {
+                if (updateIfExists || !commonDiaryEntryDAO.exists(entry)) {
+                    commonDiaryEntryDAO.saveOrUpdate(entry);
+                    savedEntries.add(entry);
+                }
+            } catch (Exception ignored) {}
+        }
+
+        return savedEntries;
+    }
+
     public DiaryEntry updateDiaryEntry(DiaryEntry diaryEntry, PatientProfile patientProfile, Instant commitedAt) {
         fill(diaryEntry, patientProfile, commitedAt);
 
@@ -48,11 +68,13 @@ public class DiaryEntryService {
         commonDiaryEntryDAO.remove(diaryEntry);
     }
 
+    @Transactional(readOnly = true)
     public List<DiaryEntry> getAllDiaryEntries(PatientProfile patientProfile,
                                                             Instant from, Instant to) {
         return getDiaryEntriesOfType(null, patientProfile, from, to);
     }
 
+    @Transactional(readOnly = true)
     public List<DiaryEntry> getDiaryEntriesOfType(DiaryEntryType entryType, PatientProfile patientProfile,
                                                   Instant from, Instant to) {
         if (patientProfile == null) return Collections.emptyList();

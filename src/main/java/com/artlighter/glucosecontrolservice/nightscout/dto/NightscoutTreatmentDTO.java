@@ -1,0 +1,27 @@
+package com.artlighter.glucosecontrolservice.nightscout.dto;
+
+import com.artlighter.glucosecontrolservice.general.TypeGroup;
+import com.artlighter.glucosecontrolservice.nightscout.util.validation.CorrectGlucose;
+import jakarta.validation.GroupSequence;
+import jakarta.validation.constraints.*;
+import org.hibernate.validator.constraints.Length;
+
+@GroupSequence({NightscoutTreatmentDTO.class, TypeGroup.class})
+@CorrectGlucose(groups = TypeGroup.class)
+public record NightscoutTreatmentDTO(
+        @NotBlank
+        String createdAt,
+        String eventType,
+        Float glucose,
+        @DecimalMin("0")
+        @DecimalMax("300")
+        Float carbs,
+        @DecimalMin("1")
+        @DecimalMax("100")
+        Float insulin,
+        @Pattern(regexp = "mg/dl|mmol")
+        String units,
+        @Length(max = 500)
+        String notes
+) {
+}

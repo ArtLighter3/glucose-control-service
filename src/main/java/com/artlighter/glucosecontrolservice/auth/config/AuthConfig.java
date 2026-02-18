@@ -33,7 +33,8 @@ public class AuthConfig {
                                 requests.requestMatchers("/api/auth/register",
                                                 //TODO временно
                                                 "/api-docs",
-                                                "/swagger-ui/index.html").permitAll()
+                                                "/swagger-ui/index.html",
+                                                "/nightscout/**").permitAll()
                                         .anyRequest().authenticated())
                         //        .requestMatchers("/api/auth/process-login").permitAll()
                 .exceptionHandling(exception ->
