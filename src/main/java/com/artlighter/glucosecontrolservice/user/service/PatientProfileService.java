@@ -30,6 +30,11 @@ public class PatientProfileService {
         return patientProfileRepository.getByUserId(userId);
     }
 
+    @Transactional(readOnly = true)
+    public PatientProfile getByUsername(String username) {
+        return patientProfileRepository.getByUserUsername(username);
+    }
+
     public PatientProfile createProfileForPatient(PatientProfile patientProfile, User user) {
         if (patientProfileRepository.existsByUserId(user.getId()))
             throw new ResourceAlreadyExistsException(patientProfile, "Patient profile for this user already exists");

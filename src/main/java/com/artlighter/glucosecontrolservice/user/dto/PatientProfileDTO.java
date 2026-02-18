@@ -7,6 +7,7 @@ import com.artlighter.glucosecontrolservice.user.util.validation.CorrectGlucoseI
 import com.artlighter.glucosecontrolservice.general.TypeGroup;
 import jakarta.validation.GroupSequence;
 import jakarta.validation.constraints.*;
+import org.hibernate.validator.constraints.Length;
 
 @GroupSequence({PatientProfileDTO.class, TypeGroup.class})
 @CorrectGlucoseIntervals(groups = {TypeGroup.class})
@@ -36,6 +37,7 @@ public record PatientProfileDTO(
         Float hypoGlucose,
         @NotNull
         Boolean isNightscoutEnabled,
+        @Length(min = 12)
         String nightscoutApiSecret
 ) {
 }

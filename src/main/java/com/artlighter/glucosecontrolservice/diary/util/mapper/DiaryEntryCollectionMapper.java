@@ -32,10 +32,11 @@ public class DiaryEntryCollectionMapper {
                 .toList();
     }
 
-    public List<DiaryEntry> mapToInternal(List<DiaryEntryDTO> externalEntries, PatientProfile patientProfile) {
+    public List<DiaryEntry> mapToInternal(List<InCollectionDiaryEntryDTO> externalEntries,
+                                          PatientProfile patientProfile) {
 
         return externalEntries.stream()
-                .map((entryDTO) -> convert(entryDTO, patientProfile))
+                .map((entryDTO) -> convert(entryDTO.entryInfo(), patientProfile))
                 .toList();
     }
 

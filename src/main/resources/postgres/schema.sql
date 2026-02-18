@@ -40,7 +40,7 @@ CREATE TABLE Patient_Profile (
                              DEFAULT 4,
     hypo_glucose real NOT NULL CHECK (hypo_glucose >= 1 AND hypo_glucose <= 40) DEFAULT 2,
     is_nightscout_enabled bool NOT NULL DEFAULT false,
-    nightscout_api_secret varchar CHECK (nightscout_api_secret IS NOT NULL
+    nightscout_api_secret varchar CHECK ((nightscout_api_secret IS NOT NULL AND length(nightscout_api_secret) >= 12)
                                                        OR is_nightscout_enabled = false)
 );
 
