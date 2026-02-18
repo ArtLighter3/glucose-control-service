@@ -11,7 +11,8 @@ public class PatientProfileMapper implements DTOMapper<PatientProfile, PatientPr
     public PatientProfileDTO mapToDTO(PatientProfile internal) {
         return new PatientProfileDTO(internal.getGlucoseUnit(), internal.getCarbsUnit(), internal.getDiabetesType(),
                 internal.getHyperGlucose(), internal.getHighGlucose(),
-                internal.getLowGlucose(), internal.getHypoGlucose());
+                internal.getLowGlucose(), internal.getHypoGlucose(),
+                internal.isNightscoutEnabled(), internal.getNightscoutApiSecret());
     }
 
     @Override
@@ -25,6 +26,8 @@ public class PatientProfileMapper implements DTOMapper<PatientProfile, PatientPr
         patientProfile.setHighGlucose(externalDTO.highGlucose());
         patientProfile.setLowGlucose(externalDTO.lowGlucose());
         patientProfile.setHypoGlucose(externalDTO.hypoGlucose());
+        patientProfile.setNightscoutEnabled(externalDTO.isNightscoutEnabled());
+        patientProfile.setNightscoutApiSecret(externalDTO.nightscoutApiSecret());
 
         return patientProfile;
     }
