@@ -1,24 +1,38 @@
 package com.artlighter.glucosecontrolservice.auth.controller.auth;
 
 import com.artlighter.glucosecontrolservice.auth.dto.UserRegistrationDTO;
+import com.artlighter.glucosecontrolservice.auth.util.exception.ExceptionDTO;
+import com.artlighter.glucosecontrolservice.auth.util.mapper.UserRegistrationMapper;
 import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.user.entity.User;
-import com.artlighter.glucosecontrolservice.auth.util.mapper.DTOConvertUtils;
 import com.artlighter.glucosecontrolservice.auth.util.exception.ValidationIsFailedException;
 import com.artlighter.glucosecontrolservice.user.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+@ApiResponses(value =
+        {@ApiResponse(responseCode = "200", description = "В случае успеха."),
+        @ApiResponse(responseCode = "400", description = "Неверное тело запроса (в т.ч. если пароли не совпадают).",
+                        content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
+        @ApiResponse(responseCode = "500", description = "Ошибка сервера.",
+                        content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+@Tag(name = "auth", description = "методы для аутентификации и авторизации")
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
     private UserService userService;
+    private UserRegistrationMapper userRegistrationMapper;
 
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, UserRegistrationMapper userRegistrationMapper) {
         this.userService = userService;
+        this.userRegistrationMapper = userRegistrationMapper;
     }
 
 //    @PostMapping("/login")
@@ -28,16 +42,19 @@ public class AuthController {
 //        return new RedirectView("/api/auth/process-login");
 //    }
 
+    @Operation(summary = "Зарегистрировать нового больного.")
+    @ApiResponses(value = @ApiResponse(responseCode = "409", description = "Если пользователь с таким" +
+            "именем уже существует.", content = @Content(schema = @Schema(implementation = ExceptionDTO.class))))
     @PostMapping(value = "/register")
-    public ResponseEntity<Object> register(@RequestBody @Valid UserRegistrationDTO userRegistrationDTO,
+    public void register(@RequestBody @Valid UserRegistrationDTO userRegistrationDTO,
                                    BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            throw new ValidationIsFailedException(bindingResult, "Validation of request body failed");
+            throw new ValidationIsFailedException(bindingResult, "request body is invalid");
         }
 
-        User addedUser = userService.addUser(DTOConvertUtils.convertToUserFromRegistrationForm(userRegistrationDTO),
+        User addedUser = userService.addUser(userRegistrationMapper.mapToInternal(userRegistrationDTO),
                 Role.ROLE_PATIENT);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(null);
+       // return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 }

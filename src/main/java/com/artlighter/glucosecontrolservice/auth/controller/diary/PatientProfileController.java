@@ -12,7 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/patients/{userId}/patient-profile")
+@RequestMapping("/api/v1/patients/{userId}/patient-profile")
 public class PatientProfileController {
     private PatientProfileService patientProfileService;
     private PatientProfileMapper patientProfileMapper;

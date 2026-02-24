@@ -13,11 +13,12 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-@RequestMapping("/api/patients/{userId}/templates/")
+@RequestMapping("/api/v1/patients/{userId}/templates/")
 public abstract class AbstractPatientTemplateResourceController
         <INT extends PatientTemplateEntity, EXT extends PatientTemplateEntityDTO> {
 
@@ -62,6 +63,7 @@ public abstract class AbstractPatientTemplateResourceController
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'TEMPLATE_ADD_OWN', " +
             "#userId, authentication)")
     @PostMapping("/default")
+    @ResponseStatus(HttpStatus.CREATED)
     public EXT postTemplate(@PathVariable int userId, @RequestBody @Valid EXT template, BindingResult bindingResult) {
         INT added = post(userId, template, bindingResult);
         return getTemplateMapper().mapToDTO(added);

@@ -1,8 +1,5 @@
 package com.artlighter.glucosecontrolservice.auth.util.mapper;
 
-import com.artlighter.glucosecontrolservice.auth.dto.UserRegistrationDTO;
-import com.artlighter.glucosecontrolservice.user.entity.Role;
-import com.artlighter.glucosecontrolservice.user.entity.User;
 import com.artlighter.glucosecontrolservice.auth.util.exception.ExceptionDTO;
 import com.artlighter.glucosecontrolservice.auth.util.exception.ValidationIsFailedException;
 import org.springframework.http.HttpStatus;
@@ -14,20 +11,12 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
- * Класс со статическими методами, помогающими конвертировать объекты DTO во внутренние объекты и наоборот.
+ * Класс со статическими методами, помогающими конвертировать внутренние исключения во внешние объекты с информацией
+ * об ошибках.
  */
-public class DTOConvertUtils {
-
-    public static User convertToUserFromRegistrationForm(UserRegistrationDTO userRegistrationDTO) {
-        User user = new User();
-        user.setUsername(userRegistrationDTO.username());
-        user.setPassword(userRegistrationDTO.password());
-        user.setRoles(Set.of(Role.ROLE_PATIENT));
-        return user;
-    }
+public class ExceptionOutputUtils {
 
     public static ExceptionDTO createValidationException(ValidationIsFailedException ex) {
         return createException(HttpStatus.BAD_REQUEST, ex.getErrors(), ex.getMessage());

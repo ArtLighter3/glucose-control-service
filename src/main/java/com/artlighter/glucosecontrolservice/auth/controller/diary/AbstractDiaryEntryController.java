@@ -1,5 +1,6 @@
 package com.artlighter.glucosecontrolservice.auth.controller.diary;
 
+import com.artlighter.glucosecontrolservice.auth.util.exception.ExceptionDTO;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.auth.util.exception.ValidationIsFailedException;
 import com.artlighter.glucosecontrolservice.diary.service.DiaryEntryService;
@@ -10,6 +11,11 @@ import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import com.artlighter.glucosecontrolservice.diary.util.mapper.EntryMapper;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +44,14 @@ import java.util.List;
  * @param <EXT> внешний класс сущности (DTO) определенного типа записи дневника
  *             для передачи вовне или приема извне.
  */
-@RequestMapping("api/patients/{userId}/entries")
+@Tag(name = "diary", description = "методы для ведения дневника самоконтроля: " +
+        "добавление, модификация записей разных типов")
+@ApiResponses(value =
+        {@ApiResponse(responseCode = "404", description = "Если больной не был найден.",
+                content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
+        @ApiResponse(responseCode = "500", description = "Ошибка сервера.",
+                content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+@RequestMapping("api/v1/patients/{userId}/entries")
 public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT extends DiaryEntryDTO> {
     //TODO мб убрать зависимости из абстрактного класса и просто сделать абстрактные геттеры, как в модуле templates?
     protected DiaryEntryService diaryEntryService;
@@ -60,6 +73,7 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
         this.entryMapper = entryMapper;
     }
 
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "В случае успеха.")})
     @GetMapping("/default")
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_SHOW_ALL', 'GLUCOSE_SHOW_ATTACHED', " +
             "'GLUCOSE_SHOW_OWN', #userId, authentication)")
@@ -70,6 +84,13 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
         return getEntries(getEntryType(), userId, from, to, outputZoneOffset);
     }
 
+    @ApiResponses(value =
+            {@ApiResponse(responseCode = "201", description = "Если запись была успешно создана."),
+            @ApiResponse(responseCode = "400", description = "Если тело запроса некорректное.",
+                    content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
+            @ApiResponse(responseCode = "409", description = "Если запись этого типа с этой временной отметкой" +
+                    "для этого пользователя уже существует.",
+                    content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PostMapping("/default")
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_ADD_ALL', 'GLUCOSE_ADD_ATTACHED', " +
             "'GLUCOSE_ADD_OWN', #userId, authentication)")
@@ -79,6 +100,12 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
         return addEntry(userId, entryDTO, bindingResult);
     }
 
+    @ApiResponses(value =
+            {@ApiResponse(responseCode = "200", description = "В случае успеха."),
+            @ApiResponse(responseCode = "400", description = "Если тело запроса некорректное.",
+                    content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Если больной или обновляемая запись не были найдены.",
+                    content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PutMapping("/default")
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_UPDATE_ALL', " +
             "'GLUCOSE_UPDATE_ATTACHED','GLUCOSE_UPDATE_OWN', #userId, authentication)")
@@ -87,6 +114,10 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
         return updateEntry(userId, entryDTO, bindingResult);
     }
 
+    @ApiResponses(value =
+            {@ApiResponse(responseCode = "200", description = "В случае успеха."),
+            @ApiResponse(responseCode = "400", description = "Если тело запроса некорректное.",
+                    content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @DeleteMapping("/default")
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_DELETE_ALL', " +
             "'GLUCOSE_DELETE_ATTACHED','GLUCOSE_DELETE_OWN', #userId, authentication)")

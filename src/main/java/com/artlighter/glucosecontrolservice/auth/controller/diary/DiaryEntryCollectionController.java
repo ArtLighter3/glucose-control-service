@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/patients/{userId}/entries")
+@RequestMapping("api/v1/patients/{userId}/entries")
 public class DiaryEntryCollectionController {
     private DiaryEntryService diaryEntryService;
     private PatientProfileService patientProfileService;

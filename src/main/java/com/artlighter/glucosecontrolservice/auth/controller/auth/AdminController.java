@@ -11,7 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/v1/")
 //@PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
     private AuthorityService authorityService;
