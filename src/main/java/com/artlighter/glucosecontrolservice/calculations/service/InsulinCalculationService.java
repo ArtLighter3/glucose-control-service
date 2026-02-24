@@ -44,9 +44,28 @@ public class InsulinCalculationService {
 //
 //    }
 
+    /**
+     * Высчитывает дозу инсулина для компенсации принятых углеводов и/или снижения текущей глюкозы glucose до
+     * целевого значения targetGlucose c учетом активного инсулина.
+     * Активный инсулин определяется на основе последних записей дневника.
+     * Расчеты ведутся в соответствии с настройками в инсулиновом профиле.
+     * @param insulinProfile инсулиновый профиль больного, не null;
+     * @param entriesToConsider записи дневника, которые будут использоваться для учета (учитываются
+     *                          только записи InsulinEntry); если null, то активный инсулин НЕ учитывается;
+     * @param timeOfDay текущее время дня у больного (точное время дня, как у него, БЕЗ учета смещений и зон!), не null;
+     * @param carbs количество принимаемых углеводов, для которых производится расчет компенсации;
+     * @param glucose текущий уровень глюкозы для коррекции сахара в крови;
+     * @param correction процент коррекции, если необходимо добавить из-за каких-то внешних факторов;
+     * @param targetGlucose целевая глюкоза, для которой будет производиться расчет коррекционной части дозы;
+     * @return InsulinResult, содержащий как результат, так и каждый элемент, участвовавший в расчете;
+     * @throws IllegalArgumentException если insulinProfile или timeOfDay равны null;
+     */
     public InsulinResult calculateInsulinDose(InsulinProfile insulinProfile,
                                               List<? extends DiaryEntry> entriesToConsider, LocalTime timeOfDay,
                                               float carbs, float glucose, float correction, float targetGlucose) {
+        if (insulinProfile == null) throw new IllegalArgumentException("insulinProfile cannot be null");
+        if (timeOfDay == null) throw new IllegalArgumentException("timeOfDay cannot be null");
+
         float currentIsf = volatileValueExtractor.extractVolatileValue(insulinProfile.getFactorsByTime(), timeOfDay,
                 insulinProfile.getDefaultInsulinSensitivityFactor());
         float currentIcr = volatileValueExtractor.extractVolatileValue(insulinProfile.getRatiosByTime(), timeOfDay,
@@ -71,6 +90,7 @@ public class InsulinCalculationService {
 
         double result = carbsInsulin + correctionInsulin;
 
+        //TODO лучше округлять уже в слое выше при конвертации в DTO
         return new InsulinResult(glucose,
                 currentIsf,
                 Float.valueOf(df.format(correctionInsulin)),

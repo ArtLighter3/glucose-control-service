@@ -1,10 +1,10 @@
 package com.artlighter.glucosecontrolservice.user.service;
 
+import com.artlighter.glucosecontrolservice.general.exception.ResourceAlreadyExistsException;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.user.entity.DoctorProfile;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.user.repository.DoctorProfileRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,14 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
+/**
+ * Сервис для доступа и модификации профилей врачей, в том числе и списка прикрепленных к ним больных.
+ */
 @Service
 @Transactional
 public class DoctorProfileService {
     private DoctorProfileRepository doctorProfileRepository;
     private PatientProfileService patientProfileService;
-
-    @Value("${glucose-control-service.max-page-size}")
-    private int maxPageSize = 20;
 
     public DoctorProfileService(DoctorProfileRepository doctorProfileRepository,
                                 PatientProfileService patientProfileService) {
@@ -38,6 +38,13 @@ public class DoctorProfileService {
 //        return doctorProfileRepository.findAttachedPatients(doctorProfile.getId(), pageable);
 //    }
 
+    /**
+     * Функция проверяет, прикреплен ли больной к врачу по их ID.
+     * @param doctorId ID врача;
+     * @param patientId ID больного;
+     * @return true, если больной прикреплен;
+     *         false, если не прикреплен, либо врач или больной с такими ID не были найдены;
+     */
     @Transactional(readOnly = true)
     public boolean isPatientAttached(int doctorId, int patientId) {
 //        DoctorProfile doctorProfile = doctorProfileRepository.findByUserId(doctorId);
@@ -47,32 +54,68 @@ public class DoctorProfileService {
         //return doctorProfile.getAttachedPatients().containsKey(patientId);
     }
 
+    /**
+     * Прикрепить больного к врачу.
+     * @param doctorId ID врача;
+     * @param patientId ID больного;
+     * @return профиль врача, к которому было произведено прикрепление;
+     * @throws ResourceNotFoundException если врач или пациент с переданными ID не были найдены;
+     * @throws ResourceAlreadyExistsException если больной уже был прикреплен к врачу;
+     */
     public DoctorProfile attachPatientToDoctor(int doctorId, int patientId) {
         DoctorProfile doctorProfile = getDoctorProfileOrThrowException(doctorId);
         PatientProfile patientProfile = getPatientProfileOrThrowException(patientId);
 
         Set<PatientProfile> attachedPatients = doctorProfile.getAttachedPatients();
-        attachedPatients.add(patientProfile);
+        boolean attached = attachedPatients.add(patientProfile);
+        if (!attached)
+            throw new ResourceAlreadyExistsException(patientProfile, "patient is already attached to this doctor");
 
         return doctorProfileRepository.save(doctorProfile);
     }
 
+    /**
+     * Открепить больного от врача.
+     * @param doctorId ID врача;
+     * @param patientId ID больного;
+     * @return профиль врача, у которого был удален прикрепленный больной;
+     * @throws ResourceNotFoundException если врач или пациент с переданными ID не были найдены, либо если
+     *                                   больной уже откреплен;
+     */
     public DoctorProfile detachPatientFromDoctor(int doctorId, int patientId) {
         DoctorProfile doctorProfile = getDoctorProfileOrThrowException(doctorId);
         PatientProfile patientProfile = getPatientProfileOrThrowException(patientId);
 
         Set<PatientProfile> attachedPatients = doctorProfile.getAttachedPatients();
-        attachedPatients.remove(patientProfile);
+        boolean detached = attachedPatients.remove(patientProfile);
+        if (!detached)
+            throw new ResourceNotFoundException("patient is not attached to this doctor");
 
         return doctorProfileRepository.save(doctorProfile);
     }
 
+    /**
+     * Функция получает список прикрепленных к врачу больных (их профилей) по ID врача.
+     * @param doctorId идентификатор врача в системе;
+     * @param pageable объект с информацией о пагинации;
+     * @return текущая страница с профилями больных, прикрепленных к врачу;
+     * @throws ResourceNotFoundException если врач не был найден в системе;
+     */
     public Page<PatientProfile> getAttachedPatients(int doctorId, Pageable pageable) {
         DoctorProfile doctorProfile = getDoctorProfileOrThrowException(doctorId);
 
         return patientProfileService.getPatientsAttachedToDoctor(doctorProfile.getId(), pageable);
     }
 
+    /**
+     * Функция получает список прикрепленных к врачу больных (их профилей) по ID врача, чьи ФИО содержат в себе
+     * критерий поиска searchQuery.
+     * @param doctorId идентификатор врача в системе;
+     * @param searchQuery критерий поиска по ФИО;
+     * @param pageable объект с информацией о пагинации;
+     * @return текущая страница с профилями больных, прикрепленных к врачу, соответствующих критерию поиска;
+     * @throws ResourceNotFoundException если врач не был найден в системе;
+     */
     public Page<PatientProfile> searchAttachedPatients(int doctorId, String searchQuery, Pageable pageable) {
         DoctorProfile doctorProfile = getDoctorProfileOrThrowException(doctorId);
 
