@@ -42,7 +42,9 @@ import java.util.List;
  * @param <INT> внутренний класс сущности, представляющей тип записи дневника (наследник DiaryEntry),
  *             к которому относится реализация.
  * @param <EXT> внешний класс сущности (DTO) определенного типа записи дневника
- *             для передачи вовне или приема извне.
+ *             для передачи вовне или приема извне (наследник DiaryEntryDTO).
+ * @see DiaryEntry
+ * @see DiaryEntryDTO
  */
 @Tag(name = "diary", description = "методы для ведения дневника самоконтроля: " +
         "добавление, модификация записей разных типов")
@@ -115,7 +117,7 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
     }
 
     @ApiResponses(value =
-            {@ApiResponse(responseCode = "200", description = "В случае успеха."),
+            {@ApiResponse(responseCode = "200", description = "Запись удалена, либо ее не существовало."),
             @ApiResponse(responseCode = "400", description = "Если тело запроса некорректное.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @DeleteMapping("/default")

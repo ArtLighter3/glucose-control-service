@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Сервис для выборки и модификации заготовок-блюд больного.
+ */
 @Service
 public class MealService extends TemplateService<Meal> {
 
@@ -21,6 +24,14 @@ public class MealService extends TemplateService<Meal> {
         super(mealRepository);
     }
 
+    /**
+     * Рассчитывает общее количество принимаемых углеводов на основе весов передаваемых блюд.
+     * Если по названию блюдо не было найдено в списках блюд больного, оно
+     * не используется для общего расчета.
+     * @param patientProfileId ID профиля больного;
+     * @param mealWeights словарь, в котором ключом является наименование блюда, а значение - вес блюда при приеме пищи.
+     * @return вещ. значение, обозначающее общее количество принимаемых углеводов в граммах;
+     */
     @Transactional(readOnly = true)
     public float calculateOverallCarbs(int patientProfileId, Map<String, Float> mealWeights) {
         if (mealWeights == null || mealWeights.isEmpty()) return 0f;

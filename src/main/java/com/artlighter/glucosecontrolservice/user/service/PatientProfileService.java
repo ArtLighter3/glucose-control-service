@@ -33,6 +33,7 @@ public class PatientProfileService {
      */
     @Transactional(readOnly = true)
     public PatientProfile getByUserId(int patientId) {
+        //TODO может, добавить выброс исключения о ненахождении в этих методах get?
         //TODO а что если по каким-то причинам у больного не создался его профиль?
         return patientProfileRepository.findByUserId(patientId);
     }
@@ -96,10 +97,17 @@ public class PatientProfileService {
         return patientProfileRepository.save(patientProfile);
     }
 
+    /**
+     * Обновляет профиль больного.
+     * @param patientProfile обновляемый профиль больного;
+     * @param userId ID пользователя-больного;
+     * @return обновленный профиль больного;
+     * @throws ResourceNotFoundException если профиль больного не существует;
+     */
     public PatientProfile updateProfileForPatient(PatientProfile patientProfile, int userId) {
         PatientProfile existingProfile = patientProfileRepository.findByUserId(userId);
         if (existingProfile == null)
-            throw new ResourceNotFoundException("Patient profile for this user does not exist");
+            throw new ResourceNotFoundException("patient profile for this user does not exist");
 
         //patientProfile.setUserId(userId);
         patientProfile.setUser(new User(userId));
@@ -107,16 +115,30 @@ public class PatientProfileService {
         return patientProfileRepository.save(patientProfile);
     }
 
+    /**
+     * Находит прикрепленных к врачу больных (их профилей) по ID профиля врача.
+     * @param doctorProfileId идентификатор врача в системе;
+     * @param pageable объект с информацией о пагинации;
+     * @return текущая страница с профилями больных, прикрепленных к врачу; пустая страница, если не было найдено списка
+     * для врача;
+     */
     public Page<PatientProfile> getPatientsAttachedToDoctor(int doctorProfileId, Pageable pageable) {
         return getPatientsAttachedToDoctor(doctorProfileId, null, pageable);
     }
 
+    /**
+     * Находит прикрепленных к врачу больных (их профилей) по ID профиля врача, в ФИО которых содержится поисковая фраза
+     * searchQueru.
+     * @param doctorProfileId ID врача в системе;
+     * @param searchQuery поисковая фраза для поиска по ФИО; если null, то находятся все больные;
+     * @param pageable объект с информацией о пагинации;
+     * @return текущая страница с профилями больных, прикрепленных к врачу, соответствующих критерию поиска;
+     * пустая страница, если не было найдено списка для врача по критерию;
+     */
     public Page<PatientProfile> getPatientsAttachedToDoctor(int doctorProfileId, @Nullable String searchQuery,
                                                             Pageable pageable) {
         if (pageable == null)
             pageable = PageRequest.of(0, 10, Sort.by("user.username"));
-        if (pageable.getPageSize() > 20)
-            pageable = PageRequest.of(pageable.getPageNumber(), 20, pageable.getSort());
 
         Page<PatientProfile> patientProfiles = searchQuery == null ?
                 patientProfileRepository.getPatientsAttachedToDoctorByDoctorId(doctorProfileId, pageable) :
@@ -127,6 +149,12 @@ public class PatientProfileService {
         return patientProfiles;
     }
 
+    /**
+     * Находит ключ к Nightscout API определенного больного по его имени пользователя.
+     * @param patientUsername имя пользователя больного;
+     * @return API-ключ к Nightscout; null, если у пользователя отключено Nightscout API,
+     *         либо не было найдено ключа или профиля больного;
+     */
     public String getNightscoutApiSecretIfEnabled(String patientUsername) {
         PatientProfile patientProfile = patientProfileRepository.findByUserUsername(patientUsername);
         if (patientProfile == null || !patientProfile.isNightscoutEnabled()) return null;
@@ -134,6 +162,10 @@ public class PatientProfileService {
         return patientProfile.getNightscoutApiSecret();
     }
 
+    /**
+     * Удаляет профиль больного. Проигнорирует, если профиль уже не существует.
+     * @param userId ID пользователя-больного;
+     */
     public void deletePatientProfile(int userId) {
         patientProfileRepository.deleteByUserId(userId);
     }

@@ -9,6 +9,9 @@ import com.artlighter.glucosecontrolservice.templates.dto.TemplateDeletionDTO;
 import com.artlighter.glucosecontrolservice.templates.entity.Medication;
 import com.artlighter.glucosecontrolservice.templates.service.impl.MedicationService;
 import com.artlighter.glucosecontrolservice.templates.util.mapper.MedicationMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
@@ -30,43 +33,54 @@ public class MedicationController extends AbstractPatientTemplateResourceControl
         this.medicationMapper = medicationMapper;
     }
 
-    @Override
-    @GetMapping("/medication-by-name")
-    public MedicationDTO getTemplate(int userId, String name) {
-        return super.getTemplate(userId, name);
-    }
+//    @Override
+//    @GetMapping("/medication-by-name")
+//    public MedicationDTO getTemplate(int userId, String name) {
+//        return super.getTemplate(userId, name);
+//    }
 
     @Override
+    @Operation(summary = "Получить список заготовленных препаратов пользователя.", description = "Возвращает список " +
+            "постранично с возможностью сортировки по определенному полю. Доступ имеет только владелец списка.")
     @GetMapping("/medications")
     public Page<MedicationDTO> getTemplates(int userId, Pageable pageable) {
         return super.getTemplates(userId, pageable);
     }
 
     @Override
+    @Operation(summary = "Получить список заготовленных препаратов пользователя с поиском по названию.",
+            description = "Возвращает список постранично с возможностью сортировки по определенному полю. " +
+                    " Доступ имеет только владелец списка.")
     @GetMapping("/medications/search")
     public Page<MedicationDTO> getTemplatesBySearchQuery(int userId, String query, Pageable pageable) {
         return super.getTemplatesBySearchQuery(userId, query, pageable);
     }
 
     @Override
+    @Operation(summary = "Добавить препарат для пользователя.")
     @PostMapping("/medications")
     public MedicationDTO postTemplate(int userId, MedicationDTO template, BindingResult bindingResult) {
         return super.postTemplate(userId, template, bindingResult);
     }
 
     @Override
+    @Operation(summary = "Обновить существующий препарат для пользователя.")
     @PutMapping("/medications")
     public MedicationDTO putTemplate(int userId, MedicationDTO template, BindingResult bindingResult) {
         return super.putTemplate(userId, template, bindingResult);
     }
 
     @Override
+    @Operation(summary = "Удалить существующий препарат для пользователя.")
     @DeleteMapping("/medications")
     public TemplateDeletionDTO deleteTemplate(int userId, TemplateDeletionDTO deletionDTO,
                                  BindingResult bindingResult) {
         return super.deleteTemplate(userId, deletionDTO, bindingResult);
     }
 
+    @Operation(summary = "Рассчитать общее количество миллиграм дозировки препаратов " +
+            "на основе названий переданных препаратов и их порций.")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "В случае успеха.")})
     @PostMapping("/medications/calculate")
     public MedicationResult calculateMilligrams(@PathVariable int userId, @RequestBody Map<String, Integer> portions) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);

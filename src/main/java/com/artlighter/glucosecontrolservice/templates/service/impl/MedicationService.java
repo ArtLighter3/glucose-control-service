@@ -1,6 +1,5 @@
 package com.artlighter.glucosecontrolservice.templates.service.impl;
 
-import com.artlighter.glucosecontrolservice.templates.entity.Meal;
 import com.artlighter.glucosecontrolservice.templates.entity.Medication;
 import com.artlighter.glucosecontrolservice.templates.entity.PatientTemplateEntity;
 import com.artlighter.glucosecontrolservice.templates.repository.MedicationRepository;
@@ -12,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Сервис для выборки и модификации заготовок-препаратов больного.
+ */
 @Service
 public class MedicationService extends TemplateService<Medication> {
 
@@ -19,6 +21,15 @@ public class MedicationService extends TemplateService<Medication> {
         super(medicationRepository);
     }
 
+    /**
+     * Рассчитывает общее количество дозировки принимаемых препаратов на основе порций каждого из них.
+     * Если по названию препарат не был найден в списках препаратов больного, он
+     * не используется для общего расчета.
+     * @param patientProfileId ID профиля больного;
+     * @param portions словарь, в котором ключом является наименование препарата,
+     *                 а значение - порция препарата при принятии.
+     * @return вещ. значение, обозначающее общее количество принимаемой дозировки в миллиграммах;
+     */
     @Transactional(readOnly = true)
     public float calculateOverallMilligrams(int patientProfileId, Map<String, Integer> portions) {
         if (portions == null || portions.isEmpty()) return 0f;
