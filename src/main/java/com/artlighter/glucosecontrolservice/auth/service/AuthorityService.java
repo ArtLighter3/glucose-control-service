@@ -6,6 +6,7 @@ import com.artlighter.glucosecontrolservice.auth.util.exception.AuthorityIsNotDe
 import com.artlighter.glucosecontrolservice.auth.repository.AuthorityRepository;
 import com.artlighter.glucosecontrolservice.auth.util.exception.RoleAlreadyHasAuthorityException;
 import com.artlighter.glucosecontrolservice.auth.util.exception.RoleDoesNotHaveSuchAuthorityException;
+import com.artlighter.glucosecontrolservice.user.entity.RoleWithAuthorities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +19,6 @@ import java.util.stream.Collectors;
  */
 
 @Service
-@Transactional
 public class AuthorityService {
     private AuthorityRepository authorityRepository;
 
@@ -36,6 +36,7 @@ public class AuthorityService {
      * @throws com.artlighter.glucosecontrolservice.auth.util.exception.RoleAlreadyHasAuthorityException
      * в случае, если право уже существует у роли
      */
+    @Transactional
     public Authority addDeletableAuthority(Role role, Authority authority) {
         return addAuthority(role, authority, true);
     }
@@ -49,6 +50,7 @@ public class AuthorityService {
      * @throws com.artlighter.glucosecontrolservice.auth.util.exception.RoleAlreadyHasAuthorityException
      * в случае, если право уже существует у роли
      */
+    @Transactional
     public Authority addUndeletableAuthority(Role role, Authority authority) {
         return addAuthority(role, authority, false);
     }
@@ -64,6 +66,7 @@ public class AuthorityService {
      * @throws com.artlighter.glucosecontrolservice.auth.util.exception.RoleAlreadyHasAuthorityException
      * в случае, если право уже существует у роли
      */
+    @Transactional
     public Authority addAuthority(Role role, Authority authority, boolean isDeletable) {
         if (role == null || authority == null) return null;
 
@@ -80,6 +83,7 @@ public class AuthorityService {
      * @param role определенная роль (из энума), которой нужно дать отзываемые права
      * @param authorities отзываемые права, добавляемые к роли.
      */
+    @Transactional
     public void addDeletableAuthorities(Role role, Authority... authorities) {
         for (Authority authority : authorities) {
             try {
@@ -95,6 +99,7 @@ public class AuthorityService {
      * @param role определенная роль (из энума), которой нужно дать неотзываемые права
      * @param authorities неотзываемые права, добавляемые к роли.
      */
+    @Transactional
     public void addUndeletableAuthorities(Role role, Authority... authorities) {
         for (Authority authority : authorities) {
             try {
@@ -114,6 +119,7 @@ public class AuthorityService {
      * @throws com.artlighter.glucosecontrolservice.auth.util.exception.RoleDoesNotHaveSuchAuthorityException в случае,
      * если у роли и так нет этого права
      */
+    @Transactional
     public Authority removeAuthority(Role role, Authority authority) {
         if (role == null || authority == null) return null;
 
@@ -159,6 +165,52 @@ public class AuthorityService {
         if (authorities == null) return Collections.emptySet();
 
         return authorities.keySet();
+    }
+
+    /**
+     * Собирает все роли с их правами, а также информацией о том, является ли право у роли удаляемым.
+     * @return множество объектов RoleWithAuthorities;
+     */
+    @Transactional(readOnly = true)
+    public Set<RoleWithAuthorities> getAllRolesWithAuthorities() {
+        Set<RoleWithAuthorities> roles = new HashSet<>();
+        for (Role role : Role.values()) {
+            if (role != Role.ROLE_SUPERUSER) {
+                roles.add(new RoleWithAuthorities(role, authorityRepository.getRoleAuthorities(role)));
+            }
+        }
+        return roles;
+    }
+
+    /**
+     * Обновляет список прав роли. Не отзывает неудаляемые права роли, поэтому они будут в результирующем множестве,
+     * даже если предполагалось их удаление.
+     * @param role обновляемая роль;
+     * @param authoritiesToUpdate новое множество прав роли;
+     * @return обновленное множество прав роли;
+     */
+    @Transactional
+    public Set<Authority> updateRole(Role role, Set<Authority> authoritiesToUpdate) {
+        //TODO доделать
+        Set<Authority> existingAuthorities = getRoleAuthorities(role);
+        Set<Authority> updatedAuthorities = new HashSet<>();
+
+        for (Authority authority : authoritiesToUpdate) {
+            if (!existingAuthorities.contains(authority)) {
+                updatedAuthorities.add(authority);
+                try {
+                    removeAuthority(role, authority);
+                } catch (AuthorityIsNotDeletableException ex) {
+                    updatedAuthorities.add(authority);
+                }
+            }
+        }
+
+        for (Authority existingAuthority : existingAuthorities) {
+
+        }
+
+        return updatedAuthorities;
     }
 
     /**

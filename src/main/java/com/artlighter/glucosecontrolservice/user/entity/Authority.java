@@ -45,7 +45,8 @@ public enum Authority {
     INSULIN_PROFILE_ADD_ATTACHED,
     INSULIN_PROFILE_ADD_ALL,
 
-    //Права для добавления/удаления прав у ролей системы
+    //Права для добавления/удаления/чтения прав у ролей системы
+    AUTHORITY_SHOW,
     AUTHORITY_GRANT_REVOKE,
 
     //Права для расчета инсулина
