@@ -25,7 +25,7 @@ public class ExceptionOutputUtils {
     public static ExceptionDTO createOutputException(HttpStatus status, Exception exception,
                                                      boolean hideExceptionMessage) {
         String exceptionMessage = hideExceptionMessage ? "" : exception.getMessage();
-        return createException(status, null, exception.getMessage());
+        return createException(status, null, exceptionMessage);
     }
 
     private static ExceptionDTO createException(HttpStatus status, Errors errors, String message) {
@@ -38,7 +38,7 @@ public class ExceptionOutputUtils {
             }
         }
 
-        return new ExceptionDTO(Date.from(Instant.now()),
+        return new ExceptionDTO(Instant.now(),
                 String.valueOf(status.value()),
                 status.name(),
                 message,

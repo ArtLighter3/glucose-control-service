@@ -1,5 +1,6 @@
 package com.artlighter.glucosecontrolservice.calculations.service;
 
+import com.artlighter.glucosecontrolservice.calculations.dto.InsulinResult;
 import com.artlighter.glucosecontrolservice.calculations.entity.*;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.BilinearInsulinDecayCurveStrategy;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.BySortVolatileValueExtractor;

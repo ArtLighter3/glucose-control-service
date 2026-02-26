@@ -2,12 +2,10 @@ package com.artlighter.glucosecontrolservice.auth.controller.user;
 
 import com.artlighter.glucosecontrolservice.auth.ServiceUserDetails;
 import com.artlighter.glucosecontrolservice.auth.service.AuthorityService;
-import com.artlighter.glucosecontrolservice.auth.dto.RoleAuthorityDTO;
 import com.artlighter.glucosecontrolservice.auth.util.exception.ExceptionDTO;
 import com.artlighter.glucosecontrolservice.auth.util.exception.NoSuchRoleException;
 import com.artlighter.glucosecontrolservice.user.entity.Authority;
 import com.artlighter.glucosecontrolservice.auth.util.SessionManager;
-import com.artlighter.glucosecontrolservice.auth.util.exception.ValidationIsFailedException;
 import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.user.entity.RoleWithAuthorities;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,15 +14,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Set;
 
 @Tag(name = "roles", description = "методы для модификации прав ролей системы")

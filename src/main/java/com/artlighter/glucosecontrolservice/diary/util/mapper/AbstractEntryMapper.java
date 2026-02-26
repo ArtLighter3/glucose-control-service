@@ -1,7 +1,6 @@
 package com.artlighter.glucosecontrolservice.diary.util.mapper;
 
 import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDTO;
-import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDeleteDTO;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.user.entity.CarbsUnit;
@@ -71,16 +70,6 @@ public abstract class AbstractEntryMapper<INT extends DiaryEntry, EXT extends Di
     @Override
     public EXT mapToDTO(INT internal) {
         return mapToDtoWithUnitConversion(internal, createDefaultPatientProfile(), ZoneOffset.UTC);
-    }
-
-    @Override
-    public INT mapToInternal(DiaryEntryDeleteDTO entryDeletionDTO) {
-        INT entry = createEntry();
-        // При удалении мы не срезаем секунды у отметки. Иначе, если в БД окажется значение
-        // с секундами, то его будет невозможно удалить без вмешательства в БД (в ID входит отметка, и отметка без
-        // срезанных секунд не будет равна отметке с секундами, запись не будет найдена)
-        entry.setCommitedAt(entryDeletionDTO.commitedAt());
-        return entry;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.artlighter.glucosecontrolservice.auth.controller.diary;
 
+import com.artlighter.glucosecontrolservice.auth.util.exception.ExceptionDTO;
 import com.artlighter.glucosecontrolservice.diary.dto.InCollectionDiaryEntryDTO;
-import com.artlighter.glucosecontrolservice.diary.dto.InCollectionDiaryEntryExceptionDTO;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.diary.service.DiaryEntryService;
 import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDTO;
@@ -9,17 +9,28 @@ import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.diary.util.mapper.DiaryEntryCollectionMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.hibernate.mapping.Collection;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.Collections;
 import java.util.List;
 
+@Tag(name = "diary", description = "методы для ведения дневника самоконтроля: " +
+        "добавление, модификация записей разных типов")
+@ApiResponses(value =
+        {@ApiResponse(responseCode = "404", description = "Если больной не был найден.",
+                content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
+        @ApiResponse(responseCode = "500", description = "Ошибка сервера.",
+                content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
 @RestController
 @RequestMapping("api/v1/patients/{userId}/entries")
 public class DiaryEntryCollectionController {
@@ -35,6 +46,11 @@ public class DiaryEntryCollectionController {
         this.collectionMapper = collectionMapper;
     }
 
+    @Operation(summary = "Получить все записи дневника всех типов в заданном периоде времени.",
+            description = "Рекомендуется указать UTC-смещение пользователя, к которому будут преобразованы" +
+                    "временные отметки записей. Иначе они будут по UTC+0. Если не указать нижнюю границу временного " +
+                    "периода выборки, то выберутся записи в течение недели до верхней границы. " +
+                    "Если не указать верхнюю границу, то верхней границей считается текущий момент времени.")
     @GetMapping
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_SHOW_ALL', 'GLUCOSE_SHOW_ATTACHED', " +
             "'GLUCOSE_SHOW_OWN', #userId, authentication)")
@@ -43,20 +59,27 @@ public class DiaryEntryCollectionController {
                                              @RequestParam(required = false) Instant to,
                                              @RequestParam(required = false) ZoneOffset outputZoneOffset) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
-        if (patientProfile == null) throw new ResourceNotFoundException("patient not found");
 
-        List<DiaryEntry> entries = diaryEntryService.getDiaryEntriesOfType(null, patientProfile, from, to);
+        List<DiaryEntry> entries = diaryEntryService.getAllDiaryEntries(patientProfile, from, to);
 
         return collectionMapper.mapToDTO(entries, patientProfile, outputZoneOffset);
     }
 
+    @Operation(summary = "Добавить весь список записей разных типов.",
+            description = "Возвращает список тех записей, которые не удалось добавить из-за некорректности их " +
+                    "значений. Если запись уже существует, то она будет обновлена.")
+    @ApiResponses(value =
+            {@ApiResponse(responseCode = "200", description = "В случае успеха. Даже если какие-то из записей" +
+                    "некорректны."),
+            @ApiResponse(responseCode = "400", description = "Если тело запроса (сам список) некорректное." +
+                    "В случае некорректности одной из записей она будет возвращена в ответе с кодом 200.",
+                    content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PostMapping
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_ADD_ALL', 'GLUCOSE_ADD_ATTACHED', " +
             "'GLUCOSE_ADD_OWN', #userId, authentication)")
     public List<DiaryEntryDTO> postAllEntries(@PathVariable int userId,
                    @RequestBody @Valid List<InCollectionDiaryEntryDTO> entries, BindingResult bindingResult) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
-        if (patientProfile == null) throw new ResourceNotFoundException("patient not found");
 
         //TODO
         if (bindingResult.hasErrors()) {}

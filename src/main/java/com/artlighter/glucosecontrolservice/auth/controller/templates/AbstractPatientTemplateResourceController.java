@@ -10,6 +10,7 @@ import com.artlighter.glucosecontrolservice.templates.dto.TemplateDeletionDTO;
 import com.artlighter.glucosecontrolservice.templates.entity.PatientTemplateEntity;
 import com.artlighter.glucosecontrolservice.templates.service.TemplateService;
 import com.artlighter.glucosecontrolservice.templates.util.mapper.TemplateMapper;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -77,7 +78,10 @@ public abstract class AbstractPatientTemplateResourceController
             "#userId, authentication)")
     @GetMapping("/defaults")
     public Page<EXT> getTemplates(@PathVariable int userId,
-                                  @PageableDefault(size = 10, page = 0, sort = "id.name") Pageable pageable) {
+                                  @PageableDefault(size = 10, page = 0, sort = "id.name")
+                                  @Parameter(description = "Данные о странице и сортировке. " +
+                                          "По-умолчанию сортируется по наименованию (возр.)")
+                                  Pageable pageable) {
         PatientProfile patientProfile = getPatientProfileOrThrowException(userId);
 
         Page<INT> templates = getTemplateService().getAllByPatientProfileId(patientProfile.getId(), pageable);
@@ -90,9 +94,13 @@ public abstract class AbstractPatientTemplateResourceController
             "#userId, authentication)")
     @GetMapping("/defaults/search")
     public Page<EXT> getTemplatesBySearchQuery(@PathVariable int userId,
-                                               @RequestParam String query,
+                                               @RequestParam @Parameter(required = true,
+                                                       description = "Поисковая фраза, содержащаяся в наименовании.")
+                                               String query,
                                                @PageableDefault(size = 10, page = 0, sort = "id.name")
-                                                   Pageable pageable) {
+                                               @Parameter(description = "Данные о странице и сортировке. " +
+                                                       "По-умолчанию сортируется по наименованию (возр.)")
+                                               Pageable pageable) {
         PatientProfile patientProfile = getPatientProfileOrThrowException(userId);
 
         Page<INT> templates = getTemplateService().searchByNameQuery(patientProfile.getId(), query, pageable);
@@ -131,23 +139,16 @@ public abstract class AbstractPatientTemplateResourceController
     }
 
     @ApiResponses(value =
-            {@ApiResponse(responseCode = "200", description = "Заготовка удалена, либо ее не существовало."),
-            @ApiResponse(responseCode = "400", description = "Если тело запроса некорректное.",
+            {@ApiResponse(responseCode = "200", description = "Заготовка удалена, либо ее и не существовало."),
+            @ApiResponse(responseCode = "400", description = "Если параметры запроса некорректны.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'TEMPLATE_DELETE_OWN', " +
             "#userId, authentication)")
     @DeleteMapping("/defaults")
-    public TemplateDeletionDTO deleteTemplate(@PathVariable int userId,
-                                              @RequestBody @Valid TemplateDeletionDTO deletionDTO,
-                                              BindingResult bindingResult) {
-        if (bindingResult.hasErrors())
-            throw new ValidationIsFailedException(bindingResult, "request body is invalid");
-
+    public void deleteTemplate(@PathVariable int userId, @RequestParam String name) {
         PatientProfile patientProfile = getPatientProfileOrThrowException(userId);
 
-        getTemplateService().deleteFromPatient(patientProfile.getId(), deletionDTO.name());
-
-        return deletionDTO;
+        getTemplateService().deleteFromPatient(patientProfile.getId(), name);
     }
 
     protected INT post(int userId, EXT template, BindingResult bindingResult) {
@@ -172,7 +173,6 @@ public abstract class AbstractPatientTemplateResourceController
 
     protected PatientProfile getPatientProfileOrThrowException(int userId) {
         PatientProfile patientProfile = getPatientProfileService().getByUserId(userId);
-        if (patientProfile == null) throw new ResourceNotFoundException("patient not found");
 
         return patientProfile;
     }

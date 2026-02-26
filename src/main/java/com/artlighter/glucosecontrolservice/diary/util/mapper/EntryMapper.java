@@ -1,7 +1,6 @@
 package com.artlighter.glucosecontrolservice.diary.util.mapper;
 
 import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDTO;
-import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDeleteDTO;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.general.DTOMapper;
@@ -16,14 +15,6 @@ import java.util.List;
  * @param <EXT> внешний DTO-объект записи дневника определенного типа, реализация интерфейса DiaryEntryDTO;
  */
 public interface EntryMapper<INT extends DiaryEntry, EXT extends DiaryEntryDTO> extends DTOMapper<INT, EXT> {
-    /**
-     * Функция конвертирует объект с данными о запросе на удаление записи дневника во внутренний объект для
-     * записи дневника, где заполнены только данные, необходимые для удаления по идентификатору.
-     * @param entryDeletionDTO объект с данными запроса на удаление записи; никогда не null;
-     * @return DiaryEntry с частично заполненными полями, необходимыми для удаления этой записи;
-     */
-    INT mapToInternal(DiaryEntryDeleteDTO entryDeletionDTO);
-
     /**
      * Функция конвертирует внешний DTO-объект записи дневника определенного типа во внутренний объект записи дневника
      * определенного типа, при этом совершая необходимые преобразования единиц измерения

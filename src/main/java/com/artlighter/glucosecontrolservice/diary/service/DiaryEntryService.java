@@ -100,14 +100,12 @@ public class DiaryEntryService {
     /**
      * Удаляет существующую запись дневника для больного. Ничего не возвращает. Если записи и так нет, то действие
      * игнорируется.
-     * @param diaryEntry запись дневника;
+     * @param entryType тип записи для удаления;
      * @param patientProfile профиль больного, для которого удаляется запись;
      * @param commitedAt временная отметка совершения удаляемой записи;
      */
-    public void deleteDiaryEntry(DiaryEntry diaryEntry, PatientProfile patientProfile, Instant commitedAt) {
-        fill(diaryEntry, patientProfile, commitedAt);
-
-        commonDiaryEntryDAO.remove(diaryEntry);
+    public void deleteDiaryEntry(DiaryEntryType entryType, PatientProfile patientProfile, Instant commitedAt) {
+        commonDiaryEntryDAO.deleteById(entryType, new DiaryEntry.DiaryEntryID(patientProfile, commitedAt));
     }
 
     /**

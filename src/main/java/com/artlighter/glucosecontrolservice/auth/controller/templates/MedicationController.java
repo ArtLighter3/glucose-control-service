@@ -10,6 +10,7 @@ import com.artlighter.glucosecontrolservice.templates.entity.Medication;
 import com.artlighter.glucosecontrolservice.templates.service.impl.MedicationService;
 import com.artlighter.glucosecontrolservice.templates.util.mapper.MedicationMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.data.domain.Page;
@@ -73,18 +74,17 @@ public class MedicationController extends AbstractPatientTemplateResourceControl
     @Override
     @Operation(summary = "Удалить существующий препарат для пользователя.")
     @DeleteMapping("/medications")
-    public TemplateDeletionDTO deleteTemplate(int userId, TemplateDeletionDTO deletionDTO,
-                                 BindingResult bindingResult) {
-        return super.deleteTemplate(userId, deletionDTO, bindingResult);
+    public void deleteTemplate(int userId,
+                               @Parameter(required = true, description = "Наименование препарата") String name) {
+        super.deleteTemplate(userId, name);
     }
 
-    @Operation(summary = "Рассчитать общее количество миллиграм дозировки препаратов " +
+    @Operation(summary = "Рассчитать общее количество миллиграмм дозировки препаратов " +
             "на основе названий переданных препаратов и их порций.")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "В случае успеха.")})
     @PostMapping("/medications/calculate")
     public MedicationResult calculateMilligrams(@PathVariable int userId, @RequestBody Map<String, Integer> portions) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
-        if (patientProfile == null) throw new ResourceNotFoundException("patient not found");
 
         float overallDose = getTemplateService().calculateOverallMilligrams(patientProfile.getId(), portions);
         return new MedicationResult(overallDose);

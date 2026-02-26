@@ -2,6 +2,7 @@ package com.artlighter.glucosecontrolservice.diary.entity.entry;
 
 import jakarta.persistence.*;
 
+//TODO ух ты, а с чего у нас в расчетах общей дозировки можно выбрать неск. препаратов, а тут ввести имя только одного?
 @Entity
 @Table(name = "medication_entry")
 public class MedicationEntry extends DiaryEntry {

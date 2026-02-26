@@ -1,27 +1,24 @@
 package com.artlighter.glucosecontrolservice.nightscout.controller;
 
-import com.artlighter.glucosecontrolservice.diary.service.DiaryEntryService;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.nightscout.dto.NightscoutEntryDTO;
 import com.artlighter.glucosecontrolservice.nightscout.dto.NightscoutTreatmentDTO;
 import com.artlighter.glucosecontrolservice.nightscout.service.NightscoutService;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Valid;
 import jakarta.validation.Validator;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+@Tag(name = "nightscout", description = "API для загрузчиков Nightscout")
 @RestController
 @RequestMapping("/nightscout/{username}/api/v1")
-
 public class NightscoutAPIController {
     private PatientProfileService patientProfileService;
     private NightscoutService nightscoutService;
@@ -43,7 +40,7 @@ public class NightscoutAPIController {
     public List<NightscoutEntryDTO> postEntry(@PathVariable String username,
                                               @RequestHeader("api-secret") String apiSecret,
                                               @RequestBody List<NightscoutEntryDTO> entries) {
-        PatientProfile patientProfile = getPatientProfileOrThrowException(username);
+        PatientProfile patientProfile = patientProfileService.getByUsername(username);
 
         List<NightscoutEntryDTO> rejected = new ArrayList<>();
         List<NightscoutEntryDTO> toAdd = getValidated(entries, rejected);
@@ -59,7 +56,7 @@ public class NightscoutAPIController {
                                                       @RequestBody List<NightscoutTreatmentDTO> treatments) {
         //TODO профиль уже подгружается при проверке авторизации в @PreAuthorize. Может сделать проверку здесь
         //чтобы два раза не загружать одно и то же?
-        PatientProfile patientProfile = getPatientProfileOrThrowException(username);
+        PatientProfile patientProfile = patientProfileService.getByUsername(username);
 
         List<NightscoutTreatmentDTO> rejected = new ArrayList<>();
         List<NightscoutTreatmentDTO> toAdd = getValidated(treatments, rejected);
@@ -86,12 +83,5 @@ public class NightscoutAPIController {
         }
 
         return toAdd;
-    }
-
-    private PatientProfile getPatientProfileOrThrowException(String username) {
-        PatientProfile patientProfile = patientProfileService.getByUsername(username);
-        if (patientProfile == null) throw new ResourceNotFoundException("patient not found");
-
-        return patientProfile;
     }
 }

@@ -1,7 +1,6 @@
 package com.artlighter.glucosecontrolservice.auth.controller.diary;
 
 import com.artlighter.glucosecontrolservice.diary.service.DiaryEntryService;
-import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDeleteDTO;
 import com.artlighter.glucosecontrolservice.diary.dto.MedicationEntryDTO;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.MedicationEntry;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
@@ -42,7 +41,7 @@ public class MedicationEntryController extends AbstractDiaryEntryController<Medi
     }
 
     @Override
-    @Operation(summary = "Обновить существующую запись с принятием лекарстваа.")
+    @Operation(summary = "Обновить существующую запись с принятием лекарства.")
     @PutMapping("/medication")
     public MedicationEntryDTO putDiaryEntry(int userId, MedicationEntryDTO entryDTO, BindingResult bindingResult) {
         return super.putDiaryEntry(userId, entryDTO, bindingResult);
@@ -51,8 +50,8 @@ public class MedicationEntryController extends AbstractDiaryEntryController<Medi
     @Override
     @Operation(summary = "Удалить существующую запись с принятием лекарства.")
     @DeleteMapping("/medication")
-    public DiaryEntryDeleteDTO deleteDiaryEntry(int userId, DiaryEntryDeleteDTO entryDTO, BindingResult bindingResult) {
-        return super.deleteDiaryEntry(userId, entryDTO, bindingResult);
+    public void deleteDiaryEntry(int userId, Instant commitedAt) {
+        super.deleteDiaryEntry(userId, commitedAt);
     }
 
     @Override

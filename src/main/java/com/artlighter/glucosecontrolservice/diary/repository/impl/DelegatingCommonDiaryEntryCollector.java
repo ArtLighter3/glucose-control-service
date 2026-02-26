@@ -38,7 +38,7 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
     public List<DiaryEntry> getAllOfTypeBetweenDates(DiaryEntryType entryType,
                                                                PatientProfile patientProfile, Instant from, Instant to,
                                                                Sort sort) {
-        if (patientProfile == null) throw new IllegalArgumentException("PatientProfile cannot be null");
+        if (patientProfile == null) throw new IllegalArgumentException("patientProfile cannot be null");
 
         if (entryType == null) return collectAllBetweenDates(patientProfile, from, to, sort);
 
@@ -63,11 +63,13 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
      * внутри идентифицирующих его полей patientProfile и/или commitedAt
      */
     @Override
-    public void remove(DiaryEntry entry) {
-        checkArguments(entry);
+    public void deleteById(DiaryEntryType entryType, DiaryEntry.DiaryEntryID id) {
+        if (entryType == null) throw new IllegalArgumentException("entryType cannot be null");
+        if (id == null || id.getCommitedAt() == null || id.getPatientProfile() == null)
+            throw new IllegalArgumentException("id cannot be null and must contain id data");
 
-        ParticularDiaryEntryRepository repository = repositories.getRepositoryForEntity(entry);
-        repository.deleteById(new DiaryEntry.DiaryEntryID(entry.getPatientProfile(), entry.getCommitedAt()));
+        ParticularDiaryEntryRepository repository = repositories.getRepositoryForType(entryType);
+        repository.deleteById(id);
     }
 
     /**
@@ -98,7 +100,7 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
     }
 
     private void checkArguments(DiaryEntry entry) {
-        if (entry == null) throw new IllegalArgumentException("DiaryEntry must not be null");
+        if (entry == null) throw new IllegalArgumentException("DiaryEntry cannot be null");
         if (entry.getPatientProfile() == null || entry.getCommitedAt() == null)
             throw new IllegalArgumentException("DiaryEntry must have an identification " +
                     "fields patientProfile and commitedAt");

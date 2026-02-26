@@ -1,7 +1,6 @@
 package com.artlighter.glucosecontrolservice.auth.controller.diary;
 
 import com.artlighter.glucosecontrolservice.diary.service.DiaryEntryService;
-import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDeleteDTO;
 import com.artlighter.glucosecontrolservice.diary.dto.GlucoseEntryDTO;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.GlucoseEntry;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
@@ -53,8 +52,8 @@ public class GlucoseEntryController extends AbstractDiaryEntryController<Glucose
     @Override
     @Operation(summary = "Удалить существующую запись с измерением глюкозы.")
     @DeleteMapping("/glucose")
-    public DiaryEntryDeleteDTO deleteDiaryEntry(int userId, DiaryEntryDeleteDTO entryDTO, BindingResult bindingResult) {
-        return super.deleteDiaryEntry(userId, entryDTO, bindingResult);
+    public void deleteDiaryEntry(int userId, Instant commitedAt) {
+        super.deleteDiaryEntry(userId, commitedAt);
     }
 
     @Override

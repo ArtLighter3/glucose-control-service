@@ -1,7 +1,6 @@
 package com.artlighter.glucosecontrolservice.auth.controller.diary;
 
 import com.artlighter.glucosecontrolservice.diary.service.DiaryEntryService;
-import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDeleteDTO;
 import com.artlighter.glucosecontrolservice.diary.dto.CarbsEntryDTO;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.CarbsEntry;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
@@ -53,8 +52,8 @@ public class CarbsEntryController extends AbstractDiaryEntryController<CarbsEntr
     @Override
     @Operation(summary = "Удалить существующую запись с принятыми углеводами.")
     @DeleteMapping("/carbs")
-    public DiaryEntryDeleteDTO deleteDiaryEntry(int userId, DiaryEntryDeleteDTO entryDTO, BindingResult bindingResult) {
-        return super.deleteDiaryEntry(userId, entryDTO, bindingResult);
+    public void deleteDiaryEntry(int userId, Instant commitedAt) {
+        super.deleteDiaryEntry(userId, commitedAt);
     }
 
     @Override

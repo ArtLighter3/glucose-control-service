@@ -5,12 +5,12 @@ import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundEx
 import com.artlighter.glucosecontrolservice.auth.util.exception.ValidationIsFailedException;
 import com.artlighter.glucosecontrolservice.diary.service.DiaryEntryService;
 import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDTO;
-import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDeleteDTO;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import com.artlighter.glucosecontrolservice.diary.util.mapper.EntryMapper;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -80,9 +80,19 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_SHOW_ALL', 'GLUCOSE_SHOW_ATTACHED', " +
             "'GLUCOSE_SHOW_OWN', #userId, authentication)")
     public List<EXT> getDiaryEntries(@PathVariable int userId,
-                                     @RequestParam(required = false) Instant from,
-                                     @RequestParam(required = false) Instant to,
-                                     @RequestParam(required = false) ZoneOffset outputZoneOffset) {
+                                     @RequestParam(required = false)
+                                     @Parameter(description = "Нижняя граница временного периода выборки записей." +
+                                             "Если не указана, то нижняя граница выбирается как точка за неделю до" +
+                                             "верхней.")
+                                     Instant from,
+                                     @RequestParam(required = false)
+                                     @Parameter(description = "Верхняя граница временного периода выборки записей." +
+                                             "Если не указана, то определяется текущим моментом времени.")
+                                     Instant to,
+                                     @RequestParam(required = false) @Parameter(description = "UTC-смещение, к" +
+                                             " которому будут преобразованы временные отметки записей на выходе." +
+                                             "Если не указано, то результаты показываются по UTC+0.")
+                                     ZoneOffset outputZoneOffset) {
         return getEntries(getEntryType(), userId, from, to, outputZoneOffset);
     }
 
@@ -91,7 +101,7 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
             @ApiResponse(responseCode = "400", description = "Если тело запроса некорректное.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
             @ApiResponse(responseCode = "409", description = "Если запись этого типа с этой временной отметкой" +
-                    "для этого пользователя уже существует.",
+                    " для этого пользователя уже существует.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PostMapping("/default")
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_ADD_ALL', 'GLUCOSE_ADD_ATTACHED', " +
@@ -117,21 +127,21 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
     }
 
     @ApiResponses(value =
-            {@ApiResponse(responseCode = "200", description = "Запись удалена, либо ее не существовало."),
-            @ApiResponse(responseCode = "400", description = "Если тело запроса некорректное.",
+            {@ApiResponse(responseCode = "200", description = "Запись удалена, либо ее и не существовало."),
+            @ApiResponse(responseCode = "400", description = "Если параметры запроса некорректны.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @DeleteMapping("/default")
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_DELETE_ALL', " +
             "'GLUCOSE_DELETE_ATTACHED','GLUCOSE_DELETE_OWN', #userId, authentication)")
-    public DiaryEntryDeleteDTO deleteDiaryEntry(@PathVariable int userId,
-                                                  @RequestBody @Valid DiaryEntryDeleteDTO entryDTO,
-                                                  BindingResult bindingResult) {
-        return deleteEntry(userId, entryDTO, bindingResult);
+    public void deleteDiaryEntry(@PathVariable int userId,
+                                 @RequestParam @Parameter(required = true,
+                                         description = "Временная отметка записи этого типа, которую надо удалить.")
+                                 Instant commitedAt) {
+        deleteEntry(userId, commitedAt);
     }
 
     private EXT addEntry(int userId, EXT entryDTO, BindingResult bindingResult) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
-        if (patientProfile == null) throw new ResourceNotFoundException("patient not found");
 
         checkValidationErrorsAndThrowException(bindingResult);
 
@@ -144,7 +154,6 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
 
     private EXT updateEntry(int userId, EXT entryDTO, BindingResult bindingResult) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
-        if (patientProfile == null) throw new ResourceNotFoundException("patient not found");
 
         checkValidationErrorsAndThrowException(bindingResult);
 
@@ -154,17 +163,10 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
         return entryDTO;
     }
 
-    private DiaryEntryDeleteDTO deleteEntry(int userId, DiaryEntryDeleteDTO entryDeleteDTO,
-                                              BindingResult bindingResult) {
+    private void deleteEntry(int userId, Instant commitedAt) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
-        if (patientProfile == null) throw new ResourceNotFoundException("patient not found");
 
-        checkValidationErrorsAndThrowException(bindingResult);
-
-        DiaryEntry entryToDelete = entryMapper.mapToInternal(entryDeleteDTO);
-        diaryEntryService.deleteDiaryEntry(entryToDelete, patientProfile, entryToDelete.getCommitedAt());
-
-        return entryDeleteDTO;
+        diaryEntryService.deleteDiaryEntry(getEntryType(), patientProfile, commitedAt);
     }
 
 //    protected void checkUserId(int userId, ServiceUserDetails userDetails) {
@@ -175,7 +177,6 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
     private List<EXT> getEntries(DiaryEntryType entryType, int userId,
                                  Instant from, Instant to, ZoneOffset outputZoneOffset) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
-        if (patientProfile == null) throw new ResourceNotFoundException("patient not found");
 
         List<DiaryEntry> entries = diaryEntryService.getDiaryEntriesOfType(entryType, patientProfile, from, to);
 

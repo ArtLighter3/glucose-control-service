@@ -46,8 +46,7 @@ public class AuthController {
     @ApiResponses(value = @ApiResponse(responseCode = "409", description = "Если пользователь с таким" +
             "именем уже существует.", content = @Content(schema = @Schema(implementation = ExceptionDTO.class))))
     @PostMapping(value = "/register")
-    public void register(@RequestBody @Valid UserRegistrationDTO userRegistrationDTO,
-                                   BindingResult bindingResult) {
+    public void register(@RequestBody @Valid UserRegistrationDTO userRegistrationDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new ValidationIsFailedException(bindingResult, "request body is invalid");
         }

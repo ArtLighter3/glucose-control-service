@@ -8,6 +8,7 @@ import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.user.service.DoctorProfileService;
 import com.artlighter.glucosecontrolservice.user.util.mapper.AttachedPatientMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -47,7 +48,11 @@ public class DoctorController {
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('ATTACHED_PATIENT_SHOW_ALL', " +
             "null, 'ATTACHED_PATIENT_SHOW_OWN', #userId, authentication)")
     public Page<AttachedPatientDTO> getAttachedPatients(@PathVariable int userId,
-                                                        @PageableDefault(sort = "user.username") Pageable pageable) {
+                                                        @PageableDefault(sort = "user.username")
+                                                        @Parameter(description = "Данные о странице и сортировке." +
+                                                                "По-умолчанию сортируется " +
+                                                                "по имени пользователя (возр.)")
+                                                        Pageable pageable) {
         Page<PatientProfile> attachedPatients = doctorProfileService.getAttachedPatients(userId, pageable);
 
         return attachedPatients.map(attachedPatientMapper::mapToDTO);
@@ -60,8 +65,14 @@ public class DoctorController {
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('ATTACHED_PATIENT_SHOW_ALL', " +
             "null, 'ATTACHED_PATIENT_SHOW_OWN', #userId, authentication)")
     public Page<AttachedPatientDTO> getAttachedPatientsBySearchQuery(@PathVariable int userId,
-                                                        @RequestParam("query") String query,
-                                                        @PageableDefault(sort = "user.username") Pageable pageable) {
+                                                        @RequestParam("query") @Parameter(required = true,
+                                                                description = "Поисковая фраза, содержащаяся в ФИО.")
+                                                        String query,
+                                                        @PageableDefault(sort = "user.username")
+                                                        @Parameter(description = "Данные о странице и сортировке. " +
+                                                                "По-умолчанию сортируется " +
+                                                                "по имени пользователя (возр.)")
+                                                        Pageable pageable) {
         Page<PatientProfile> attachedPatients = doctorProfileService.searchAttachedPatients(userId, query, pageable);
 
         return attachedPatients.map(attachedPatientMapper::mapToDTO);
@@ -92,20 +103,16 @@ public class DoctorController {
     @Operation(summary = "Открепить больного от врача.", description = "Для открепления больного необходимо " +
             "право ATTACHED_PATIENT_ATTACH_DETACH.")
     @ApiResponses(value =
-            {@ApiResponse(responseCode = "400", description = "Если тело запроса неверное.",
+            {@ApiResponse(responseCode = "400", description = "Если параметры запроса некорректны.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
             @ApiResponse(responseCode = "404", description = "Если врач или пациент не найдены, " +
                             "либо если больной уже откреплен от врача.",
                             content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @DeleteMapping("/attached-patients")
     @PreAuthorize("hasAuthority('ATTACHED_PATIENT_ATTACH_DETACH')")
-    public PatientAttachDetachDTO detachPatient(@PathVariable int userId,
-                                                @RequestBody @Valid PatientAttachDetachDTO attachDetachDTO,
-                                                BindingResult bindingResult) {
-        if (bindingResult.hasErrors())
-            throw new ValidationIsFailedException(bindingResult, "request body is invalid");
-
-        doctorProfileService.detachPatientFromDoctor(userId, attachDetachDTO.patientId());
-        return attachDetachDTO;
+    public void detachPatient(@PathVariable int userId,
+                              @RequestParam @Parameter(required = true, description = "ID пользователя больного")
+                              Integer patientId) {
+        doctorProfileService.detachPatientFromDoctor(userId, patientId);
     }
 }

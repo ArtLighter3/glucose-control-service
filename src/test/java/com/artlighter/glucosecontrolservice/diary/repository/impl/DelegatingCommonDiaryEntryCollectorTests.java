@@ -166,40 +166,31 @@ public class DelegatingCommonDiaryEntryCollectorTests {
     }
 
     @Test
-    public void remove_GetsCorrectEntity_CallsCorrectRepositoryToRemove() {
-        GlucoseEntry glucoseEntry = new GlucoseEntry();
-        glucoseEntry.setPatientProfile(new PatientProfile());
-        glucoseEntry.setCommitedAt(Instant.now());
+    public void deleteById_GetsCorrectEntity_CallsCorrectRepositoryToRemove() {
+        DiaryEntry.DiaryEntryID glucoseEntryId = new DiaryEntry.DiaryEntryID(new PatientProfile(), Instant.now());
+        DiaryEntry.DiaryEntryID insulinEntryId = new DiaryEntry.DiaryEntryID(new PatientProfile(), Instant.now());
 
-        collector.remove(glucoseEntry);
+        collector.deleteById(DiaryEntryType.GLUCOSE_ENTRY, glucoseEntryId);
+        collector.deleteById(DiaryEntryType.INSULIN_ENTRY, insulinEntryId);
 
-        InsulinEntry insulinEntry = new InsulinEntry();
-        insulinEntry.setPatientProfile(new PatientProfile());
-        insulinEntry.setCommitedAt(Instant.now());
-       // when(insulinRepository.save(insulinEntry)).thenReturn(insulinEntry);
-
-        collector.remove(insulinEntry);
-
-        verify(glucoseRepository).deleteById(
-                new DiaryEntry.DiaryEntryID(glucoseEntry.getPatientProfile(), glucoseEntry.getCommitedAt()));
-        verify(insulinRepository).deleteById(
-                new DiaryEntry.DiaryEntryID(insulinEntry.getPatientProfile(), insulinEntry.getCommitedAt()));
+        verify(glucoseRepository).deleteById(glucoseEntryId);
+        verify(insulinRepository).deleteById(insulinEntryId);
     }
 
     @Test
-    public void remove_DiaryEntryIsNullOrDoesNotHaveIdFields_ThrowsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> collector.remove(null));
+    public void deleteById_DiaryEntryTypeIsNullOrIdDoesNotHaveIdFields_ThrowsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> collector.deleteById(null, null));
+        assertThrows(IllegalArgumentException.class, () -> collector.deleteById(DiaryEntryType.INSULIN_ENTRY, null));
+        assertThrows(IllegalArgumentException.class, () ->
+                collector.deleteById(null, new DiaryEntry.DiaryEntryID(new PatientProfile(),
+                        Instant.now())));
 
-        GlucoseEntry entry = new GlucoseEntry();
-        entry.setValue(2.5);
-        entry.setMeasurementType(MeasurementType.AFTER_MEAL);
-        entry.setNotes("notes");
-        entry.setCommitedAt(Instant.now());
-        assertThrows(IllegalArgumentException.class, () -> collector.remove(entry));
-
-        entry.setCommitedAt(null);
-        entry.setPatientProfile(new PatientProfile());
-        assertThrows(IllegalArgumentException.class, () -> collector.remove(entry));
+        assertThrows(IllegalArgumentException.class, () -> collector.deleteById(DiaryEntryType.GLUCOSE_ENTRY,
+                new DiaryEntry.DiaryEntryID(new PatientProfile(), null)));
+        assertThrows(IllegalArgumentException.class, () -> collector.deleteById(DiaryEntryType.GLUCOSE_ENTRY,
+                new DiaryEntry.DiaryEntryID(null, Instant.now())));
+        assertThrows(IllegalArgumentException.class, () -> collector.deleteById(DiaryEntryType.GLUCOSE_ENTRY,
+                new DiaryEntry.DiaryEntryID(null, null)));
     }
 
     @Test

@@ -1,7 +1,7 @@
 package com.artlighter.glucosecontrolservice.calculations.service;
 
 import com.artlighter.glucosecontrolservice.calculations.entity.InsulinProfile;
-import com.artlighter.glucosecontrolservice.calculations.entity.InsulinResult;
+import com.artlighter.glucosecontrolservice.calculations.dto.InsulinResult;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.InsulinCalculator;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.InsulinDecayCurveStrategy;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.VolatileValueExtractor;

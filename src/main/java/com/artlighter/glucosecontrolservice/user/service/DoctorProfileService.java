@@ -64,7 +64,7 @@ public class DoctorProfileService {
      */
     public DoctorProfile attachPatientToDoctor(int doctorId, int patientId) {
         DoctorProfile doctorProfile = getDoctorProfileOrThrowException(doctorId);
-        PatientProfile patientProfile = getPatientProfileOrThrowException(patientId);
+        PatientProfile patientProfile = patientProfileService.getByUserId(patientId);
 
         Set<PatientProfile> attachedPatients = doctorProfile.getAttachedPatients();
         boolean attached = attachedPatients.add(patientProfile);
@@ -84,12 +84,11 @@ public class DoctorProfileService {
      */
     public DoctorProfile detachPatientFromDoctor(int doctorId, int patientId) {
         DoctorProfile doctorProfile = getDoctorProfileOrThrowException(doctorId);
-        PatientProfile patientProfile = getPatientProfileOrThrowException(patientId);
+        PatientProfile patientProfile = patientProfileService.getByUserId(patientId);
 
         Set<PatientProfile> attachedPatients = doctorProfile.getAttachedPatients();
         boolean detached = attachedPatients.remove(patientProfile);
-        if (!detached)
-            throw new ResourceNotFoundException("patient is not attached to this doctor");
+        if (!detached) throw new ResourceNotFoundException("patient is not attached to this doctor");
 
         return doctorProfileRepository.save(doctorProfile);
     }
@@ -120,12 +119,6 @@ public class DoctorProfileService {
         DoctorProfile doctorProfile = getDoctorProfileOrThrowException(doctorId);
 
         return patientProfileService.getPatientsAttachedToDoctor(doctorProfile.getId(), searchQuery, pageable);
-    }
-
-    private PatientProfile getPatientProfileOrThrowException(int patientId) {
-        PatientProfile patientProfile = patientProfileService.getByUserId(patientId);
-        if (patientProfile == null) throw new ResourceNotFoundException("patient not found");
-        return patientProfile;
     }
 
     private DoctorProfile getDoctorProfileOrThrowException(int doctorId) {

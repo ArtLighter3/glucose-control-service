@@ -26,11 +26,17 @@ public class InsulinProfileService {
     /**
      * Находит инсулиновый профиль по ID профиля больного (не по ID самого больного!).
      * @param patientProfileId - ID профиля больного
-     * @return InsulinProfile; null, если не найден;
+     * @return инсулиновый профиль InsulinProfile; никогда не null;
+     * @throws ResourceNotFoundException если инсулиновый профиль не был найден;
      */
     @Transactional(readOnly = true)
     public InsulinProfile getByPatientProfileId(int patientProfileId) {
-        return insulinProfileRepository.findByProfileId(patientProfileId);
+        InsulinProfile insulinProfile = insulinProfileRepository.findByProfileId(patientProfileId);
+        if (insulinProfile == null)
+            throw new ResourceNotFoundException("insulin profile for patient profile with ID '"
+                    + patientProfileId + "' not found");
+
+        return insulinProfile;
     }
 
 //    @Transactional(readOnly = true)

@@ -44,8 +44,6 @@ public class PatientProfileController {
             "'ROLE_PATIENT', #userId, authentication)")
     public PatientProfileDTO getPatientProfile(@PathVariable int userId) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
-        if (patientProfile == null)
-            throw new ResourceNotFoundException("patient profile for user " + userId + " not found");
 
         return patientProfileMapper.mapToDTO(patientProfile);
     }

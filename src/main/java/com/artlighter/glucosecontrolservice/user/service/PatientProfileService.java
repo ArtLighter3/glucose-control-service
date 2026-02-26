@@ -28,24 +28,33 @@ public class PatientProfileService {
 
     /**
      * Находит профиль больного по ID этого больного.
-     * @param patientId ID больного.
-     * @return PatientProfile, соответствующий ID больного; null, если не существует;
+     * @param patientId ID пользователя больного;
+     * @return PatientProfile, соответствующий ID больного; никогда не null;
+     * @throws ResourceNotFoundException если не было найдено профиля больного для этого patientId;
      */
     @Transactional(readOnly = true)
     public PatientProfile getByUserId(int patientId) {
-        //TODO может, добавить выброс исключения о ненахождении в этих методах get?
         //TODO а что если по каким-то причинам у больного не создался его профиль?
-        return patientProfileRepository.findByUserId(patientId);
+        PatientProfile patientProfile = patientProfileRepository.findByUserId(patientId);
+        if (patientProfile == null)
+            throw new ResourceNotFoundException("patient profile for user with ID '" + patientId + "' not found");
+
+        return patientProfile;
     }
 
     /**
      * Находит профиль больного по имени пользователя этого больного.
      * @param username имя пользователя больного.
-     * @return PatientProfile, соответствующий имени пользователя; null, если не существует;
+     * @return PatientProfile, соответствующий имени пользователя; никогда не null;
+     * @throws ResourceNotFoundException если не было найдено профиля больного для этого username;
      */
     @Transactional(readOnly = true)
     public PatientProfile getByUsername(String username) {
-        return patientProfileRepository.findByUserUsername(username);
+        PatientProfile patientProfile = patientProfileRepository.findByUserUsername(username);
+        if (patientProfile == null)
+            throw new ResourceNotFoundException("patient profile for user with username '" + username + "' not found");
+
+        return patientProfile;
     }
 
     /**

@@ -5,7 +5,7 @@ import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundEx
 import com.artlighter.glucosecontrolservice.auth.util.exception.ValidationIsFailedException;
 import com.artlighter.glucosecontrolservice.calculations.dto.InsulinCalculationRequestDTO;
 import com.artlighter.glucosecontrolservice.calculations.entity.InsulinProfile;
-import com.artlighter.glucosecontrolservice.calculations.entity.InsulinResult;
+import com.artlighter.glucosecontrolservice.calculations.dto.InsulinResult;
 import com.artlighter.glucosecontrolservice.calculations.service.InsulinProfileService;
 import com.artlighter.glucosecontrolservice.calculations.service.InsulinCalculationService;
 import com.artlighter.glucosecontrolservice.diary.service.DiaryEntryService;
@@ -62,15 +62,13 @@ public class InsulinCalculationController {
     @GetMapping("/calculate")
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'INSULIN_CALCULATE_OWN'," +
             "#userId, authentication)")
-    public InsulinResult calculate(@Valid InsulinCalculationRequestDTO calculationRequest, BindingResult bindingResult,
-                                   @PathVariable int userId) {
+    public InsulinResult calculate(@PathVariable int userId,
+                                   @Valid InsulinCalculationRequestDTO calculationRequest,
+                                   BindingResult bindingResult) {
         if (bindingResult.hasErrors()) throw new ValidationIsFailedException(bindingResult, "request body is invalid");
 
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
-        if (patientProfile == null) throw new ResourceNotFoundException("patient not found");
-
         InsulinProfile insulinProfile = insulinProfileService.getByPatientProfileId(patientProfile.getId());
-        if (insulinProfile == null) throw new ResourceNotFoundException("insulin profile not found");
 
         Instant now = Instant.now();
         List<DiaryEntry> insulinEntries = diaryEntryService.getDiaryEntriesOfType(DiaryEntryType.INSULIN_ENTRY,

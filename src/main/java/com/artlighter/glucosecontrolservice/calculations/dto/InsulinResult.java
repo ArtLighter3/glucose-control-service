@@ -1,20 +1,31 @@
-package com.artlighter.glucosecontrolservice.calculations.entity;
+package com.artlighter.glucosecontrolservice.calculations.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Objects;
 
+@Schema(description = "Результат расчета инсулина")
 public class InsulinResult {
+    @Schema(description = "Текущий уровень глюкозы, использовавшийся в расчетах (в ммоль/л)")
     private Float glucose;
+    @Schema(description = "Соотношение единицы инсулина к углеводам (ICR), использовавшееся в расчетах")
     private Float insulinSensitivityFactor;
+    @Schema(description = "Инсулин, направленный на корректировку значения глюкозы glucose " +
+            "до целевых значений (в единицах) и используемый в общей дозировке")
     private Float correctionInsulin;
-
+    @Schema(description = "Активный инсулин, рассчитанный на основе недавних записей ввода инсулина и используемый в" +
+            " общей дозировке")
     private Float activeInsulin;
-
+    @Schema(description = "Количество принимаемых углеводов, использовавшееся в расчетах (в граммах)")
     private Float carbs;
+    @Schema(description = "Фактор чувствительности к инсулину (ISF), использовавшийся в расчетах")
     private Float insulinToCarbsRatio;
+    @Schema(description = "Инсулин, направленный на компенсацию принимаемых углеводов carbs (в единицах) и" +
+            " используемый в общей дозировке")
     private Float carbsInsulin;
-
+    @Schema(description = "Значение корректировки, использовавшееся в расчетах")
     private Float correction;
-
+    @Schema(description = "Итоговая дозировка инсулина (в единицах)")
     private Float result;
 
     public InsulinResult(Float glucose, Float insulinSensitivityFactor, Float correctionInsulin,

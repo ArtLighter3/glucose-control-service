@@ -1,17 +1,22 @@
 package com.artlighter.glucosecontrolservice.auth.dto;
 
 import com.artlighter.glucosecontrolservice.auth.util.validation.PasswordsMatch;
-import com.artlighter.glucosecontrolservice.auth.util.validation.UserDoesNotExist;
-import jakarta.validation.constraints.NotEmpty;
+import com.artlighter.glucosecontrolservice.general.TypeGroup;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.GroupSequence;
+import jakarta.validation.constraints.NotBlank;
 
-@UserDoesNotExist
-@PasswordsMatch
+@Schema(name = "UserRegistration", description = "Форма регистрации нового пользователя.")
+@GroupSequence({UserRegistrationDTO.class, TypeGroup.class})
+@PasswordsMatch(groups = TypeGroup.class)
 public record UserRegistrationDTO(
-        @NotEmpty(message = "username shouldn't be empty")
+        @Schema(description = "Имя пользователя")
+        @NotBlank
         String username,
-        @NotEmpty(message = "password shouldn't be empty")
+        @Schema(description = "Пароль пользователя")
+        @NotBlank
         String password,
-        @NotEmpty(message = "password shouldn't be empty")
-        String repeatedPassword,
-        Integer age) {
+        @Schema(description = "Повторенный пароль. Должен совпадать с полем password")
+        @NotBlank
+        String repeatedPassword) {
 }

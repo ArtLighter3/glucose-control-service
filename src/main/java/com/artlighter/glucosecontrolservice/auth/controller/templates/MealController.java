@@ -10,6 +10,7 @@ import com.artlighter.glucosecontrolservice.templates.entity.Meal;
 import com.artlighter.glucosecontrolservice.templates.service.impl.MealService;
 import com.artlighter.glucosecontrolservice.templates.util.mapper.MealMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.data.domain.Page;
@@ -93,9 +94,9 @@ public class MealController extends AbstractPatientTemplateResourceController<Me
     @Override
     @Operation(summary = "Удалить существующее блюдо для пользователя.")
     @DeleteMapping("/meals")
-    public TemplateDeletionDTO deleteTemplate(int userId, TemplateDeletionDTO deletionDTO,
-                                              BindingResult bindingResult) {
-        return super.deleteTemplate(userId, deletionDTO, bindingResult);
+    public void deleteTemplate(int userId,
+                               @Parameter(required = true, description = "Наименование блюда") String name) {
+        super.deleteTemplate(userId, name);
     }
 
     @Operation(summary = "Рассчитать общее количество углеводов на основе названий переданных блюд и их веса.")
@@ -103,7 +104,6 @@ public class MealController extends AbstractPatientTemplateResourceController<Me
     @PostMapping("/meals/calculate")
     public CarbsResult calculateCarbs(@PathVariable int userId, @RequestBody Map<String, Float> mealWeights) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
-        if (patientProfile == null) throw new ResourceNotFoundException("patient not found");
 
         float overallCarbs = getTemplateService().calculateOverallCarbs(patientProfile.getId(), mealWeights);
         return new CarbsResult(patientProfile.getCarbsUnit().convertFromGrams(overallCarbs),

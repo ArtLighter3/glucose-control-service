@@ -51,12 +51,7 @@ public class InsulinProfileController {
             "'INSULIN_PROFILE_SHOW_ATTACHED', 'INSULIN_PROFILE_SHOW_OWN', #userId, authentication)")
     public InsulinProfileDTO getInsulinProfile(@PathVariable int userId) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
-        if (patientProfile == null)
-            throw new ResourceNotFoundException("patient " + userId + " not found");
-
         InsulinProfile insulinProfile = insulinProfileService.getByPatientProfileId(patientProfile.getId());
-        if (insulinProfile == null)
-            throw new ResourceNotFoundException("insulin profile for user " + userId + " not found");
 
         return insulinProfileMapper.mapToDTO(insulinProfile);
     }
@@ -83,8 +78,6 @@ public class InsulinProfileController {
             throw new ValidationIsFailedException(bindingResult, "insulin profile is invalid");
 
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
-        if (patientProfile == null)
-            throw new ResourceNotFoundException("patient " + userId + " not found");
 
         insulinProfileService.createInsulinProfile(insulinProfileMapper.mapToInternal(insulinProfileDTO),
                 patientProfile.getId());
@@ -107,8 +100,6 @@ public class InsulinProfileController {
             throw new ValidationIsFailedException(bindingResult, "insulin profile is invalid");
 
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
-        if (patientProfile == null)
-            throw new ResourceNotFoundException("patient " + userId + " not found");
 
         insulinProfileService.updateInsulinProfile(insulinProfileMapper.mapToInternal(insulinProfileDTO),
                 patientProfile.getId());

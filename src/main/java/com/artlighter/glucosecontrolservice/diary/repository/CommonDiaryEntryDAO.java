@@ -38,18 +38,20 @@ public interface CommonDiaryEntryDAO {
     DiaryEntry saveOrUpdate(DiaryEntry entry);
 
     /**
-     * Функция удаляет ресурс DiaryEntry из хранилища. Если ресурс уже существует, он игнорируется.
-     * @param entry ресурс DiaryEntry, который необходимо удалить
-     * @throws IllegalArgumentException в случае, если DiaryEntry равен null, либо не содержит
-     * внутри идентифицирующих его полей patientProfile и/или commitedAt
+     * Функция удаляет ресурс DiaryEntry из хранилища для пользователя по его типу и временной отметке.
+     * Если ресурс уже существует, он игнорируется.
+     * @param entryType тип записи для удаления;
+     * @param id ID записи, содержащая ID профиля больного и временную отметку записи;
+     * @throws IllegalArgumentException в случае, если entryType равен null, либо если id
+     * равен null или не содержит внутри идентификационных данных;
      */
-    void remove(DiaryEntry entry);
+    void deleteById(DiaryEntryType entryType, DiaryEntry.DiaryEntryID id);
 
     /**
      * Функция определяет, существует ли переданный ресурс DiaryEntry
      * @param entry ресурс, который необходимо проверить
      * @return true, если ресурс существует; false в ином случае
-     * @throws IllegalArgumentException в случае, если DiaryEntry равен null, либо не содержит
+     * @throws IllegalArgumentException в случае, если entry равен null, либо не содержит
      * внутри идентифицирующих его полей patientProfile и/или commitedAt
      */
     boolean exists(DiaryEntry entry);
