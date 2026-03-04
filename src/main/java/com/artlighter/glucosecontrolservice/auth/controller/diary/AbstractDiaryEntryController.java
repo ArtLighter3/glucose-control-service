@@ -54,6 +54,7 @@ import java.util.List;
         @ApiResponse(responseCode = "500", description = "Ошибка сервера.",
                 content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
 @RequestMapping("api/v1/patients/{userId}/entries")
+//@CrossOrigin(origins = "http://localhost:5173")
 public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT extends DiaryEntryDTO> {
     //TODO мб убрать зависимости из абстрактного класса и просто сделать абстрактные геттеры, как в модуле templates?
     protected DiaryEntryService diaryEntryService;

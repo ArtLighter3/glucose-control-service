@@ -8,6 +8,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,8 +17,16 @@ import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationEntryPointFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -28,6 +37,7 @@ public class AuthConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsFromUserService userDetailsService)
             throws Exception {
         return http
+                .cors(Customizer.withDefaults())
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((requests) ->
                                 requests.requestMatchers("/api/auth/register",
@@ -40,13 +50,32 @@ public class AuthConfig {
                 .exceptionHandling(exception ->
                         exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .formLogin(form ->
-                        form.loginProcessingUrl("/api/auth/process-login"))
+                        form.loginProcessingUrl("/api/v1/auth/process-login")
+                             //   .successForwardUrl("/api/v1/auth/get-current-user")
+                             //   .failureForwardUrl("/api/v1/auth/get-current-user")
+                                .defaultSuccessUrl("/api/v1/auth/get-current-user", true)
+                                .failureHandler(new AuthenticationEntryPointFailureHandler(
+                                        new HttpStatusEntryPoint(HttpStatus.BAD_REQUEST)))
+                                .permitAll())
                 .userDetailsService(userDetailsService)
                 .sessionManagement(session ->
                         session.maximumSessions(1).sessionRegistry(sessionRegistry()))
                 .build();
         //SessionAuth
 
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS", "DELETE", "PUT"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean
