@@ -1,5 +1,6 @@
 package com.artlighter.glucosecontrolservice.calculations.dto;
 
+import com.artlighter.glucosecontrolservice.calculations.util.validation.CorrectTimeOfDay;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
@@ -24,13 +25,15 @@ public record InsulinProfileDTO(
         @Min(value = 2)
         @Max(value = 9)
         int durationOfInsulinAction,
-        @Schema(description = "Значения ISF по времени суток")
-        Map<@NotNull LocalTime,
+        @Schema(description = "Значения ISF по времени суток. Принимаются значения, " +
+                "начиная от 00:30 с интервалом по 30 минут.")
+        Map<@CorrectTimeOfDay LocalTime,
                 @DecimalMin(value = "0.2")
                 @DecimalMax(value = "55.5")
                         Float> factorsByTime,
-        @Schema(description = "Значения ICR по времени суток")
-        Map<@NotNull LocalTime,
+        @Schema(description = "Значения ISF по времени суток. Принимаются значения, " +
+                "начиная от 00:30 с интервалом по 30 минут.")
+        Map<@CorrectTimeOfDay LocalTime,
                 @DecimalMin(value = "2")
                 @DecimalMax(value = "100")
                         Float> ratiosByTime

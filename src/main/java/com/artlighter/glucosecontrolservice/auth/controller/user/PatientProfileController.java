@@ -1,7 +1,6 @@
-package com.artlighter.glucosecontrolservice.auth.controller.diary;
+package com.artlighter.glucosecontrolservice.auth.controller.user;
 
 import com.artlighter.glucosecontrolservice.auth.util.exception.ExceptionDTO;
-import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.auth.util.exception.ValidationIsFailedException;
 import com.artlighter.glucosecontrolservice.user.dto.PatientProfileDTO;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
