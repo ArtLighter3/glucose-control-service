@@ -8,9 +8,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Класс со статическими методами, помогающими конвертировать внутренние исключения во внешние объекты с информацией
@@ -29,12 +27,16 @@ public class ExceptionOutputUtils {
     }
 
     private static ExceptionDTO createException(HttpStatus status, Errors errors, String message) {
-        Map<String, String> validationErrors = errors != null ? new HashMap<>() : null;
+        Map<String, List<String>> fieldErrors = new HashMap<>();
+        List<String> objectErrors = new ArrayList<>();
+
         if (errors != null && errors.hasErrors()) {
             for (ObjectError error : errors.getAllErrors()) {
                 if (error instanceof FieldError fieldError) {
-                    validationErrors.put(fieldError.getField(), fieldError.getDefaultMessage());
-                } else validationErrors.put("", error.getDefaultMessage());
+                    fieldErrors
+                            .computeIfAbsent(fieldError.getField(), (key) -> new ArrayList<>())
+                            .add(fieldError.getDefaultMessage());
+                } else objectErrors.add(error.getDefaultMessage());
             }
         }
 
@@ -42,7 +44,8 @@ public class ExceptionOutputUtils {
                 String.valueOf(status.value()),
                 status.name(),
                 message,
-                validationErrors);
+                fieldErrors,
+                objectErrors);
     }
 
 }

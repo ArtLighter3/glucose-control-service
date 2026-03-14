@@ -3,6 +3,7 @@ package com.artlighter.glucosecontrolservice.auth.util.exception;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 @Schema(name = "Exception", description = "Сообщение об ошибке")
@@ -15,10 +16,12 @@ public record ExceptionDTO(
         String error,
         @Schema(description = "Сообщение с подробностями про ошибку от сервера")
         String message,
-        @Schema(description = "Ошибки валидации конкретных полей или всего объекта в целом (если был некорректный " +
+        @Schema(description = "Ошибки валидации конкретных полей (если был некорректный " +
                 "объект, который проверялся на корректность). " +
-                "Формат каждого вхождения: \"Имя поля\":\"Сообщение\"; Если ошибка относится к объекту в целом, то " +
-                "в имени поля указывается пустая строка.")
-        Map<String, String> validationErrors
+                "Формат каждого вхождения: \"Имя поля\":\"Сообщение\";")
+        Map<String, List<String>> fieldErrors,
+        @Schema(description = "Ошибки валидации, относящиеся ко всему объекту либо связанные с несколькими полями" +
+                " одновременно. Представлен как список сообщений.")
+        List<String> objectErrors
 ) {
 }
