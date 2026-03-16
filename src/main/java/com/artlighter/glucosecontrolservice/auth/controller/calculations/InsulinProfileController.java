@@ -101,8 +101,8 @@ public class InsulinProfileController {
 
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
 
-        insulinProfileService.updateInsulinProfile(insulinProfileMapper.mapToInternal(insulinProfileDTO),
-                patientProfile.getId());
-        return insulinProfileDTO;
+        InsulinProfile updated = insulinProfileService
+                .updateInsulinProfile(insulinProfileMapper.mapToInternal(insulinProfileDTO), patientProfile.getId());
+        return insulinProfileMapper.mapToDTO(updated);
     }
 }

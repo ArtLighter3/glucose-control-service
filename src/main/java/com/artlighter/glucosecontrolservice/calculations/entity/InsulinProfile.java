@@ -19,10 +19,10 @@ public class InsulinProfile {
     private float defaultInsulinSensitivityFactor;
     @Column(name = "dia")
     private int durationOfInsulinAction;
-    @OneToMany(mappedBy = "insulinProfile", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "insulinProfile", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("timeOfDay")
     private List<InsulinSensitivityFactor> factorsByTime;
-    @OneToMany(mappedBy = "insulinProfile", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "insulinProfile", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("timeOfDay")
     private List<InsulinToCarbsRatio> ratiosByTime;
 
