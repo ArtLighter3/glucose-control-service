@@ -87,4 +87,6 @@ public class InsulinProfile {
     public void setRatiosByTime(List<InsulinToCarbsRatio> ratiosByTime) {
         this.ratiosByTime = ratiosByTime;
     }
+
+
 }
