@@ -1,4 +1,4 @@
-package com.artlighter.glucosecontrolservice.auth.repository.impl;
+package com.artlighter.glucosecontrolservice.user.repository.impl;
 
 import com.artlighter.glucosecontrolservice.user.entity.Authority;
 import com.artlighter.glucosecontrolservice.user.entity.Role;

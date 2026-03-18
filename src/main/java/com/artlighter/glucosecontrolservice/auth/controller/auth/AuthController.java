@@ -73,7 +73,8 @@ public class AuthController {
             content = @Content(schema = @Schema(implementation = ExceptionDTO.class))))
     @GetMapping("/get-current-user")
     public UserSessionDTO getUserInSession(@AuthenticationPrincipal ServiceUserDetails serviceUserDetails) {
-        if (serviceUserDetails == null) throw new ResourceNotFoundException("no user for this session");
+        if (serviceUserDetails == null)
+            throw new ResourceNotFoundException(ServiceUserDetails.class, "no user for this session");
 
         return userSessionMapper.mapToDTO(serviceUserDetails);
     }

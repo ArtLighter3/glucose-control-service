@@ -1,11 +1,11 @@
-package com.artlighter.glucosecontrolservice.auth.service;
+package com.artlighter.glucosecontrolservice.user.service;
 
 import com.artlighter.glucosecontrolservice.user.entity.Authority;
 import com.artlighter.glucosecontrolservice.user.entity.Role;
-import com.artlighter.glucosecontrolservice.auth.util.exception.AuthorityIsNotDeletableException;
-import com.artlighter.glucosecontrolservice.auth.repository.AuthorityRepository;
-import com.artlighter.glucosecontrolservice.auth.util.exception.RoleAlreadyHasAuthorityException;
-import com.artlighter.glucosecontrolservice.auth.util.exception.RoleDoesNotHaveSuchAuthorityException;
+import com.artlighter.glucosecontrolservice.user.util.exception.AuthorityIsNotDeletableException;
+import com.artlighter.glucosecontrolservice.user.repository.AuthorityRepository;
+import com.artlighter.glucosecontrolservice.user.util.exception.RoleAlreadyHasAuthorityException;
+import com.artlighter.glucosecontrolservice.user.util.exception.RoleDoesNotHaveSuchAuthorityException;
 import com.artlighter.glucosecontrolservice.user.entity.RoleWithAuthorities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,7 @@ public class AuthorityService {
      * @param authority определенное отзываемое право (из энума), добавляемое к роли
      * @return экземпляр добавленного права из энума в случае успешного добавления;
      * null, если не удалось дать право роли
-     * @throws com.artlighter.glucosecontrolservice.auth.util.exception.RoleAlreadyHasAuthorityException
+     * @throws RoleAlreadyHasAuthorityException
      * в случае, если право уже существует у роли
      */
     @Transactional
@@ -47,7 +47,7 @@ public class AuthorityService {
      * @param authority определенное неотзываемое право (из энума), добавляемое к роли
      * @return экземпляр добавленного права из энума в случае успешного добавления;
      * null, если не удалось дать право роли
-     * @throws com.artlighter.glucosecontrolservice.auth.util.exception.RoleAlreadyHasAuthorityException
+     * @throws RoleAlreadyHasAuthorityException
      * в случае, если право уже существует у роли
      */
     @Transactional
@@ -63,7 +63,7 @@ public class AuthorityService {
      *                    отзывать это право у этой роли в настройках системы
      * @return экземпляр добавленного права из энума в случае успешного добавления;
      * null, если право дать не удалось по иным причинам, не перечисленным в исключениях
-     * @throws com.artlighter.glucosecontrolservice.auth.util.exception.RoleAlreadyHasAuthorityException
+     * @throws RoleAlreadyHasAuthorityException
      * в случае, если право уже существует у роли
      */
     @Transactional
@@ -116,7 +116,7 @@ public class AuthorityService {
      * перечисленным в исключениях
      * @throws AuthorityIsNotDeletableException в случае, если это право должно быть у роли всегда
      * и не разрешается его отзывать
-     * @throws com.artlighter.glucosecontrolservice.auth.util.exception.RoleDoesNotHaveSuchAuthorityException в случае,
+     * @throws RoleDoesNotHaveSuchAuthorityException в случае,
      * если у роли и так нет этого права
      */
     @Transactional

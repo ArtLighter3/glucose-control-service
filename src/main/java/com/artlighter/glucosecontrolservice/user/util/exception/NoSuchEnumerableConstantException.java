@@ -1,4 +1,4 @@
-package com.artlighter.glucosecontrolservice.auth.util.exception;
+package com.artlighter.glucosecontrolservice.user.util.exception;
 
 /**
  * Общее исключение, выбрасывающееся в ситуации, когда запрос на модификацию, требующий указания значения, имеющего

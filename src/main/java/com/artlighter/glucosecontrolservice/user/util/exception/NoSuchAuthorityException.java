@@ -1,4 +1,4 @@
-package com.artlighter.glucosecontrolservice.auth.util.exception;
+package com.artlighter.glucosecontrolservice.user.util.exception;
 
 /**
  * Исключение, выбрасываемое в случае попытки добавления или удаления права у роли, которого нет в списке прав системы

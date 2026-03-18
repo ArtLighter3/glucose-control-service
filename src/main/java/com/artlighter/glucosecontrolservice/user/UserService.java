@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -51,10 +50,22 @@ public class UserService {
 
         if (role == Role.ROLE_PATIENT) {
             //patientProfileService.createDefaultProfileForPatient(user.getId());
-            patientProfileService.createDefaultProfileForPatient(user);
+            try {
+                patientProfileService.createDefaultProfileForPatient(user);
+            } catch (ResourceAlreadyExistsException ignored) {}
         }
 
         return userRepository.save(user);
+    }
+
+    /**
+     * Находит пользователя в системе по его ID.
+     * @param id идентификатор пользователя в системе;
+     * @return объект пользователя, если был найден; null в случае невозможности достать пользователя
+     */
+    public User findUserById(int id) {
+        User user = userRepository.findByIdWithRoles(id);
+        return user;
     }
 
     /**
@@ -62,8 +73,18 @@ public class UserService {
      * @param username строковое уникальное имя пользователя
      * @return объект пользователя, если был найден; null в случае невозможности достать пользователя
      */
-    public User getUserByUsername(String username) {
+    public User findUserByUsername(String username) {
         User user = userRepository.findByUsernameWithRoles(username);
         return user;
+    }
+
+    /**
+     * Определяет, есть ли у пользователя роль без необходимости загрузки всего пользователя
+     * @param id идентификатор пользователя в системе
+     * @param role роль
+     * @return true, если роль есть; false иначе;
+     */
+    public boolean hasRole(int id, Role role) {
+        return userRepository.existsByIdAndRolesContaining(id, role);
     }
 }

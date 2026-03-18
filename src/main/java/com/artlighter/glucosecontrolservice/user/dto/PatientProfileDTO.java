@@ -5,38 +5,50 @@ import com.artlighter.glucosecontrolservice.user.entity.GlucoseUnit;
 import com.artlighter.glucosecontrolservice.user.util.validation.CorrectApiSettings;
 import com.artlighter.glucosecontrolservice.user.util.validation.CorrectGlucoseIntervals;
 import com.artlighter.glucosecontrolservice.general.TypeGroup;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.GroupSequence;
 import jakarta.validation.constraints.*;
 import org.hibernate.validator.constraints.Length;
 
+@Schema(name = "PatientProfile", description = "Профиль больного с его настройками")
 @GroupSequence({PatientProfileDTO.class, TypeGroup.class})
 @CorrectGlucoseIntervals(groups = {TypeGroup.class})
 @CorrectApiSettings(groups = {TypeGroup.class})
 public record PatientProfileDTO(
+        @Schema(description = "Единицы измерения глюкозы при ведении дневника")
         GlucoseUnit glucoseUnit,
+        @Schema(description = "Единицы измерения углеводов при ведении дневника")
         CarbsUnit carbsUnit,
+        @Schema(description = "Тип диабета")
         @Min(1)
         @Max(2)
         @NotNull
         Integer diabetesType,
+        @Schema(description = "Предельно высокое значение глюкозы (в ммоль/л)")
         @DecimalMin("1")
         @DecimalMax("40")
         @NotNull
         Float hyperGlucose,
+        @Schema(description = "Верхняя граница нормы глюкозы (в ммоль/л)")
         @DecimalMin("1")
         @DecimalMax("40")
         @NotNull
         Float highGlucose,
+        @Schema(description = "Нижняя граница нормы глюкозы (в ммоль/л)")
         @DecimalMin("1")
         @DecimalMax("40")
         @NotNull
         Float lowGlucose,
+        @Schema(description = "Предельно низкое значение глюкозы (в ммоль/л)")
         @DecimalMin("1")
         @DecimalMax("40")
         @NotNull
         Float hypoGlucose,
+        @Schema(description = "Включено ли API для интеграции с загрузчиками Nightscout. Если true, то " +
+                "обязательно должен быть передан nightscoutApiSecret.")
         @NotNull
         Boolean isNightscoutEnabled,
+        @Schema(description = "API-ключ для загрузчиков Nightscout")
         @Length(min = 12)
         String nightscoutApiSecret
 ) {

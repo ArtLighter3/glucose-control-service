@@ -1,9 +1,9 @@
 package com.artlighter.glucosecontrolservice.auth.controller.user;
 
 import com.artlighter.glucosecontrolservice.auth.ServiceUserDetails;
-import com.artlighter.glucosecontrolservice.auth.service.AuthorityService;
+import com.artlighter.glucosecontrolservice.user.service.AuthorityService;
 import com.artlighter.glucosecontrolservice.auth.util.exception.ExceptionDTO;
-import com.artlighter.glucosecontrolservice.auth.util.exception.NoSuchRoleException;
+import com.artlighter.glucosecontrolservice.user.util.exception.NoSuchRoleException;
 import com.artlighter.glucosecontrolservice.user.entity.Authority;
 import com.artlighter.glucosecontrolservice.auth.util.SessionManager;
 import com.artlighter.glucosecontrolservice.user.entity.Role;
@@ -49,7 +49,7 @@ public class RoleController {
     }
 
     @Operation(summary = "Обновить права роли новым списком прав.",
-            description = "Возвратит новый список прав роли. Не удалит права, которые нельзя отзывать, поэтому они" +
+            description = "Возвратит новый список прав роли. Не удалит права, которые нельзя отзывать, поэтому они " +
                     "будут в результирующем списке в любом случае и не будут удалены из роли.")
     @ApiResponses(value =
             {@ApiResponse(responseCode = "200",
@@ -58,7 +58,7 @@ public class RoleController {
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PutMapping("/authorities")
     @PreAuthorize("hasAuthority('AUTHORITY_GRANT_REVOKE')")
-    public Set<Authority> updatePatientRole(@RequestParam Role role,
+    public Set<Authority> updateRole(@RequestParam Role role,
                                             @RequestBody Set<Authority> authorities,
                                             @AuthenticationPrincipal ServiceUserDetails userDetails) {
         if (role == Role.ROLE_SUPERUSER) throw new NoSuchRoleException("ROLE_SUPERUSER");

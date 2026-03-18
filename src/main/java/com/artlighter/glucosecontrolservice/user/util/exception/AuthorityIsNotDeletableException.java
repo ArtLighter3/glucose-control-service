@@ -1,4 +1,4 @@
-package com.artlighter.glucosecontrolservice.auth.util.exception;
+package com.artlighter.glucosecontrolservice.user.util.exception;
 
 import com.artlighter.glucosecontrolservice.user.entity.Authority;
 import com.artlighter.glucosecontrolservice.user.entity.Role;

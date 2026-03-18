@@ -1,9 +1,10 @@
-package com.artlighter.glucosecontrolservice.auth.repository;
+package com.artlighter.glucosecontrolservice.user.repository;
 
 import com.artlighter.glucosecontrolservice.user.entity.Authority;
 import com.artlighter.glucosecontrolservice.user.entity.Role;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Общий интерфейс для методов доступа к репозиториям данных о правах ролей
@@ -40,4 +41,11 @@ public interface AuthorityRepository {
      * пустой словарь в случае ошибок
      */
     Map<Authority, Boolean> getRoleAuthorities(Role role);
+
+    /**
+     * Находит права определенного пользователя. Если пользователя не существует, возвращает пустую коллекцию
+     * @param userId идентификатор пользователя
+     * @return множество прав пользователя, пустое в случае ошибок;
+     */
+   // Set<Role> getRolesOfUser(int userId);
 }

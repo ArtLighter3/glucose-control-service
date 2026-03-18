@@ -7,19 +7,19 @@ import com.artlighter.glucosecontrolservice.user.entity.User;
  * которые можно совершить только с больными.
  */
 public class UserIsNotPatientException extends RuntimeException {
-    private User user;
+    private int userId;
 
-    public UserIsNotPatientException(User user) {
+    public UserIsNotPatientException(int userId) {
         super("user is not patient");
-        this.user = user;
+        this.userId = userId;
     }
 
-    public UserIsNotPatientException(User user, String message) {
+    public UserIsNotPatientException(int userId, String message) {
         super(message);
-        this.user = user;
+        this.userId = userId;
     }
 
-    public User getUser() {
-        return user;
+    public int getUserId() {
+        return userId;
     }
 }

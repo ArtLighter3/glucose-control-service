@@ -92,7 +92,6 @@ public class DoctorController {
     public PatientAttachDetachDTO attachPatient(@PathVariable int userId,
                                                 @RequestBody @Valid PatientAttachDetachDTO attachDetachDTO,
                                                 BindingResult bindingResult) {
-        //TODO а что если прикрепляемый пользователь не является пациентом?
         if (bindingResult.hasErrors())
             throw new ValidationIsFailedException(bindingResult, "request body is invalid");
 

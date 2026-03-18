@@ -2,9 +2,13 @@ package com.artlighter.glucosecontrolservice.user.service;
 
 import com.artlighter.glucosecontrolservice.general.exception.ResourceAlreadyExistsException;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
+import com.artlighter.glucosecontrolservice.user.UserService;
 import com.artlighter.glucosecontrolservice.user.entity.DoctorProfile;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
+import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.user.repository.DoctorProfileRepository;
+import com.artlighter.glucosecontrolservice.user.util.exception.UserIsNotDoctorException;
+import com.artlighter.glucosecontrolservice.user.util.exception.UserIsNotPatientException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,11 +24,14 @@ import java.util.Set;
 public class DoctorProfileService {
     private DoctorProfileRepository doctorProfileRepository;
     private PatientProfileService patientProfileService;
+    private UserService userService;
 
     public DoctorProfileService(DoctorProfileRepository doctorProfileRepository,
-                                PatientProfileService patientProfileService) {
+                                PatientProfileService patientProfileService,
+                                UserService userService) {
         this.doctorProfileRepository = doctorProfileRepository;
         this.patientProfileService = patientProfileService;
+        this.userService = userService;
     }
 
 //    @Transactional(readOnly = true)
@@ -61,10 +68,17 @@ public class DoctorProfileService {
      * @return профиль врача, к которому было произведено прикрепление;
      * @throws ResourceNotFoundException если врач или пациент с переданными ID не были найдены;
      * @throws ResourceAlreadyExistsException если больной уже был прикреплен к врачу;
+     * @throws UserIsNotDoctorException если пользователь с ID doctorId не является врачом;
+     * @throws UserIsNotPatientException если пользователь с ID patientId не является больным;
      */
     public DoctorProfile attachPatientToDoctor(int doctorId, int patientId) {
         DoctorProfile doctorProfile = getDoctorProfileOrThrowException(doctorId);
         PatientProfile patientProfile = patientProfileService.getByUserId(patientId);
+
+        if (!userService.hasRole(doctorId, Role.ROLE_DOCTOR))
+            throw new UserIsNotDoctorException(doctorId);
+        if (!userService.hasRole(patientId, Role.ROLE_PATIENT))
+            throw new UserIsNotPatientException(patientId);
 
         Set<PatientProfile> attachedPatients = doctorProfile.getAttachedPatients();
         boolean attached = attachedPatients.add(patientProfile);
@@ -88,7 +102,9 @@ public class DoctorProfileService {
 
         Set<PatientProfile> attachedPatients = doctorProfile.getAttachedPatients();
         boolean detached = attachedPatients.remove(patientProfile);
-        if (!detached) throw new ResourceNotFoundException("patient is not attached to this doctor");
+        if (!detached)
+            throw new ResourceNotFoundException(PatientProfile.class, "patient '"
+                    + patientId + "' is not attached to doctor '" + doctorId + "'");
 
         return doctorProfileRepository.save(doctorProfile);
     }
@@ -123,7 +139,9 @@ public class DoctorProfileService {
 
     private DoctorProfile getDoctorProfileOrThrowException(int doctorId) {
         DoctorProfile doctorProfile = doctorProfileRepository.findByUserId(doctorId);
-        if (doctorProfile == null) throw new ResourceNotFoundException("doctor not found");
+        if (doctorProfile == null)
+            throw new ResourceNotFoundException(DoctorProfile.class, "doctor with ID '" + doctorId  + "' not found");
+
         return doctorProfile;
     }
 }

@@ -2,10 +2,11 @@ package com.artlighter.glucosecontrolservice.auth.service;
 
 import com.artlighter.glucosecontrolservice.user.entity.Authority;
 import com.artlighter.glucosecontrolservice.user.entity.Role;
-import com.artlighter.glucosecontrolservice.auth.repository.AuthorityRepository;
-import com.artlighter.glucosecontrolservice.auth.util.exception.AuthorityIsNotDeletableException;
-import com.artlighter.glucosecontrolservice.auth.util.exception.RoleAlreadyHasAuthorityException;
-import com.artlighter.glucosecontrolservice.auth.util.exception.RoleDoesNotHaveSuchAuthorityException;
+import com.artlighter.glucosecontrolservice.user.repository.AuthorityRepository;
+import com.artlighter.glucosecontrolservice.user.util.exception.AuthorityIsNotDeletableException;
+import com.artlighter.glucosecontrolservice.user.util.exception.RoleAlreadyHasAuthorityException;
+import com.artlighter.glucosecontrolservice.user.util.exception.RoleDoesNotHaveSuchAuthorityException;
+import com.artlighter.glucosecontrolservice.user.service.AuthorityService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -33,7 +33,7 @@ public class InsulinProfileService {
     public InsulinProfile getByPatientProfileId(int patientProfileId) {
         InsulinProfile insulinProfile = insulinProfileRepository.findByProfileId(patientProfileId);
         if (insulinProfile == null)
-            throw new ResourceNotFoundException("insulin profile for patient profile with ID '"
+            throw new ResourceNotFoundException(InsulinProfile.class, "insulin profile for patient profile with ID '"
                     + patientProfileId + "' not found");
 
         return insulinProfile;
@@ -77,7 +77,8 @@ public class InsulinProfileService {
         if (insulinProfile == null) throw new IllegalArgumentException("insulinProfile cannot be null");
 
         if (!insulinProfileRepository.existsByProfileId(patientProfileId))
-            throw new ResourceNotFoundException("insulin profile for this user does not exist");
+            throw new ResourceNotFoundException(InsulinProfile.class, "insulin profile for patient profile with ID '"
+                    + patientProfileId + "' not found");
 
         insulinProfile.setProfileId(patientProfileId);
         return insulinProfileRepository.save(insulinProfile);

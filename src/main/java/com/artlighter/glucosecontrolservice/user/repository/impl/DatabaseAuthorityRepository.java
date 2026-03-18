@@ -1,8 +1,8 @@
-package com.artlighter.glucosecontrolservice.auth.repository.impl;
+package com.artlighter.glucosecontrolservice.user.repository.impl;
 
 import com.artlighter.glucosecontrolservice.user.entity.Authority;
 import com.artlighter.glucosecontrolservice.user.entity.Role;
-import com.artlighter.glucosecontrolservice.auth.repository.AuthorityRepository;
+import com.artlighter.glucosecontrolservice.user.repository.AuthorityRepository;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -84,6 +84,14 @@ public class DatabaseAuthorityRepository implements AuthorityRepository {
 
         return authorities;
     }
+
+//    @Override
+//    public Set<Role> getRolesOfUser(int userId) {
+//        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+//        CriteriaQuery<Ro>
+//
+//        return Set.of();
+//    }
 
     @Entity
     @Table(name = "role_authority")

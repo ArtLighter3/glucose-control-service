@@ -5,6 +5,8 @@ import com.artlighter.glucosecontrolservice.auth.util.exception.*;
 import com.artlighter.glucosecontrolservice.diary.util.exception.NoRepositoryForEntryTypeException;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceAlreadyExistsException;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
+import com.artlighter.glucosecontrolservice.user.util.exception.AuthoritiesException;
+import com.artlighter.glucosecontrolservice.user.util.exception.NoSuchEnumerableConstantException;
 import com.artlighter.glucosecontrolservice.user.util.exception.UserIsNotPatientException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

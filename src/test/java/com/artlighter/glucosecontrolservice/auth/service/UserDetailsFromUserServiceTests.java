@@ -4,6 +4,7 @@ import com.artlighter.glucosecontrolservice.user.entity.Authority;
 import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.user.entity.User;
 import com.artlighter.glucosecontrolservice.user.UserService;
+import com.artlighter.glucosecontrolservice.user.service.AuthorityService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,7 +59,7 @@ public class UserDetailsFromUserServiceTests {
 
     @Test
     public void loadUserByUsername_CannotFindUser_ThrowsUsernameNotFoundException() {
-        when(userService.getUserByUsername(eq("non_existent_user"))).thenReturn(null);
+        when(userService.findUserByUsername(eq("non_existent_user"))).thenReturn(null);
 
         assertThrows(UsernameNotFoundException.class, () ->
                 userDetailsService.loadUserByUsername("non_existent_user"));
@@ -88,7 +89,7 @@ public class UserDetailsFromUserServiceTests {
         user.setUsername(username);
         user.setRoles(roles);
 
-        when(userService.getUserByUsername(eq(username))).thenReturn(user);
+        when(userService.findUserByUsername(eq(username))).thenReturn(user);
 
         Set<Role> initialRolesToConstruct = isSuperuser ?
                 Arrays.stream(Role.values()).collect(Collectors.toSet()) : roles;

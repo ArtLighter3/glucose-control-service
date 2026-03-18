@@ -76,8 +76,8 @@ public abstract class TemplateService<T extends PatientTemplateEntity> {
                 new PatientTemplateEntity.PatientTemplateEntityID(patientProfileId, name);
 
         if (!patientTemplateEntityRepository.existsById(id))
-            throw new ResourceNotFoundException("template with name " + name +
-                    " for patient with profile id " + patientProfileId + " does not exist");
+            throw new ResourceNotFoundException(PatientTemplateEntity.class, "template with name '" + name +
+                    "' for patient with profile id '" + patientProfileId + "' not found");
 
         t.setId(id);
 

@@ -37,7 +37,8 @@ public class PatientProfileService {
         //TODO а что если по каким-то причинам у больного не создался его профиль?
         PatientProfile patientProfile = patientProfileRepository.findByUserId(patientId);
         if (patientProfile == null)
-            throw new ResourceNotFoundException("patient profile for user with ID '" + patientId + "' not found");
+            throw new ResourceNotFoundException(PatientProfile.class,
+                    "patient profile for user with ID '" + patientId + "' not found");
 
         return patientProfile;
     }
@@ -52,7 +53,8 @@ public class PatientProfileService {
     public PatientProfile getByUsername(String username) {
         PatientProfile patientProfile = patientProfileRepository.findByUserUsername(username);
         if (patientProfile == null)
-            throw new ResourceNotFoundException("patient profile for user with username '" + username + "' not found");
+            throw new ResourceNotFoundException(PatientProfile.class,
+                    "patient profile for user with username '" + username + "' not found");
 
         return patientProfile;
     }
@@ -73,7 +75,7 @@ public class PatientProfileService {
         if (patientProfileRepository.existsByUserId(user.getId()))
             throw new ResourceAlreadyExistsException(patientProfile, "patient profile for this user already exists");
         if (!user.getRoles().contains(Role.ROLE_PATIENT))
-            throw new UserIsNotPatientException(user);
+            throw new UserIsNotPatientException(user.getId());
 
         //patientProfile.setUserId(userId);
         patientProfile.setUser(user);
@@ -93,9 +95,10 @@ public class PatientProfileService {
 
         PatientProfile patientProfile = null;
         if (patientProfileRepository.existsByUserId(user.getId()))
-            throw new ResourceAlreadyExistsException(patientProfile, "patient profile for this user already exists");
+            throw new ResourceAlreadyExistsException(PatientProfile.class,
+                    "patient profile for this user already exists");
         if (!user.getRoles().contains(Role.ROLE_PATIENT))
-            throw new UserIsNotPatientException(user);
+            throw new UserIsNotPatientException(user.getId());
 
         patientProfile = new PatientProfile();
 
@@ -116,7 +119,8 @@ public class PatientProfileService {
     public PatientProfile updateProfileForPatient(PatientProfile patientProfile, int userId) {
         PatientProfile existingProfile = patientProfileRepository.findByUserId(userId);
         if (existingProfile == null)
-            throw new ResourceNotFoundException("patient profile for this user does not exist");
+            throw new ResourceNotFoundException(PatientProfile.class,
+                    "patient profile for user with ID '" + userId + "' not found");
 
         //patientProfile.setUserId(userId);
         patientProfile.setUser(new User(userId));

@@ -1,11 +1,9 @@
 package com.artlighter.glucosecontrolservice.auth.controller.templates;
 
-import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.templates.dto.MedicationDTO;
 import com.artlighter.glucosecontrolservice.templates.dto.MedicationResult;
-import com.artlighter.glucosecontrolservice.templates.dto.TemplateDeletionDTO;
 import com.artlighter.glucosecontrolservice.templates.entity.Medication;
 import com.artlighter.glucosecontrolservice.templates.service.impl.MedicationService;
 import com.artlighter.glucosecontrolservice.templates.util.mapper.MedicationMapper;
