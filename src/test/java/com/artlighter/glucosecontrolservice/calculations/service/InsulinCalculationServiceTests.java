@@ -5,27 +5,38 @@ import com.artlighter.glucosecontrolservice.calculations.entity.*;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.BilinearInsulinDecayCurveStrategy;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.BySortVolatileValueExtractor;
 import com.artlighter.glucosecontrolservice.calculations.util.calc.InsulinCalculatorImpl;
+import com.artlighter.glucosecontrolservice.diary.service.DiaryEntryService;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.user.entity.CarbsUnit;
 import com.artlighter.glucosecontrolservice.user.entity.GlucoseUnit;
 import com.artlighter.glucosecontrolservice.user.entity.User;
+import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.Instant;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @Import({InsulinCalculationService.class, BilinearInsulinDecayCurveStrategy.class, InsulinCalculatorImpl.class,
          BySortVolatileValueExtractor.class})
 public class InsulinCalculationServiceTests {
+    @MockitoBean
+    private DiaryEntryService diaryEntryService;
+    @MockitoBean
+    private PatientProfileService patientProfileService;
+    @MockitoBean
+    private InsulinProfileService insulinProfileService;
     @Autowired
     private InsulinCalculationService insulinCalculationService;
 
@@ -134,9 +145,11 @@ public class InsulinCalculationServiceTests {
                 3, null, null);
         InsulinResult expected = new InsulinResult(6f, 1f, 0.0f, 0.0f,
                 carbs, icr, expectedCarbsDose, correction, expectedCarbsDose);
+        when(insulinProfileService.getByPatientProfileId(patientProfile.getId())).thenReturn(insulinProfile);
+        when(patientProfileService.getByUserId(patientProfile.getUser().getId())).thenReturn(patientProfile);
 
-        InsulinResult actual = insulinCalculationService.calculateInsulinDose(insulinProfile,
-                null, null, carbs, 6f, correction, patientProfile.getHighGlucose());
+        InsulinResult actual = insulinCalculationService.calculateInsulinDose(patientProfile.getUser().getId(),
+                LocalTime.now(), false, false, carbs, 6f, correction);
 
         assertEquals(expected, actual);
     }
@@ -150,9 +163,11 @@ public class InsulinCalculationServiceTests {
                 3, null, ratios);
         InsulinResult expected = new InsulinResult(6f, 1f, 0.0f, 0.0f,
                 carbs, expectedIcr, expectedCarbsDose, correction, expectedCarbsDose);
+        when(insulinProfileService.getByPatientProfileId(patientProfile.getId())).thenReturn(insulinProfile);
+        when(patientProfileService.getByUserId(patientProfile.getUser().getId())).thenReturn(patientProfile);
 
-        InsulinResult actual = insulinCalculationService.calculateInsulinDose(insulinProfile,
-                null, timeOfDay, carbs, 6f, correction, patientProfile.getHighGlucose());
+        InsulinResult actual = insulinCalculationService.calculateInsulinDose(patientProfile.getUser().getId(),
+                timeOfDay, false, false, carbs, 6f, correction);
 
         assertEquals(expected, actual);
     }
