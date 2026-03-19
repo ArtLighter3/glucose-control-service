@@ -17,17 +17,25 @@ public interface CommonDiaryEntryDAO {
     /**
      * Функция находит все ресурсы DiaryEntry определенного типа из хранилища по PatientProfile
      * в диапазоне временных отметок from и to
-     * @param entryType тип DiaryEntry; если null, то выбираются DiaryEntry ВСЕХ типов
-     * @param patientProfile профиль больного, для которого надо найти DiaryEntry
-     * @param from временная отметка, с которой выбираются ресурсы (включительно)
-     * @param to временная отметка, до которой выбираются ресурсы (включительно)
-     * @param sort тип сортировки итоговой коллекции
-     * @return список объектов DiaryEntry
+     * @param entryType тип DiaryEntry; если null, то выбираются DiaryEntry ВСЕХ типов;
+     * @param patientProfile профиль больного, для которого надо найти DiaryEntry;
+     * @param from временная отметка, с которой выбираются ресурсы (включительно);
+     * @param to временная отметка, до которой выбираются ресурсы (включительно);
+     * @param sort тип сортировки итоговой коллекции;
+     * @return список объектов DiaryEntry;
      */
     List<DiaryEntry> getAllOfTypeBetweenDates(DiaryEntryType entryType,
                                                         PatientProfile patientProfile, Instant from, Instant to,
                                                         Sort sort);
 
+    /**
+     * Функция находит последний ресурс DiaryEntry определенного типа по параметрам сортировки
+     * @param entryType тип DiaryEntry;
+     * @param patientProfile профиль больного, для которого надо найти DiaryEntry;
+     * @param sort тип сортировки для поиска по ней последнего элемента;
+     * @return Ресурс DiaryEntry; null, если не было найдено ни одного;
+     */
+    DiaryEntry findLastEntryOfType(DiaryEntryType entryType, PatientProfile patientProfile, Sort sort);
     /**
      * Функция сохраняет новый ресурс DiaryEntry в хранилище, либо обновляет, если тот уже существует
      * @param entry ресурс DiaryEntry, который необходимо сохранить или обновить

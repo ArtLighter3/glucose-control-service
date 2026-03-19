@@ -75,7 +75,7 @@ public class InsulinCalculationService {
      * @param glucose текущий уровень глюкозы для коррекции сахара в крови;
      * @param correction процент коррекции, если необходимо добавить из-за каких-то внешних факторов;
      * @return InsulinResult, содержащий как результат, так и каждый элемент, участвовавший в расчете;
-     * @throws IllegalArgumentException если insulinProfile или timeOfDay равны null;
+     * @throws IllegalArgumentException если timeOfDay равны null;
      */
     public InsulinResult calculateInsulinDose(int patientId, LocalTime timeOfDay,
                                               boolean considerActiveInsulin, boolean correctGlucoseLevel,
@@ -130,11 +130,21 @@ public class InsulinCalculationService {
         if (patientTimestamp == null) patientTimestamp = Instant.now();
 
         PatientProfile patientProfile = patientProfileService.getByUserId(patientId);
-        InsulinProfile insulinProfile = insulinProfileService.getByPatientProfileId(patientProfile.getId());
 
         List<DiaryEntry> diaryEntries = diaryEntryService.getDiaryEntriesOfType(DiaryEntryType.INSULIN_ENTRY,
                 patientProfile, patientTimestamp.minus(Duration.ofHours(12)), patientTimestamp);
-        List<InsulinEntry> insulinEntries = diaryEntries.stream()
+
+        return calculateActiveInsulin(patientProfile, diaryEntries, patientTimestamp);
+    }
+
+    public Float calculateActiveInsulin(PatientProfile patientProfile, List<? extends DiaryEntry> entriesToConsider,
+                                        Instant patientTimestamp) {
+        if (patientProfile == null) throw new IllegalArgumentException("patientProfile cannot be null");
+        if (patientTimestamp == null) patientTimestamp = Instant.now();
+
+        InsulinProfile insulinProfile = insulinProfileService.getByPatientProfileId(patientProfile.getId());
+
+        List<InsulinEntry> insulinEntries = entriesToConsider.stream()
                 .filter((entry) -> entry instanceof InsulinEntry)
                 .map((entry -> (InsulinEntry) entry)).toList();
 

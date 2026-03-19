@@ -21,7 +21,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "insulin-calculations", description = "методы для модификации инсулиновых профилей и для расчетов инсулина")
+@Tag(name = "calculations", description = "методы для модификации инсулиновых профилей и для расчетов инсулина, " +
+        "подсчета статистики")
 @ApiResponses(value =
         {@ApiResponse(responseCode = "404", description = "Если больной или его инсулиновый профиль не были найдены.",
                 content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),

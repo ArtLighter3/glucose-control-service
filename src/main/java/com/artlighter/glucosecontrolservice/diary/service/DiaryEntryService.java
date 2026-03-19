@@ -152,6 +152,21 @@ public class DiaryEntryService {
 //                .collect(Collectors.toList());
     }
 
+    /**
+     * Находит последнюю по временной отметке запись дневника определенного типа.
+     * @param entryType тип записи дневника самоконтроля; не null;
+     * @param patientProfile профиль больного, не null;
+     * @return Последнюю запись дневника этого типа; null, если не было найдено;
+    //  * @throws IllegalArgumentException если patientProfile равен null;
+     */
+    @Transactional(readOnly = true)
+    public DiaryEntry findLastEntryOfType(DiaryEntryType entryType, PatientProfile patientProfile) {
+        DiaryEntry entry = commonDiaryEntryDAO.findLastEntryOfType(entryType, patientProfile,
+                Sort.by("commitedAt").descending());
+
+        return entry;
+    }
+
     private void fill(DiaryEntry diaryEntry, PatientProfile patientProfile, Instant commitedAt) {
         if (diaryEntry != null) {
             diaryEntry.setPatientProfile(patientProfile);

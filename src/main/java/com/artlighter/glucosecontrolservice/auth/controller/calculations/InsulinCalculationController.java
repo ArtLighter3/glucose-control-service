@@ -30,7 +30,8 @@ import java.time.Instant;
 import java.time.LocalTime;
 import java.util.List;
 
-@Tag(name = "insulin-calculations", description = "методы для модификации инсулиновых профилей и для расчетов инсулина")
+@Tag(name = "calculations", description = "методы для модификации инсулиновых профилей и для расчетов инсулина, " +
+        "подсчета статистики")
 @ApiResponses(value =
         {@ApiResponse(responseCode = "200", description = "В случае успеха."),
         @ApiResponse(responseCode = "404", description = "Если больной или его инсулиновый профиль не были найдены.",
@@ -68,20 +69,22 @@ public class InsulinCalculationController {
                 calculationRequest.correction() != null ? calculationRequest.correction() : 0f);
     }
 
-    @Operation(summary = "Рассчитать только активный инсулин.",
-            description = "Необходимо право INSULIN_CALCULATE_OWN, " +
-                    "доступ только у самого больного.")
-    @ApiResponses(value = @ApiResponse(responseCode = "400", description = "Если параметры запроса некорректны.",
-            content = @Content(schema = @Schema(implementation = ExceptionDTO.class))))
-    @GetMapping("/calculate-iob")
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'INSULIN_CALCULATE_OWN'," +
-            "#userId, authentication)")
-    public Float calculateActiveInsulin(@PathVariable int userId,
-                                        @Parameter(description = "Временная отметка в формате ISO 8601, " +
-                                                "в зависимости от которой " +
-                                                "считать прошлый введенный инсулин.")
-                                        @RequestParam(required = true)
-                                        Instant timestamp) {
-        return insulinCalculationService.calculateActiveInsulin(userId, timestamp);
-    }
+//    @Operation(summary = "Рассчитать только активный инсулин.",
+//            description = "Необходимо право INSULIN_CALCULATE_OWN, " +
+//                    "доступ только у самого больного.")
+//    @ApiResponses(value = @ApiResponse(responseCode = "400", description = "Если параметры запроса некорректны.",
+//            content = @Content(schema = @Schema(implementation = ExceptionDTO.class))))
+//    @GetMapping("/calculate-iob")
+//    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'INSULIN_CALCULATE_OWN'," +
+//            "#userId, authentication)")
+//    public Float calculateActiveInsulin(@PathVariable int userId,
+//                                        @Parameter(description = "Временная отметка в формате ISO 8601, " +
+//                                                "в зависимости от которой " +
+//                                                "считать прошлый введенный инсулин.")
+//                                        @RequestParam(required = true)
+//                                        Instant timestamp) {
+//        return insulinCalculationService.calculateActiveInsulin(userId, timestamp);
+//    }
+
+
 }

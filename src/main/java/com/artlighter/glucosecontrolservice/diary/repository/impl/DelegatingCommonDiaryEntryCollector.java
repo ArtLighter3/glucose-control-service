@@ -32,12 +32,12 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
     }
 
     /**
-     * @throws IllegalArgumentException если PatientProfile равен null
+     * @throws IllegalArgumentException если PatientProfile равен null;
      */
     @Override
     public List<DiaryEntry> getAllOfTypeBetweenDates(DiaryEntryType entryType,
-                                                               PatientProfile patientProfile, Instant from, Instant to,
-                                                               Sort sort) {
+                                                     PatientProfile patientProfile, Instant from, Instant to,
+                                                     Sort sort) {
         if (patientProfile == null) throw new IllegalArgumentException("patientProfile cannot be null");
 
         if (entryType == null) return collectAllBetweenDates(patientProfile, from, to, sort);
@@ -47,8 +47,20 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
     }
 
     /**
+     * @throws IllegalArgumentException если patientProfile или entryType равны null;
+     */
+    @Override
+    public DiaryEntry findLastEntryOfType(DiaryEntryType entryType, PatientProfile patientProfile, Sort sort) {
+        if (patientProfile == null) throw new IllegalArgumentException("patientProfile cannot be null");
+        if (entryType == null) throw new IllegalArgumentException("entryType cannot be null");
+
+        ParticularDiaryEntryRepository repository = repositories.getRepositoryForType(entryType);
+        return  repository.findFirstByPatientProfileId(patientProfile.getId(), sort);
+    }
+
+    /**
      * @throws IllegalArgumentException в случае, если DiaryEntry равен null, либо не содержит
-     * внутри идентифицирующих его полей patientProfile и/или commitedAt
+     * внутри идентифицирующих его полей patientProfile и/или commitedAt;
      */
     @Override
     public DiaryEntry saveOrUpdate(DiaryEntry entry) {
@@ -60,7 +72,7 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
 
     /**
      * @throws IllegalArgumentException в случае, если DiaryEntry равен null, либо не содержит
-     * внутри идентифицирующих его полей patientProfile и/или commitedAt
+     * внутри идентифицирующих его полей patientProfile и/или commitedAt;
      */
     @Override
     public void deleteById(DiaryEntryType entryType, DiaryEntry.DiaryEntryID id) {
@@ -74,7 +86,7 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
 
     /**
      * @throws IllegalArgumentException в случае, если DiaryEntry равен null, либо не содержит
-     * внутри идентифицирующих его полей patientProfile и/или commitedAt
+     * внутри идентифицирующих его полей patientProfile и/или commitedAt;
      */
     @Override
     public boolean exists(DiaryEntry entry) {

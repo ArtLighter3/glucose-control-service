@@ -96,7 +96,8 @@ public class AuthConfig {
                     Authority.GLUCOSE_SHOW_OWN, Authority.GLUCOSE_ADD_OWN, Authority.GLUCOSE_UPDATE_OWN,
                     Authority.INSULIN_PROFILE_SHOW_OWN, Authority.INSULIN_PROFILE_UPDATE_OWN,
                     Authority.INSULIN_PROFILE_ADD_OWN,
-                    Authority.INSULIN_CALCULATE_OWN, Authority.TEMPLATE_ADD_OWN, Authority.TEMPLATE_SHOW_OWN,
+                    Authority.INSULIN_CALCULATE_OWN, Authority.ACTIVITY_SHOW_OWN,
+                    Authority.TEMPLATE_ADD_OWN, Authority.TEMPLATE_SHOW_OWN,
                     Authority.TEMPLATE_DELETE_OWN, Authority.TEMPLATE_UPDATE_OWN);
 
             authorityService.addUndeletableAuthorities(Role.ROLE_DOCTOR, Authority.GLUCOSE_SHOW_ATTACHED,
