@@ -14,6 +14,7 @@ import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalTime;
 import java.util.List;
 
 @Tag(name = "insulin-calculations", description = "методы для модификации инсулиновых профилей и для расчетов инсулина")
@@ -38,26 +40,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/patients/{userId}/insulin")
 public class InsulinCalculationController {
-    private PatientProfileService patientProfileService;
-    private InsulinProfileService insulinProfileService;
     private InsulinCalculationService insulinCalculationService;
-    private DiaryEntryService diaryEntryService;
 
-    public InsulinCalculationController(PatientProfileService patientProfileService,
-                                        InsulinProfileService insulinProfileService,
-                                        InsulinCalculationService insulinCalculationService,
-                                        DiaryEntryService diaryEntryService) {
-        this.patientProfileService = patientProfileService;
-        this.insulinProfileService = insulinProfileService;
+    public InsulinCalculationController(InsulinCalculationService insulinCalculationService) {
         this.insulinCalculationService = insulinCalculationService;
-        this.diaryEntryService = diaryEntryService;
     }
 
     @Operation(summary = "Рассчитать количество единиц инсулина для больного на основе его профиля и записей дневника.",
             description = "Могут учитываться предыдущие вводы инсулина, " +
                     "если указан соответствующий параметр в теле запроса. Необходимо право INSULIN_CALCULATE_OWN, " +
                     "доступ только у самого больного.")
-    @ApiResponses(value = @ApiResponse(responseCode = "400", description = "Если тело запроса некорректное.",
+    @ApiResponses(value = @ApiResponse(responseCode = "400", description = "Если параметры запроса некорректны.",
             content = @Content(schema = @Schema(implementation = ExceptionDTO.class))))
     @GetMapping("/calculate")
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'INSULIN_CALCULATE_OWN'," +
@@ -67,17 +60,28 @@ public class InsulinCalculationController {
                                    BindingResult bindingResult) {
         if (bindingResult.hasErrors()) throw new ValidationIsFailedException(bindingResult, "request body is invalid");
 
-        PatientProfile patientProfile = patientProfileService.getByUserId(userId);
-        InsulinProfile insulinProfile = insulinProfileService.getByPatientProfileId(patientProfile.getId());
-
-        Instant now = Instant.now();
-        List<DiaryEntry> insulinEntries = diaryEntryService.getDiaryEntriesOfType(DiaryEntryType.INSULIN_ENTRY,
-                patientProfile, now.minus(Duration.ofHours(12)), now);
-
-        return insulinCalculationService.calculateInsulinDose(insulinProfile, null,
-                calculationRequest.localTimeOfDay(), calculationRequest.carbs(),
+        return insulinCalculationService.calculateInsulinDose(userId,
+                calculationRequest.localTimeOfDay(),
+                calculationRequest.considerActiveInsulin(), calculationRequest.correctGlucoseLevel(),
+                calculationRequest.carbs(),
                 calculationRequest.glucose() != null ? calculationRequest.glucose() : 0f,
-                calculationRequest.correction() != null ? calculationRequest.correction() : 0f,
-                patientProfile.getHighGlucose());
+                calculationRequest.correction() != null ? calculationRequest.correction() : 0f);
+    }
+
+    @Operation(summary = "Рассчитать только активный инсулин.",
+            description = "Необходимо право INSULIN_CALCULATE_OWN, " +
+                    "доступ только у самого больного.")
+    @ApiResponses(value = @ApiResponse(responseCode = "400", description = "Если параметры запроса некорректны.",
+            content = @Content(schema = @Schema(implementation = ExceptionDTO.class))))
+    @GetMapping("/calculate-iob")
+    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'INSULIN_CALCULATE_OWN'," +
+            "#userId, authentication)")
+    public Float calculateActiveInsulin(@PathVariable int userId,
+                                        @Parameter(description = "Временная отметка в формате ISO 8601, " +
+                                                "в зависимости от которой " +
+                                                "считать прошлый введенный инсулин.")
+                                        @RequestParam(required = true)
+                                        Instant timestamp) {
+        return insulinCalculationService.calculateActiveInsulin(userId, timestamp);
     }
 }
