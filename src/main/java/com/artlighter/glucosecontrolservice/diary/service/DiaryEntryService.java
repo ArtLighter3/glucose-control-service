@@ -116,8 +116,7 @@ public class DiaryEntryService {
      *             если null, то выберутся записи в течение недели до верхней границы to;
      * @param to верхняя граница временного периода выборки по UTC+0; если null, то верхней границей считается
      *           текущий момент времени;
-     * @return список записей дневника всех типов;
-   //  * @throws IllegalArgumentException если patientProfile равен null;
+     * @return список записей дневника всех типов; никогда не null;
      */
     @Transactional(readOnly = true)
     public List<DiaryEntry> getAllDiaryEntries(PatientProfile patientProfile, Instant from, Instant to) {
@@ -132,8 +131,7 @@ public class DiaryEntryService {
      *             если null, то выберутся записи в течение недели до верхней границы to;
      * @param to верхняя граница временного периода выборки по UTC+0; если null, то верхней границей считается
      *           текущий момент времени;
-     * @return список записей дневника соответствующего типа;
-   //  * @throws IllegalArgumentException если patientProfile равен null;
+     * @return список записей дневника соответствующего типа; никогда не null;
      */
     @Transactional(readOnly = true)
     public List<DiaryEntry> getDiaryEntriesOfType(DiaryEntryType entryType, PatientProfile patientProfile,
@@ -157,7 +155,6 @@ public class DiaryEntryService {
      * @param entryType тип записи дневника самоконтроля; не null;
      * @param patientProfile профиль больного, не null;
      * @return Последнюю запись дневника этого типа; null, если не было найдено;
-    //  * @throws IllegalArgumentException если patientProfile равен null;
      */
     @Transactional(readOnly = true)
     public DiaryEntry findLastEntryOfType(DiaryEntryType entryType, PatientProfile patientProfile) {

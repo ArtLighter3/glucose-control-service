@@ -126,8 +126,8 @@ public class InsulinCalculationService {
                 Float.valueOf(df.format(result)));
     }
 
-    public Float calculateActiveInsulin(int patientId, Instant patientTimestamp) {
-        if (patientTimestamp == null) patientTimestamp = Instant.now();
+    public Float calculateActiveInsulin(int patientId) {
+        Instant patientTimestamp = Instant.now();
 
         PatientProfile patientProfile = patientProfileService.getByUserId(patientId);
 

@@ -7,10 +7,12 @@ import com.artlighter.glucosecontrolservice.calculations.dto.InsulinResult;
 import com.artlighter.glucosecontrolservice.calculations.dto.RecentActivityDTO;
 import com.artlighter.glucosecontrolservice.calculations.service.InsulinCalculationService;
 import com.artlighter.glucosecontrolservice.diary.dto.GlucoseEntryDTO;
+import com.artlighter.glucosecontrolservice.diary.entity.entry.CarbsEntry;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.GlucoseEntry;
 import com.artlighter.glucosecontrolservice.diary.service.DiaryEntryService;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
+import com.artlighter.glucosecontrolservice.diary.util.mapper.DiaryEntryCollectionMapper;
 import com.artlighter.glucosecontrolservice.diary.util.mapper.GlucoseEntryMapper;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @Tag(name = "calculations", description = "методы для модификации инсулиновых профилей и для расчетов инсулина, " +
@@ -46,14 +49,17 @@ public class StatisticsController {
     private PatientProfileService patientProfileService;
     private DiaryEntryService diaryEntryService;
     private GlucoseEntryMapper glucoseEntryMapper;
+    private DiaryEntryCollectionMapper diaryEntryCollectionMapper;
 
     public StatisticsController(InsulinCalculationService insulinCalculationService,
                                 PatientProfileService patientProfileService, DiaryEntryService diaryEntryService,
-                                GlucoseEntryMapper glucoseEntryMapper) {
+                                GlucoseEntryMapper glucoseEntryMapper,
+                                DiaryEntryCollectionMapper diaryEntryCollectionMapper) {
         this.insulinCalculationService = insulinCalculationService;
         this.patientProfileService = patientProfileService;
         this.diaryEntryService = diaryEntryService;
         this.glucoseEntryMapper = glucoseEntryMapper;
+        this.diaryEntryCollectionMapper = diaryEntryCollectionMapper;
     }
 
     @Operation(summary = "Получить и рассчитать информацию о " +
@@ -62,30 +68,55 @@ public class StatisticsController {
     @ApiResponses(value = @ApiResponse(responseCode = "400", description = "Если параметры запроса некорректны.",
             content = @Content(schema = @Schema(implementation = ExceptionDTO.class))))
     @GetMapping
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'ACTIVITY_SHOW_OWN'," +
+    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'GLUCOSE_SHOW_OWN'," +
             "#userId, authentication)")
     public RecentActivityDTO getRecentActivity(@PathVariable int userId,
-                                        @Parameter(description = "Временная отметка в формате ISO 8601, " +
-                                                "в зависимости от которой рассчитывать активность.")
-                                        @RequestParam(required = true)
-                                        Instant timestamp) {
+                                        @Parameter(description = "UTC-смещение, к которому будут " +
+                                                "преобразованы временные отметки записей дневника, а " +
+                                                "также на основе которого будут рассчитаны углеводы за день. " +
+                                                "Если не указать, то отметки записей будут по UTC+0",
+                                                required = false)
+                                        @RequestParam(required = false)
+                                        ZoneOffset outputZoneOffset) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
 
+        Instant timestamp = Instant.now();
         List<DiaryEntry> recentEntries = diaryEntryService.getAllDiaryEntries(patientProfile,
                 timestamp.minus(Duration.ofHours(24)), timestamp);
 
         GlucoseEntryDTO lastGlucoseEntry = null;
         DiaryEntry lastEntry = diaryEntryService.findLastEntryOfType(DiaryEntryType.GLUCOSE_ENTRY, patientProfile);
         if (lastEntry instanceof GlucoseEntry)
-            lastGlucoseEntry = glucoseEntryMapper.mapToDTO((GlucoseEntry) lastEntry);
+            lastGlucoseEntry = glucoseEntryMapper.mapToDtoWithUnitConversion((GlucoseEntry) lastEntry,
+                    patientProfile, outputZoneOffset);
 
         Float activeInsulin = null;
         try {
             activeInsulin = insulinCalculationService.calculateActiveInsulin(patientProfile, recentEntries, timestamp);
         } catch (ResourceNotFoundException ignored) {}
 
-        return new RecentActivityDTO(recentEntries, lastGlucoseEntry, activeInsulin);
-    }
+//        Float carbsOfDay = outputZoneOffset != null ?
+//                calculateCarbs(recentEntries,
+//                        timestamp.atOffset(outputZoneOffset).toLocalDate().atStartOfDay().toInstant(outputZoneOffset))
+//                : null;
 
+        return new RecentActivityDTO(diaryEntryCollectionMapper
+                .mapToDTO(recentEntries, patientProfile, outputZoneOffset), lastGlucoseEntry, activeInsulin/*,
+                carbsOfDay, patientProfile.getCarbsUnit()*/);
+    }
+//
+//    private float calculateCarbs(List<? extends DiaryEntry> entries, Instant localStartOfDay) {
+//        float totalCarbs = 0f;
+//
+//        for (DiaryEntry entry : entries) {
+//            if (entry instanceof CarbsEntry carbsEntry) {
+//                if (carbsEntry.getCommitedAt().isAfter(localStartOfDay) ||
+//                        carbsEntry.getCommitedAt().equals(localStartOfDay))
+//                    totalCarbs += carbsEntry.getValue();
+//            }
+//        }
+//
+//        return totalCarbs;
+//    }
 
 }
