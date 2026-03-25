@@ -148,7 +148,7 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
 
         INT entryToAdd = entryMapper.mapToInternalWithUnitConversion(entryDTO, patientProfile);
         //log.info("timestamp of entry = {}", entryToAdd.getCommitedAt());
-        diaryEntryService.addDiaryEntry(entryToAdd, patientProfile, entryToAdd.getCommitedAt());
+        diaryEntryService.addDiaryEntry(entryToAdd, patientProfile.getUserId(), entryToAdd.getCommitedAt());
 
         return entryDTO;
     }
@@ -159,7 +159,7 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
         checkValidationErrorsAndThrowException(bindingResult);
 
         INT entryToUpdate = entryMapper.mapToInternalWithUnitConversion(entryDTO, patientProfile);
-        diaryEntryService.updateDiaryEntry(entryToUpdate, patientProfile, entryToUpdate.getCommitedAt());
+        diaryEntryService.updateDiaryEntry(entryToUpdate, patientProfile.getUserId(), entryToUpdate.getCommitedAt());
 
         return entryDTO;
     }
@@ -167,7 +167,7 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
     private void deleteEntry(int userId, Instant commitedAt) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
 
-        diaryEntryService.deleteDiaryEntry(getEntryType(), patientProfile, commitedAt);
+        diaryEntryService.deleteDiaryEntry(getEntryType(), patientProfile.getUserId(), commitedAt);
     }
 
 //    protected void checkUserId(int userId, ServiceUserDetails userDetails) {

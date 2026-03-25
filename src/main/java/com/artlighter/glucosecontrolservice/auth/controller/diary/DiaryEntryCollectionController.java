@@ -86,7 +86,7 @@ public class DiaryEntryCollectionController {
 
         List<DiaryEntry> added
                 = diaryEntryService.addDiaryEntries(collectionMapper.mapToInternal(entries, patientProfile),
-                        patientProfile, true);
+                        patientProfile.getUserId(), true);
 
         return collectionMapper.mapToDTO(added, patientProfile, ZoneOffset.UTC);
     }

@@ -10,7 +10,7 @@ public class AttachedPatientMapper implements DTOMapper<PatientProfile, Attached
     @Override
     public AttachedPatientDTO mapToDTO(PatientProfile internal) {
         return new AttachedPatientDTO(internal.getUser().getUsername(), internal.getUser().getUsername(),
-                internal.getUser().getUsername(), internal.getUser().getId(), internal.getId(),
+                internal.getUser().getUsername(), internal.getUser().getId(), internal.getUserId(),
                 null);
     }
 

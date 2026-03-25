@@ -18,7 +18,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.time.Instant;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -145,8 +144,8 @@ public class InsulinCalculationServiceTests {
                 3, null, null);
         InsulinResult expected = new InsulinResult(6f, 1f, 0.0f, 0.0f,
                 carbs, icr, expectedCarbsDose, correction, expectedCarbsDose);
-        when(insulinProfileService.getByPatientProfileId(patientProfile.getId())).thenReturn(insulinProfile);
-        when(patientProfileService.getByUserId(patientProfile.getUser().getId())).thenReturn(patientProfile);
+        when(insulinProfileService.getByPatientProfileId(patientProfile.getUserId())).thenReturn(insulinProfile);
+        when(patientProfileService.getByUserId(patientProfile.getUserId())).thenReturn(patientProfile);
 
         InsulinResult actual = insulinCalculationService.calculateInsulinDose(patientProfile.getUser().getId(),
                 LocalTime.now(), false, false, carbs, 6f, correction);
@@ -163,8 +162,8 @@ public class InsulinCalculationServiceTests {
                 3, null, ratios);
         InsulinResult expected = new InsulinResult(6f, 1f, 0.0f, 0.0f,
                 carbs, expectedIcr, expectedCarbsDose, correction, expectedCarbsDose);
-        when(insulinProfileService.getByPatientProfileId(patientProfile.getId())).thenReturn(insulinProfile);
-        when(patientProfileService.getByUserId(patientProfile.getUser().getId())).thenReturn(patientProfile);
+        when(insulinProfileService.getByPatientProfileId(patientProfile.getUserId())).thenReturn(insulinProfile);
+        when(patientProfileService.getByUserId(patientProfile.getUserId())).thenReturn(patientProfile);
 
         InsulinResult actual = insulinCalculationService.calculateInsulinDose(patientProfile.getUser().getId(),
                 timeOfDay, false, false, carbs, 6f, correction);

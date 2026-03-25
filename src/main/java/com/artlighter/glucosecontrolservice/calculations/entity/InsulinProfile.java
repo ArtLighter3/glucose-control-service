@@ -1,18 +1,15 @@
 package com.artlighter.glucosecontrolservice.calculations.entity;
 
 import jakarta.persistence.*;
-import org.springframework.core.annotation.Order;
 
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Map;
 
 @Entity
 @Table(name = "insulin_profile")
 public class InsulinProfile {
     @Id
-    @Column(name = "profile_id")
-    private int profileId;
+    @Column(name = "patient_profile_id")
+    private int patientProfileId;
     @Column(name = "default_icr")
     private float defaultInsulinToCarbsRatio;
     @Column(name = "default_isf")
@@ -29,10 +26,10 @@ public class InsulinProfile {
     public InsulinProfile() {
     }
 
-    public InsulinProfile(int profileId, float defaultInsulinToCarbsRatio, float defaultInsulinSensitivityFactor,
+    public InsulinProfile(int patientProfileId, float defaultInsulinToCarbsRatio, float defaultInsulinSensitivityFactor,
                           int durationOfInsulinAction, List<InsulinSensitivityFactor> factorsByTime,
                           List<InsulinToCarbsRatio> ratiosByTime) {
-        this.profileId = profileId;
+        this.patientProfileId = patientProfileId;
         this.defaultInsulinToCarbsRatio = defaultInsulinToCarbsRatio;
         this.defaultInsulinSensitivityFactor = defaultInsulinSensitivityFactor;
         this.durationOfInsulinAction = durationOfInsulinAction;
@@ -40,12 +37,12 @@ public class InsulinProfile {
         this.ratiosByTime = ratiosByTime;
     }
 
-    public int getProfileId() {
-        return profileId;
+    public int getPatientProfileId() {
+        return patientProfileId;
     }
 
-    public void setProfileId(int profileId) {
-        this.profileId = profileId;
+    public void setPatientProfileId(int profileId) {
+        this.patientProfileId = profileId;
     }
 
     public float getDefaultInsulinToCarbsRatio() {

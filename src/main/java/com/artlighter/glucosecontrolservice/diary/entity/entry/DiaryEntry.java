@@ -1,7 +1,6 @@
 package com.artlighter.glucosecontrolservice.diary.entity.entry;
 
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -24,10 +23,7 @@ public abstract class DiaryEntry {
     //private int profileId;
   //  @MapsId("profileId")
     @Id
-    @JoinColumn(name = "profile_id", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
-    private PatientProfile patientProfile;
+    private int profileId;
     @Id
     private Instant commitedAt;
 
@@ -50,12 +46,12 @@ public abstract class DiaryEntry {
         this.notes = notes;
     }
 
-    public PatientProfile getPatientProfile() {
-        return patientProfile;
+    public int getProfileId() {
+        return profileId;
     }
 
-    public void setPatientProfile(PatientProfile patientProfile) {
-        this.patientProfile = patientProfile;
+    public void setProfileId(int profileId) {
+        this.profileId = profileId;
     }
 
     public Instant getCommitedAt() {
@@ -101,19 +97,19 @@ public abstract class DiaryEntry {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         DiaryEntry that = (DiaryEntry) o;
-        return Objects.equals(patientProfile, that.patientProfile) && Objects.equals(commitedAt, that.commitedAt);
+        return Objects.equals(profileId, that.profileId) && Objects.equals(commitedAt, that.commitedAt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(patientProfile, commitedAt);
+        return Objects.hash(profileId, commitedAt);
     }
 
     //@Embeddable
     public static class DiaryEntryID implements Serializable {
         //private int profileId;
         private Instant commitedAt;
-        private PatientProfile patientProfile;
+        private int profileId;
 
 //        public int getProfileId() {
 //            return profileId;
@@ -127,8 +123,8 @@ public abstract class DiaryEntry {
         public DiaryEntryID() {
         }
 
-        public DiaryEntryID(PatientProfile patientProfile, Instant commitedAt) {
-            this.patientProfile = patientProfile;
+        public DiaryEntryID(int profileId, Instant commitedAt) {
+            this.profileId = profileId;
             this.commitedAt = commitedAt;
         }
 
@@ -140,24 +136,24 @@ public abstract class DiaryEntry {
             this.commitedAt = commitedAt;
         }
 
-        public PatientProfile getPatientProfile() {
-            return patientProfile;
+        public int getProfileId() {
+            return profileId;
         }
 
-        public void setPatientProfile(PatientProfile patientProfile) {
-            this.patientProfile = patientProfile;
+        public void setProfileId(int profileId) {
+            this.profileId = profileId;
         }
 
         @Override
         public boolean equals(Object o) {
             if (o == null || getClass() != o.getClass()) return false;
             DiaryEntryID that = (DiaryEntryID) o;
-            return Objects.equals(commitedAt, that.commitedAt) && Objects.equals(patientProfile, that.patientProfile);
+            return Objects.equals(commitedAt, that.commitedAt) && Objects.equals(profileId, that.profileId);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(commitedAt, patientProfile);
+            return Objects.hash(commitedAt, profileId);
         }
 
 //                @Override

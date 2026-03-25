@@ -45,7 +45,7 @@ public class NightscoutAPIController {
         List<NightscoutEntryDTO> rejected = new ArrayList<>();
         List<NightscoutEntryDTO> toAdd = getValidated(entries, rejected);
 
-        rejected.addAll(nightscoutService.addGlucoseEntries(toAdd, patientProfile, true));
+        rejected.addAll(nightscoutService.addGlucoseEntries(toAdd, patientProfile.getUserId(), true));
         return rejected;
     }
 
@@ -61,7 +61,7 @@ public class NightscoutAPIController {
         List<NightscoutTreatmentDTO> rejected = new ArrayList<>();
         List<NightscoutTreatmentDTO> toAdd = getValidated(treatments, rejected);
 
-        rejected.addAll(nightscoutService.addTreatments(toAdd, patientProfile, true));
+        rejected.addAll(nightscoutService.addTreatments(toAdd, patientProfile.getUserId(), true));
         return rejected;
     }
 

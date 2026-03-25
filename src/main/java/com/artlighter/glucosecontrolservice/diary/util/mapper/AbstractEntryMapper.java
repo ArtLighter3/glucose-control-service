@@ -41,7 +41,7 @@ public abstract class AbstractEntryMapper<INT extends DiaryEntry, EXT extends Di
         entry.setValue(entryDTO.value());
         entry.setCommitedAt(entryDTO.commitedAt().toInstant().truncatedTo(ChronoUnit.MINUTES));
         entry.setNotes(entryDTO.notes());
-        entry.setPatientProfile(patientProfile);
+        entry.setProfileId(patientProfile.getUserId());
 
         fillFieldsOfInternalWithUnitConversion(entry, entryDTO, patientProfile);
         //entry.setValue(round(entry.getValue()));

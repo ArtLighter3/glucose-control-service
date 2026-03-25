@@ -82,7 +82,7 @@ public abstract class AbstractPatientTemplateResourceController
                                   Pageable pageable) {
         PatientProfile patientProfile = getPatientProfileOrThrowException(userId);
 
-        Page<INT> templates = getTemplateService().getAllByPatientProfileId(patientProfile.getId(), pageable);
+        Page<INT> templates = getTemplateService().getAllByPatientProfileId(patientProfile.getUserId(), pageable);
 
         return templates.map(getTemplateMapper()::mapToDTO);
     }
@@ -101,7 +101,7 @@ public abstract class AbstractPatientTemplateResourceController
                                                Pageable pageable) {
         PatientProfile patientProfile = getPatientProfileOrThrowException(userId);
 
-        Page<INT> templates = getTemplateService().searchByNameQuery(patientProfile.getId(), query, pageable);
+        Page<INT> templates = getTemplateService().searchByNameQuery(patientProfile.getUserId(), query, pageable);
 
         return templates.map(getTemplateMapper()::mapToDTO);
     }
@@ -146,7 +146,7 @@ public abstract class AbstractPatientTemplateResourceController
     public void deleteTemplate(@PathVariable int userId, @RequestParam String name) {
         PatientProfile patientProfile = getPatientProfileOrThrowException(userId);
 
-        getTemplateService().deleteFromPatient(patientProfile.getId(), name);
+        getTemplateService().deleteFromPatient(patientProfile.getUserId(), name);
     }
 
     protected INT post(int userId, EXT template, BindingResult bindingResult) {
@@ -156,7 +156,7 @@ public abstract class AbstractPatientTemplateResourceController
         PatientProfile patientProfile = getPatientProfileOrThrowException(userId);
 
         INT toAdd = getTemplateMapper().mapToInternal(template);
-        return getTemplateService().addToPatient(toAdd, patientProfile.getId(), toAdd.getId().getName());
+        return getTemplateService().addToPatient(toAdd, patientProfile.getUserId(), toAdd.getId().getName());
     }
 
     protected INT update(int userId, EXT template, BindingResult bindingResult) {
@@ -166,13 +166,11 @@ public abstract class AbstractPatientTemplateResourceController
         PatientProfile patientProfile = getPatientProfileOrThrowException(userId);
 
         INT toUpdate = getTemplateMapper().mapToInternal(template);
-        return getTemplateService().update(toUpdate, patientProfile.getId(), toUpdate.getId().getName());
+        return getTemplateService().update(toUpdate, patientProfile.getUserId(), toUpdate.getId().getName());
     }
 
     protected PatientProfile getPatientProfileOrThrowException(int userId) {
-        PatientProfile patientProfile = getPatientProfileService().getByUserId(userId);
-
-        return patientProfile;
+        return getPatientProfileService().getByUserId(userId);
     }
 
    // protected abstract EXT mapToDTO(INT internal);

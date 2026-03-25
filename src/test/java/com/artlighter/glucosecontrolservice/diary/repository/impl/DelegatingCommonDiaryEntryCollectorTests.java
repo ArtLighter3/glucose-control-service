@@ -58,9 +58,9 @@ public class DelegatingCommonDiaryEntryCollectorTests {
         Instant from = Instant.now().minus(Duration.ofDays(20));
         List<GlucoseEntry> expected = filter(storage, from, to, DiaryEntryType.GLUCOSE_ENTRY)
                 .stream().map((entry) -> (GlucoseEntry) entry).collect(Collectors.toList());
-        when(glucoseRepository.getAllByPatientProfileIdAndCommitedAtBetween(anyInt(), eq(from), eq(to), notNull()))
+        when(glucoseRepository.getAllByProfileIdAndCommitedAtBetween(anyInt(), eq(from), eq(to), notNull()))
                 .thenReturn(expected);
-        when(glucoseRepository.getAllByPatientProfileIdAndCommitedAtBetween(anyInt(), eq(from), eq(to)))
+        when(glucoseRepository.getAllByProfileIdAndCommitedAtBetween(anyInt(), eq(from), eq(to)))
                 .thenReturn(expected);
 
         List<DiaryEntry> actual = collector.getAllOfTypeBetweenDates(DiaryEntryType.GLUCOSE_ENTRY,
@@ -75,9 +75,9 @@ public class DelegatingCommonDiaryEntryCollectorTests {
         from = Instant.now().minus(Duration.ofDays(30));
         List<InsulinEntry> expected2 = filter(storage, from, to, DiaryEntryType.INSULIN_ENTRY)
                 .stream().map((entry) -> (InsulinEntry) entry).collect(Collectors.toList());
-        when(insulinRepository.getAllByPatientProfileIdAndCommitedAtBetween(anyInt(), eq(from), eq(to), notNull()))
+        when(insulinRepository.getAllByProfileIdAndCommitedAtBetween(anyInt(), eq(from), eq(to), notNull()))
                 .thenReturn(expected2);
-        when(insulinRepository.getAllByPatientProfileIdAndCommitedAtBetween(anyInt(), eq(from), eq(to)))
+        when(insulinRepository.getAllByProfileIdAndCommitedAtBetween(anyInt(), eq(from), eq(to)))
                 .thenReturn(expected2);
 
         List<DiaryEntry> actual2 = collector.getAllOfTypeBetweenDates(DiaryEntryType.INSULIN_ENTRY,
@@ -98,13 +98,13 @@ public class DelegatingCommonDiaryEntryCollectorTests {
                 .stream().map((entry) -> (GlucoseEntry) entry).collect(Collectors.toList());
         List<InsulinEntry> insulinEntries = filter(expected, from, to, DiaryEntryType.INSULIN_ENTRY)
                 .stream().map((entry) -> (InsulinEntry) entry).collect(Collectors.toList());
-        when(glucoseRepository.getAllByPatientProfileIdAndCommitedAtBetween(anyInt(), eq(from), eq(to), notNull()))
+        when(glucoseRepository.getAllByProfileIdAndCommitedAtBetween(anyInt(), eq(from), eq(to), notNull()))
                 .thenReturn(glucoseEntries);
-        when(glucoseRepository.getAllByPatientProfileIdAndCommitedAtBetween(anyInt(), eq(from), eq(to)))
+        when(glucoseRepository.getAllByProfileIdAndCommitedAtBetween(anyInt(), eq(from), eq(to)))
                 .thenReturn(glucoseEntries);
-        when(insulinRepository.getAllByPatientProfileIdAndCommitedAtBetween(anyInt(), eq(from), eq(to), notNull()))
+        when(insulinRepository.getAllByProfileIdAndCommitedAtBetween(anyInt(), eq(from), eq(to), notNull()))
                 .thenReturn(insulinEntries);
-        when(insulinRepository.getAllByPatientProfileIdAndCommitedAtBetween(anyInt(), eq(from), eq(to)))
+        when(insulinRepository.getAllByProfileIdAndCommitedAtBetween(anyInt(), eq(from), eq(to)))
                 .thenReturn(insulinEntries);
 
         List<DiaryEntry> actual = collector.getAllOfTypeBetweenDates(null,
@@ -124,7 +124,7 @@ public class DelegatingCommonDiaryEntryCollectorTests {
     @Test
     public void saveOrUpdate_GetsCorrectEntity_CallsCorrectRepositoryToSaveOrUpdate() {
         GlucoseEntry glucoseEntry = new GlucoseEntry();
-        glucoseEntry.setPatientProfile(new PatientProfile());
+        glucoseEntry.setProfileId(0);
         glucoseEntry.setCommitedAt(Instant.now());
         when(glucoseRepository.save(glucoseEntry)).thenReturn(glucoseEntry);
 
@@ -135,7 +135,7 @@ public class DelegatingCommonDiaryEntryCollectorTests {
 
 
         InsulinEntry insulinEntry = new InsulinEntry();
-        insulinEntry.setPatientProfile(new PatientProfile());
+        insulinEntry.setProfileId(0);
         insulinEntry.setCommitedAt(Instant.now());
         when(insulinRepository.save(insulinEntry)).thenReturn(insulinEntry);
 
@@ -161,14 +161,14 @@ public class DelegatingCommonDiaryEntryCollectorTests {
         assertThrows(IllegalArgumentException.class, () -> collector.saveOrUpdate(entry));
 
         entry.setCommitedAt(null);
-        entry.setPatientProfile(new PatientProfile());
+        entry.setProfileId(0);
         assertThrows(IllegalArgumentException.class, () -> collector.saveOrUpdate(entry));
     }
 
     @Test
     public void deleteById_GetsCorrectEntity_CallsCorrectRepositoryToRemove() {
-        DiaryEntry.DiaryEntryID glucoseEntryId = new DiaryEntry.DiaryEntryID(new PatientProfile(), Instant.now());
-        DiaryEntry.DiaryEntryID insulinEntryId = new DiaryEntry.DiaryEntryID(new PatientProfile(), Instant.now());
+        DiaryEntry.DiaryEntryID glucoseEntryId = new DiaryEntry.DiaryEntryID(0, Instant.now());
+        DiaryEntry.DiaryEntryID insulinEntryId = new DiaryEntry.DiaryEntryID(0, Instant.now());
 
         collector.deleteById(DiaryEntryType.GLUCOSE_ENTRY, glucoseEntryId);
         collector.deleteById(DiaryEntryType.INSULIN_ENTRY, insulinEntryId);
@@ -182,40 +182,39 @@ public class DelegatingCommonDiaryEntryCollectorTests {
         assertThrows(IllegalArgumentException.class, () -> collector.deleteById(null, null));
         assertThrows(IllegalArgumentException.class, () -> collector.deleteById(DiaryEntryType.INSULIN_ENTRY, null));
         assertThrows(IllegalArgumentException.class, () ->
-                collector.deleteById(null, new DiaryEntry.DiaryEntryID(new PatientProfile(),
-                        Instant.now())));
+                collector.deleteById(null, new DiaryEntry.DiaryEntryID(0, Instant.now())));
 
         assertThrows(IllegalArgumentException.class, () -> collector.deleteById(DiaryEntryType.GLUCOSE_ENTRY,
-                new DiaryEntry.DiaryEntryID(new PatientProfile(), null)));
-        assertThrows(IllegalArgumentException.class, () -> collector.deleteById(DiaryEntryType.GLUCOSE_ENTRY,
-                new DiaryEntry.DiaryEntryID(null, Instant.now())));
-        assertThrows(IllegalArgumentException.class, () -> collector.deleteById(DiaryEntryType.GLUCOSE_ENTRY,
-                new DiaryEntry.DiaryEntryID(null, null)));
+                new DiaryEntry.DiaryEntryID(0, null)));
+//        assertThrows(IllegalArgumentException.class, () -> collector.deleteById(DiaryEntryType.GLUCOSE_ENTRY,
+//                new DiaryEntry.DiaryEntryID(null, Instant.now())));
+//        assertThrows(IllegalArgumentException.class, () -> collector.deleteById(DiaryEntryType.GLUCOSE_ENTRY,
+//                new DiaryEntry.DiaryEntryID(null, null)));
     }
 
     @Test
     public void exists_GetsCorrectEntity_CallsCorrectRepositoryAndReturnsCorrectBoolean() {
         GlucoseEntry existentGlucoseEntry = new GlucoseEntry();
-        existentGlucoseEntry.setPatientProfile(new PatientProfile());
+        existentGlucoseEntry.setProfileId(0);
         existentGlucoseEntry.setCommitedAt(Instant.now().minus(Duration.ofDays(1)));
         GlucoseEntry nonexistentGlucoseEntry = new GlucoseEntry();
-        nonexistentGlucoseEntry.setPatientProfile(new PatientProfile());
+        nonexistentGlucoseEntry.setProfileId(0);
         nonexistentGlucoseEntry.setCommitedAt(Instant.now().minus(Duration.ofDays(2)));
 
         InsulinEntry existentInsulinEntry = new InsulinEntry();
-        existentInsulinEntry.setPatientProfile(new PatientProfile());
+        existentInsulinEntry.setProfileId(0);
         existentInsulinEntry.setCommitedAt(Instant.now().minus(Duration.ofDays(3)));
         InsulinEntry nonexistentInsulinEntry = new InsulinEntry();
-        nonexistentInsulinEntry.setPatientProfile(new PatientProfile());
+        nonexistentInsulinEntry.setProfileId(0);
         nonexistentInsulinEntry.setCommitedAt(Instant.now().minus(Duration.ofDays(4)));
 
-        when(insulinRepository.existsById(new DiaryEntry.DiaryEntryID(existentInsulinEntry.getPatientProfile(),
+        when(insulinRepository.existsById(new DiaryEntry.DiaryEntryID(existentInsulinEntry.getProfileId(),
                 existentInsulinEntry.getCommitedAt()))).thenReturn(true);
-        when(insulinRepository.existsById(new DiaryEntry.DiaryEntryID(nonexistentInsulinEntry.getPatientProfile(),
+        when(insulinRepository.existsById(new DiaryEntry.DiaryEntryID(nonexistentInsulinEntry.getProfileId(),
                 nonexistentInsulinEntry.getCommitedAt()))).thenReturn(false);
-        when(glucoseRepository.existsById(new DiaryEntry.DiaryEntryID(existentGlucoseEntry.getPatientProfile(),
+        when(glucoseRepository.existsById(new DiaryEntry.DiaryEntryID(existentGlucoseEntry.getProfileId(),
                 existentGlucoseEntry.getCommitedAt()))).thenReturn(true);
-        when(glucoseRepository.existsById(new DiaryEntry.DiaryEntryID(nonexistentGlucoseEntry.getPatientProfile(),
+        when(glucoseRepository.existsById(new DiaryEntry.DiaryEntryID(nonexistentGlucoseEntry.getProfileId(),
                 nonexistentGlucoseEntry.getCommitedAt()))).thenReturn(false);
 
         assertTrue(collector.exists(existentGlucoseEntry));
@@ -239,7 +238,7 @@ public class DelegatingCommonDiaryEntryCollectorTests {
         assertThrows(IllegalArgumentException.class, () -> collector.exists(entry));
 
         entry.setCommitedAt(null);
-        entry.setPatientProfile(new PatientProfile());
+        entry.setProfileId(0);
         assertThrows(IllegalArgumentException.class, () -> collector.exists(entry));
     }
 

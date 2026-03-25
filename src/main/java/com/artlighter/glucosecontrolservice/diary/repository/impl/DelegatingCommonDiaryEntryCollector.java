@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -43,7 +42,7 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
         if (entryType == null) return collectAllBetweenDates(patientProfile, from, to, sort);
 
         ParticularDiaryEntryRepository repository = repositories.getRepositoryForType(entryType);
-        return repository.getAllByPatientProfileIdAndCommitedAtBetween(patientProfile.getId(), from, to, sort);
+        return repository.getAllByProfileIdAndCommitedAtBetween(patientProfile.getUserId(), from, to, sort);
     }
 
     /**
@@ -55,7 +54,7 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
         if (entryType == null) throw new IllegalArgumentException("entryType cannot be null");
 
         ParticularDiaryEntryRepository repository = repositories.getRepositoryForType(entryType);
-        return  repository.findFirstByPatientProfileId(patientProfile.getId(), sort);
+        return  repository.findFirstByProfileId(patientProfile.getUserId(), sort);
     }
 
     /**
@@ -77,7 +76,7 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
     @Override
     public void deleteById(DiaryEntryType entryType, DiaryEntry.DiaryEntryID id) {
         if (entryType == null) throw new IllegalArgumentException("entryType cannot be null");
-        if (id == null || id.getCommitedAt() == null || id.getPatientProfile() == null)
+        if (id == null || id.getCommitedAt() == null)
             throw new IllegalArgumentException("id cannot be null and must contain id data");
 
         ParticularDiaryEntryRepository repository = repositories.getRepositoryForType(entryType);
@@ -94,7 +93,7 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
        // if (entry == null || entry.getPatientProfile() == null) return false;
 
         ParticularDiaryEntryRepository repository = repositories.getRepositoryForEntity(entry);
-        return repository.existsById(new DiaryEntry.DiaryEntryID(entry.getPatientProfile(), entry.getCommitedAt()));
+        return repository.existsById(new DiaryEntry.DiaryEntryID(entry.getProfileId(), entry.getCommitedAt()));
     }
 
     private List<DiaryEntry> collectAllBetweenDates(PatientProfile patientProfile, Instant from, Instant to,
@@ -102,7 +101,7 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
         List<DiaryEntry> diaryEntries = new ArrayList<>();
         //TODO можно просто добавить отдельный DAO, в котором будет один запрос с UNION для получения всех записей
         for (ParticularDiaryEntryRepository repository : repositories.getAllRepositories()) {
-            diaryEntries.addAll(repository.getAllByPatientProfileIdAndCommitedAtBetween(patientProfile.getId(),
+            diaryEntries.addAll(repository.getAllByProfileIdAndCommitedAtBetween(patientProfile.getUserId(),
                     from, to));
         }
         //TODO реализовать сортировку по Sort
@@ -113,7 +112,7 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
 
     private void checkArguments(DiaryEntry entry) {
         if (entry == null) throw new IllegalArgumentException("DiaryEntry cannot be null");
-        if (entry.getPatientProfile() == null || entry.getCommitedAt() == null)
+        if (entry.getCommitedAt() == null)
             throw new IllegalArgumentException("DiaryEntry must have an identification " +
                     "fields patientProfile and commitedAt");
     }

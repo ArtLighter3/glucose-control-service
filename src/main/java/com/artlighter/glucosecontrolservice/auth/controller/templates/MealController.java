@@ -52,7 +52,7 @@ public class MealController extends AbstractPatientTemplateResourceController<Me
         //углеводов в нужные единицы измерения
         PatientProfile patientProfile = getPatientProfileOrThrowException(userId);
 
-        Page<Meal> meals = getTemplateService().getAllByPatientProfileId(patientProfile.getId(), pageable);
+        Page<Meal> meals = getTemplateService().getAllByPatientProfileId(patientProfile.getUserId(), pageable);
 
         return meals.map((meal) ->
                 getTemplateMapper().mapToDtoWithUnitConversion(meal, patientProfile.getCarbsUnit()));
@@ -69,7 +69,7 @@ public class MealController extends AbstractPatientTemplateResourceController<Me
         //углеводов в нужные единицы измерения
         PatientProfile patientProfile = getPatientProfileOrThrowException(userId);
 
-        Page<Meal> meals = getTemplateService().searchByNameQuery(patientProfile.getId(), query, pageable);
+        Page<Meal> meals = getTemplateService().searchByNameQuery(patientProfile.getUserId(), query, pageable);
 
         return meals.map((meal) ->
                 getTemplateMapper().mapToDtoWithUnitConversion(meal, patientProfile.getCarbsUnit()));
@@ -103,7 +103,7 @@ public class MealController extends AbstractPatientTemplateResourceController<Me
     public CarbsResult calculateCarbs(@PathVariable int userId, @RequestBody Map<String, Float> mealWeights) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
 
-        float overallCarbs = getTemplateService().calculateOverallCarbs(patientProfile.getId(), mealWeights);
+        float overallCarbs = getTemplateService().calculateOverallCarbs(patientProfile.getUserId(), mealWeights);
         return new CarbsResult(patientProfile.getCarbsUnit().convertFromGrams(overallCarbs),
                 patientProfile.getCarbsUnit());
     }

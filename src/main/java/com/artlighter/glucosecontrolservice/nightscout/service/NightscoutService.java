@@ -8,13 +8,8 @@ import com.artlighter.glucosecontrolservice.nightscout.dto.NightscoutTreatmentDT
 import com.artlighter.glucosecontrolservice.nightscout.util.mapper.NightscoutEntryMapper;
 import com.artlighter.glucosecontrolservice.nightscout.util.mapper.NightscoutTreatmentMapper;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,18 +30,18 @@ public class NightscoutService {
         this.diaryEntryService = diaryEntryService;
     }
 
-    public List<NightscoutEntryDTO> addGlucoseEntries(List<NightscoutEntryDTO> entries, PatientProfile patientProfile,
+    public List<NightscoutEntryDTO> addGlucoseEntries(List<NightscoutEntryDTO> entries, int patientProfileId,
                                                       boolean updateIfExists) {
         List<DiaryEntry> diaryEntriesToAdd = new ArrayList<>();
 
         for (NightscoutEntryDTO entry : entries) {
             GlucoseEntry glucoseEntry = nightscoutEntryMapper.mapToInternal(entry);
-            glucoseEntry.setPatientProfile(patientProfile);
+            glucoseEntry.setProfileId(patientProfileId);
             diaryEntriesToAdd.add(glucoseEntry);
         }
 
         List<DiaryEntry> rejected =
-                diaryEntryService.addDiaryEntries(diaryEntriesToAdd, patientProfile, updateIfExists);
+                diaryEntryService.addDiaryEntries(diaryEntriesToAdd, patientProfileId, updateIfExists);
 
         return rejected.stream()
                 .filter((rejectedEntry) -> rejectedEntry instanceof GlucoseEntry)
@@ -56,19 +51,20 @@ public class NightscoutService {
     }
 
     public List<NightscoutTreatmentDTO> addTreatments(List<NightscoutTreatmentDTO> treatments,
-                                                      PatientProfile patientProfile, boolean updateIfExists) {
+                                                      int patientProfileId, boolean updateIfExists) {
         List<DiaryEntry> diaryEntriesToAdd = new ArrayList<>();
 
         for (NightscoutTreatmentDTO treatment : treatments) {
             List<DiaryEntry> dividedDiaryEntries = nightscoutTreatmentMapper.mapToInternal(treatment);
 
             for (DiaryEntry dividedDiaryEntry : dividedDiaryEntries) {
-                dividedDiaryEntry.setPatientProfile(patientProfile);
+                dividedDiaryEntry.setProfileId(patientProfileId);
                 diaryEntriesToAdd.add(dividedDiaryEntry);
             }
         }
 
-        List<DiaryEntry> rejected = diaryEntryService.addDiaryEntries(diaryEntriesToAdd, patientProfile, updateIfExists);
+        List<DiaryEntry> rejected =
+                diaryEntryService.addDiaryEntries(diaryEntriesToAdd, patientProfileId, updateIfExists);
 
 //        return rejected.stream()
 //                .filter((rejectedEntry) -> rejectedEntry instanceof GlucoseEntry)

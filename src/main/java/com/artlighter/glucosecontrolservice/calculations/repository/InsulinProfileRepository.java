@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface InsulinProfileRepository extends JpaRepository<InsulinProfile, Integer> {
-    InsulinProfile findByProfileId(int profileId);
-    boolean existsByProfileId(int profileId);
-    void deleteByProfileId(int profileId);
+    InsulinProfile findByPatientProfileId(int profileId);
+    boolean existsByPatientProfileId(int profileId);
+    void deleteByPatientProfileId(int profileId);
 }

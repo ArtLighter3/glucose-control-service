@@ -16,7 +16,7 @@ public abstract class InsulinVolatileValue {
     protected LocalTime timeOfDay;
     @Id
     @ManyToOne
-    @JoinColumn(name = "insulin_profile_id", referencedColumnName = "profile_id")
+    @JoinColumn(name = "insulin_profile_id", referencedColumnName = "patient_profile_id")
     protected InsulinProfile insulinProfile;
 
     public abstract float getValue();

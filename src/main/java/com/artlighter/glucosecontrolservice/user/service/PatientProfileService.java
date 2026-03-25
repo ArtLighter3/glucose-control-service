@@ -124,7 +124,7 @@ public class PatientProfileService {
 
         //patientProfile.setUserId(userId);
         patientProfile.setUser(new User(userId));
-        patientProfile.setId(existingProfile.getId());
+        patientProfile.setUserId(existingProfile.getUserId());
         return patientProfileRepository.save(patientProfile);
     }
 

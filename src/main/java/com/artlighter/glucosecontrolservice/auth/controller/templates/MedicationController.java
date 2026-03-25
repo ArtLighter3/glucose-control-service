@@ -84,7 +84,7 @@ public class MedicationController extends AbstractPatientTemplateResourceControl
     public MedicationResult calculateMilligrams(@PathVariable int userId, @RequestBody Map<String, Integer> portions) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
 
-        float overallDose = getTemplateService().calculateOverallMilligrams(patientProfile.getId(), portions);
+        float overallDose = getTemplateService().calculateOverallMilligrams(patientProfile.getUserId(), portions);
         return new MedicationResult(overallDose);
     }
 

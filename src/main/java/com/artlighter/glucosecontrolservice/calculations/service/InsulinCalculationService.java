@@ -14,7 +14,6 @@ import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
@@ -83,7 +82,7 @@ public class InsulinCalculationService {
         if (timeOfDay == null) throw new IllegalArgumentException("timeOfDay cannot be null");
 
         PatientProfile patientProfile = patientProfileService.getByUserId(patientId);
-        InsulinProfile insulinProfile = insulinProfileService.getByPatientProfileId(patientProfile.getId());
+        InsulinProfile insulinProfile = insulinProfileService.getByPatientProfileId(patientProfile.getUserId());
 
         Instant now = Instant.now();
         List<DiaryEntry> entriesToConsider = considerActiveInsulin ?
@@ -142,7 +141,7 @@ public class InsulinCalculationService {
         if (patientProfile == null) throw new IllegalArgumentException("patientProfile cannot be null");
         if (patientTimestamp == null) patientTimestamp = Instant.now();
 
-        InsulinProfile insulinProfile = insulinProfileService.getByPatientProfileId(patientProfile.getId());
+        InsulinProfile insulinProfile = insulinProfileService.getByPatientProfileId(patientProfile.getUserId());
 
         List<InsulinEntry> insulinEntries = entriesToConsider.stream()
                 .filter((entry) -> entry instanceof InsulinEntry)

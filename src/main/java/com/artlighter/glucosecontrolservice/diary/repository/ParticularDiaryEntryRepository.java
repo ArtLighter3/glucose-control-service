@@ -19,9 +19,9 @@ public interface ParticularDiaryEntryRepository<T extends DiaryEntry>
 
 //    List<T> getAllByPatientProfile(PatientProfile patientProfile);
 //    List<T> getAllByPatientProfile(PatientProfile patientProfile, Sort sort);
-    List<T> getAllByPatientProfileIdAndCommitedAtBetween(int profileId,
-                                                         Instant from, Instant to);
-    List<T> getAllByPatientProfileIdAndCommitedAtBetween(int profileId,
-                                                         Instant from, Instant to, Sort sort);
-    T findFirstByPatientProfileId(int patientProfileId, Sort sort);
+    List<T> getAllByProfileIdAndCommitedAtBetween(int profileId,
+                                                  Instant from, Instant to);
+    List<T> getAllByProfileIdAndCommitedAtBetween(int profileId,
+                                                  Instant from, Instant to, Sort sort);
+    T findFirstByProfileId(int patientProfileId, Sort sort);
 }

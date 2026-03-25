@@ -31,7 +31,7 @@ public class InsulinProfileService {
      */
     @Transactional(readOnly = true)
     public InsulinProfile getByPatientProfileId(int patientProfileId) {
-        InsulinProfile insulinProfile = insulinProfileRepository.findByProfileId(patientProfileId);
+        InsulinProfile insulinProfile = insulinProfileRepository.findByPatientProfileId(patientProfileId);
         if (insulinProfile == null)
             throw new ResourceNotFoundException(InsulinProfile.class, "insulin profile for patient profile with ID '"
                     + patientProfileId + "' not found");
@@ -58,10 +58,10 @@ public class InsulinProfileService {
     public InsulinProfile createInsulinProfile(InsulinProfile insulinProfile, int patientProfileId) {
         if (insulinProfile == null) throw new IllegalArgumentException("insulinProfile cannot be null");
 
-        if (insulinProfileRepository.existsByProfileId(patientProfileId))
+        if (insulinProfileRepository.existsByPatientProfileId(patientProfileId))
             throw new ResourceAlreadyExistsException(insulinProfile, "insulin profile for this user already exists");
 
-        insulinProfile.setProfileId(patientProfileId);
+        insulinProfile.setPatientProfileId(patientProfileId);
         return insulinProfileRepository.save(insulinProfile);
     }
 
@@ -76,11 +76,11 @@ public class InsulinProfileService {
     public InsulinProfile updateInsulinProfile(InsulinProfile insulinProfile, int patientProfileId) {
         if (insulinProfile == null) throw new IllegalArgumentException("insulinProfile cannot be null");
 
-        if (!insulinProfileRepository.existsByProfileId(patientProfileId))
+        if (!insulinProfileRepository.existsByPatientProfileId(patientProfileId))
             throw new ResourceNotFoundException(InsulinProfile.class, "insulin profile for patient profile with ID '"
                     + patientProfileId + "' not found");
 
-        insulinProfile.setProfileId(patientProfileId);
+        insulinProfile.setPatientProfileId(patientProfileId);
         return insulinProfileRepository.save(insulinProfile);
     }
 

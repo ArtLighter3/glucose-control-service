@@ -34,14 +34,14 @@ public class DiaryEntryService {
     /**
      * Добавляет новую запись дневника для больного.
      * @param diaryEntry запись дневника определенного типа;
-     * @param patientProfile профиль больного, для которого добавляется запись;
+     * @param patientProfileId ID профиля больного, для которого добавляется запись;
      * @param commitedAt временная отметка совершения записи;
      * @return сохраненная запись DiaryEntry;
      * @throws ResourceAlreadyExistsException если запись этого типа для этого пользователя
      *                                        с этой отметкой уже существует;
      */
-    public DiaryEntry addDiaryEntry(DiaryEntry diaryEntry, PatientProfile patientProfile, Instant commitedAt) {
-        fill(diaryEntry, patientProfile, commitedAt);
+    public DiaryEntry addDiaryEntry(DiaryEntry diaryEntry, int patientProfileId, Instant commitedAt) {
+        fill(diaryEntry, patientProfileId, commitedAt);
 
         if (commonDiaryEntryDAO.exists(diaryEntry))
             throw new ResourceAlreadyExistsException(diaryEntry,
@@ -53,20 +53,20 @@ public class DiaryEntryService {
     /**
      * Добавляет список записей дневника для больного.
      * @param entries список записей дневника, могут быть разных типов; если null, то ничего не добавляется;
-     * @param patientProfile профиль больного, для которого добавляются записи;
+     * @param patientProfileId ID профиля больного, для которого добавляются записи;
      * @param updateIfExists флаг, устанавливающий, нужно ли обновлять запись из списка, если она уже существует; если
      *                       false, то существующая запись не обновляется, а возвращается в отклоненных записях;
      * @return список ОТКЛОНЕННЫХ записей (отклонены могут быть либо из-за того,
      *         что уже существуют, а флаг updateIfExists = false, либо по иным серверным причинам);
      */
-    public List<DiaryEntry> addDiaryEntries(List<DiaryEntry> entries, PatientProfile patientProfile,
+    public List<DiaryEntry> addDiaryEntries(List<DiaryEntry> entries, int patientProfileId,
                                             boolean updateIfExists) {
         if (entries == null) return Collections.emptyList();
 
         List<DiaryEntry> savedEntries = new ArrayList<>();
 
         for (DiaryEntry entry : entries) {
-            entry.setPatientProfile(patientProfile);
+            entry.setProfileId(patientProfileId);
 
             try {
                 if (updateIfExists || !commonDiaryEntryDAO.exists(entry)) {
@@ -82,18 +82,18 @@ public class DiaryEntryService {
     /**
      * Обновляет существующую запись дневника для больного.
      * @param diaryEntry запись дневника;
-     * @param patientProfile профиль больного, для которого обновляется запись;
+     * @param patientProfileId ID профиля больного, для которого обновляется запись;
      * @param commitedAt временная отметка совершения обновляемой записи;
      * @return обновленная запись DiaryEntry;
      * @throws ResourceNotFoundException если запись этого типа для этого пользователя
      *                                        с этой отметкой не найдена;
      */
-    public DiaryEntry updateDiaryEntry(DiaryEntry diaryEntry, PatientProfile patientProfile, Instant commitedAt) {
-        fill(diaryEntry, patientProfile, commitedAt);
+    public DiaryEntry updateDiaryEntry(DiaryEntry diaryEntry, int patientProfileId, Instant commitedAt) {
+        fill(diaryEntry, patientProfileId, commitedAt);
 
         if (!commonDiaryEntryDAO.exists(diaryEntry))
             throw new ResourceNotFoundException(DiaryEntry.class, "diary entry for patient profile '"
-                    + patientProfile.getId() + "' and timestamp '" + diaryEntry.getCommitedAt()  + "' not found");
+                    + patientProfileId + "' and timestamp '" + diaryEntry.getCommitedAt()  + "' not found");
 
         return commonDiaryEntryDAO.saveOrUpdate(diaryEntry);
     }
@@ -102,11 +102,11 @@ public class DiaryEntryService {
      * Удаляет существующую запись дневника для больного. Ничего не возвращает. Если записи и так нет, то действие
      * игнорируется.
      * @param entryType тип записи для удаления;
-     * @param patientProfile профиль больного, для которого удаляется запись;
+     * @param patientProfileId ID профиля больного, для которого удаляется запись;
      * @param commitedAt временная отметка совершения удаляемой записи;
      */
-    public void deleteDiaryEntry(DiaryEntryType entryType, PatientProfile patientProfile, Instant commitedAt) {
-        commonDiaryEntryDAO.deleteById(entryType, new DiaryEntry.DiaryEntryID(patientProfile, commitedAt));
+    public void deleteDiaryEntry(DiaryEntryType entryType, int patientProfileId, Instant commitedAt) {
+        commonDiaryEntryDAO.deleteById(entryType, new DiaryEntry.DiaryEntryID(patientProfileId, commitedAt));
     }
 
     /**
@@ -164,9 +164,9 @@ public class DiaryEntryService {
         return entry;
     }
 
-    private void fill(DiaryEntry diaryEntry, PatientProfile patientProfile, Instant commitedAt) {
+    private void fill(DiaryEntry diaryEntry, int patientProfileId, Instant commitedAt) {
         if (diaryEntry != null) {
-            diaryEntry.setPatientProfile(patientProfile);
+            diaryEntry.setProfileId(patientProfileId);
             diaryEntry.setCommitedAt(commitedAt);
         }
     }

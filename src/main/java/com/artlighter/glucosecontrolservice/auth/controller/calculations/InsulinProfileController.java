@@ -1,7 +1,6 @@
 package com.artlighter.glucosecontrolservice.auth.controller.calculations;
 
 import com.artlighter.glucosecontrolservice.auth.util.exception.ExceptionDTO;
-import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.auth.util.exception.ValidationIsFailedException;
 import com.artlighter.glucosecontrolservice.calculations.dto.InsulinProfileDTO;
 import com.artlighter.glucosecontrolservice.calculations.entity.InsulinProfile;
@@ -51,8 +50,8 @@ public class InsulinProfileController {
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('INSULIN_PROFILE_SHOW_ALL', " +
             "'INSULIN_PROFILE_SHOW_ATTACHED', 'INSULIN_PROFILE_SHOW_OWN', #userId, authentication)")
     public InsulinProfileDTO getInsulinProfile(@PathVariable int userId) {
-        PatientProfile patientProfile = patientProfileService.getByUserId(userId);
-        InsulinProfile insulinProfile = insulinProfileService.getByPatientProfileId(patientProfile.getId());
+       // PatientProfile patientProfile = patientProfileService.getByUserId(userId);
+        InsulinProfile insulinProfile = insulinProfileService.getByPatientProfileId(userId);
 
         return insulinProfileMapper.mapToDTO(insulinProfile);
     }
@@ -78,10 +77,12 @@ public class InsulinProfileController {
         if (bindingResult.hasErrors())
             throw new ValidationIsFailedException(bindingResult, "insulin profile is invalid");
 
+        //Здесь все же проверяется наличие профиля пациента, чтобы пользователь получил нашу
+        //NOT FOUND ошибку, а не от базы данных, при попытке создания для несуществующего профиля пациента
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
 
         insulinProfileService.createInsulinProfile(insulinProfileMapper.mapToInternal(insulinProfileDTO),
-                patientProfile.getId());
+                patientProfile.getUserId());
         return insulinProfileDTO;
     }
 
@@ -100,10 +101,10 @@ public class InsulinProfileController {
         if (bindingResult.hasErrors())
             throw new ValidationIsFailedException(bindingResult, "insulin profile is invalid");
 
-        PatientProfile patientProfile = patientProfileService.getByUserId(userId);
+        //PatientProfile patientProfile = patientProfileService.getByUserId(userId);
 
         InsulinProfile updated = insulinProfileService
-                .updateInsulinProfile(insulinProfileMapper.mapToInternal(insulinProfileDTO), patientProfile.getId());
+                .updateInsulinProfile(insulinProfileMapper.mapToInternal(insulinProfileDTO), userId);
         return insulinProfileMapper.mapToDTO(updated);
     }
 }

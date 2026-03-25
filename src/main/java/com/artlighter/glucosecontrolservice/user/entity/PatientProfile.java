@@ -12,10 +12,11 @@ import java.util.Set;
 @Table(name = "patient_profile")
 public class PatientProfile {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @Column(name = "id")
+    private int userId;
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "id", referencedColumnName = "id")
+    @MapsId
     private User user;
     @Enumerated
     @JdbcType(PostgreSQLEnumJdbcType.class)
@@ -50,9 +51,9 @@ public class PatientProfile {
 //        this.hypoGlucose = hypoGlucose;
 //    }
 
-    public PatientProfile(int id, User user, GlucoseUnit glucoseUnit, CarbsUnit carbsUnit, int diabetesType,
+    public PatientProfile(int userId, User user, GlucoseUnit glucoseUnit, CarbsUnit carbsUnit, int diabetesType,
                           float hyperGlucose, float highGlucose, float lowGlucose, float hypoGlucose) {
-        this.id = id;
+        this.userId = userId;
         this.user = user;
         this.glucoseUnit = glucoseUnit;
         this.carbsUnit = carbsUnit;
@@ -63,10 +64,10 @@ public class PatientProfile {
         this.hypoGlucose = hypoGlucose;
     }
 
-    public PatientProfile(int id, User user, GlucoseUnit glucoseUnit, CarbsUnit carbsUnit, int diabetesType,
+    public PatientProfile(int userId, User user, GlucoseUnit glucoseUnit, CarbsUnit carbsUnit, int diabetesType,
                           float hyperGlucose, float highGlucose, float lowGlucose, float hypoGlucose,
                           boolean nightscoutEnabled, String nightscoutApiSecret) {
-        this(id, user, glucoseUnit, carbsUnit, diabetesType, hyperGlucose, highGlucose, lowGlucose, hypoGlucose);
+        this(userId, user, glucoseUnit, carbsUnit, diabetesType, hyperGlucose, highGlucose, lowGlucose, hypoGlucose);
         this.nightscoutEnabled = nightscoutEnabled;
         this.nightscoutApiSecret = nightscoutApiSecret;
     }
@@ -74,12 +75,12 @@ public class PatientProfile {
     public PatientProfile() {
     }
 
-    public int getId() {
-        return id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setUserId(int id) {
+        this.userId = id;
     }
 
     public GlucoseUnit getGlucoseUnit() {
@@ -182,11 +183,11 @@ public class PatientProfile {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         PatientProfile that = (PatientProfile) o;
-        return id == that.id;
+        return userId == that.userId;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(userId);
     }
 }
