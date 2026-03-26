@@ -7,7 +7,6 @@ import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 import java.util.Objects;
 import java.util.Set;
 
-//TODO сделать так, чтобы у профиля пациента не было отдельного ID, а первичный ключ просто был ID аккаунта.
 @Entity
 @Table(name = "patient_profile")
 public class PatientProfile {

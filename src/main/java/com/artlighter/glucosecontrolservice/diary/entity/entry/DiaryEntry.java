@@ -1,6 +1,5 @@
 package com.artlighter.glucosecontrolservice.diary.entity.entry;
 
-import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import jakarta.persistence.*;
 
 import java.io.Serializable;

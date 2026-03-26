@@ -72,22 +72,6 @@ public class RoleController {
         return updatedAuthorities;
     }
 
-//    @PostMapping("/add-authority")
-//    @PreAuthorize("hasAuthority('AUTHORITY_GRANT_REVOKE')")
-//    public RoleAuthorityDTO addAuthority(@RequestBody @Valid RoleAuthorityDTO roleAuthorityDTO,
-//                                         BindingResult bindingResult) {
-//        //TODO Сделать так, чтобы можно было передавать массив ролей и прав, иначе админов после первого
-//        //запроса выкинет из сессии, и последующие запросы по одной паре на добавление не пройдут (или мб
-//        // переделать логику и не выкидывать из сессии, а обновлять права?).
-//        if (bindingResult.hasErrors()) throw new ValidationIsFailedException(bindingResult, "");
-//
-//        Authority addedAuthority = authorityService.addDeletableAuthority(roleAuthorityDTO.role(),
-//                roleAuthorityDTO.authority());
-//        if (addedAuthority != null) sessionManager.expireAllUsersWithRole(roleAuthorityDTO.role());
-//
-//        return roleAuthorityDTO;
-//    }
-
     private Set<Authority> updateAuthorities(Role role, Set<Authority> authorities) {
         return authorityService.updateRole(role, authorities);
     }
