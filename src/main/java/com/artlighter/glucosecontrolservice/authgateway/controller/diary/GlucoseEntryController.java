@@ -79,7 +79,7 @@ public class GlucoseEntryController extends AbstractDiaryEntryController<Glucose
         try {
             convertableValueRangeValidator.isGlucoseValid(entryDTO.value(), patientProfile.getGlucoseUnit());
         } catch (ConvertableValueValidationException ex) {
-            bindingResult.rejectValue("value", ex.getMessage());
+            bindingResult.rejectValue("value", "not_in_range", ex.getMessage());
             throw new ValidationIsFailedException(bindingResult);
         }
     }

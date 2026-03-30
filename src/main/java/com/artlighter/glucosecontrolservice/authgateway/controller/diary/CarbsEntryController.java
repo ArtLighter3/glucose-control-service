@@ -79,7 +79,7 @@ public class CarbsEntryController extends AbstractDiaryEntryController<CarbsEntr
         try {
             convertableValueRangeValidator.isCarbsValid(entryDTO.value(), patientProfile.getCarbsUnit());
         } catch (ConvertableValueValidationException ex) {
-            bindingResult.rejectValue("value", ex.getMessage());
+            bindingResult.rejectValue("value", "not_in_range", ex.getMessage());
             throw new ValidationIsFailedException(bindingResult);
         }
     }

@@ -74,21 +74,26 @@ public class InsulinCalculationController {
 
     private void validateCarbsAndGlucose(InsulinCalculationRequestDTO calculationRequest,
                                          PatientProfile patientProfile, BindingResult bindingResult) {
+        boolean hasErrors = false;
+
         try {
             convertableValueRangeValidator.isCarbsValid(calculationRequest.carbs(), patientProfile.getCarbsUnit());
         } catch (ConvertableValueValidationException ex) {
-            bindingResult.rejectValue("carbs", ex.getMessage());
-            throw new ValidationIsFailedException(bindingResult);
+            bindingResult.rejectValue("carbs", "not_in_range", ex.getMessage());
+            hasErrors = true;
         }
 
-        if (calculationRequest.glucose() == null) return;
-        try {
-            convertableValueRangeValidator.isGlucoseValid(calculationRequest.glucose(),
-                    patientProfile.getGlucoseUnit());
-        } catch (ConvertableValueValidationException ex) {
-            bindingResult.rejectValue("glucose", ex.getMessage());
-            throw new ValidationIsFailedException(bindingResult);
+        if (calculationRequest.glucose() != null) {
+            try {
+                convertableValueRangeValidator.isGlucoseValid(calculationRequest.glucose(),
+                        patientProfile.getGlucoseUnit());
+            } catch (ConvertableValueValidationException ex) {
+                bindingResult.rejectValue("glucose", "not_in_range", ex.getMessage());
+                hasErrors = true;
+            }
         }
+
+        if (hasErrors) throw new ValidationIsFailedException(bindingResult);
     }
 
 //    @Operation(summary = "Рассчитать только активный инсулин.",

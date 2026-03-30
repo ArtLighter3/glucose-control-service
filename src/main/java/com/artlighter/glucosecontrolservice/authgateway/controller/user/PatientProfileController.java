@@ -77,23 +77,26 @@ public class PatientProfileController {
 
     private void validateGlucose(PatientProfileDTO patientProfileDTO, BindingResult bindingResult) {
         //TODO: Выглядит не очень, может стоит переделать структуру валидаций конвертируемых значений;
-        checkGlucoseAndThrowException(patientProfileDTO.hyperGlucose(), "hyperGlucose",
+        boolean check1 = checkGlucoseAndRejectValue(patientProfileDTO.hyperGlucose(), "hyperGlucose",
                 patientProfileDTO, bindingResult);
-        checkGlucoseAndThrowException(patientProfileDTO.highGlucose(), "highGlucose",
+        boolean check2 = checkGlucoseAndRejectValue(patientProfileDTO.highGlucose(), "highGlucose",
                 patientProfileDTO, bindingResult);
-        checkGlucoseAndThrowException(patientProfileDTO.lowGlucose(), "lowGlucose",
+        boolean check3 = checkGlucoseAndRejectValue(patientProfileDTO.lowGlucose(), "lowGlucose",
                 patientProfileDTO, bindingResult);
-        checkGlucoseAndThrowException(patientProfileDTO.hypoGlucose(), "hypoGlucose",
+        boolean check4 = checkGlucoseAndRejectValue(patientProfileDTO.hypoGlucose(), "hypoGlucose",
                 patientProfileDTO, bindingResult);
+
+        if (!check1 || !check2 || !check3 || !check4) throw new ValidationIsFailedException(bindingResult);
     }
 
-    private void checkGlucoseAndThrowException(Float value, String fieldName,
-                                               PatientProfileDTO patientProfileDTO, BindingResult bindingResult) {
+    private boolean checkGlucoseAndRejectValue(Float value, String fieldName,
+                                            PatientProfileDTO patientProfileDTO, BindingResult bindingResult) {
         try {
             convertableValueRangeValidator.isGlucoseValid(value, patientProfileDTO.glucoseUnit());
         } catch (ConvertableValueValidationException ex) {
-            bindingResult.rejectValue(fieldName, ex.getMessage());
-            throw new ValidationIsFailedException(bindingResult);
+            bindingResult.rejectValue(fieldName, "not_in_range", ex.getMessage());
+            return false;
         }
+        return true;
     }
 }
