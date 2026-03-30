@@ -7,27 +7,28 @@ import jakarta.validation.GroupSequence;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 
 @Schema(name = "InsulinCalculationRequest",
         description = "Запрос на расчет инсулина с нужными параметрами и настройками расчета")
 @GroupSequence({InsulinCalculationRequestDTO.class, TypeGroup.class})
 @CorrectCalculationRequest(groups = {TypeGroup.class})
 public record InsulinCalculationRequestDTO(
-        @Schema(description = "Количество углеводов в граммах для расчета компенсации", example = "60.5")
+        @Schema(description = "Количество углеводов для расчета компенсации (в единицах измерения, выставленных " +
+                "пользователем, диапазоны: 1-300 грамм, 0.01-30 ХЕ(10), 0.01-25 ХЕ(12), 0.01-20 ХЕ(15) )",
+                example = "60.5")
         @NotNull
-        @DecimalMin("0")
-        @DecimalMax("300")
         Float carbs,
-        @Schema(description = "Уровень глюкозы для расчета корректировки до целевого значения." +
+        @Schema(description = "Уровень глюкозы для расчета корректировки до целевого значения " +
+                "(в единицах измерения, выставленных пользователем, диапазоны: 0.5-40 ммоль/л, 9-720 мг/дл). " +
                 "Должно быть указано обязательно, если correctGlucoseLevel = true", example = "9.7")
-        @DecimalMin("0.5")
-        @DecimalMax("40")
         Float glucose,
-        @Schema(description = "Время дня пользователя. Нужно для определения параметров, изменяемых по времени суток" +
-                "(ISF, ICR...). Точное местное время дня пользователя без преобразований по временным зонам!",
-                example = "16:30")
+        @Schema(description = "UTC-смещение зоны пользователя. " +
+                "Нужно для правильного определения параметров, изменяемых по времени суток " +
+                "(ISF, ICR...).",
+                example = "+7:30")
         @NotNull
-        LocalTime localTimeOfDay,
+        ZoneOffset patientZoneOffset,
         @Schema(description = "Учитывать ли активный инсулин. Активный инсулин будет рассчитываться " +
                 "исходя из недавних записей ввода инсулина.")
         @NotNull

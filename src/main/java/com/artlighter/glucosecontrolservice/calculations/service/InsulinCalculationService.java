@@ -29,7 +29,6 @@ public class InsulinCalculationService {
     private InsulinCalculator insulinCalculator;
     private InsulinDecayCurveStrategy decayCurveStrategy;
     private VolatileValueExtractor volatileValueExtractor;
-    private PatientProfileService patientProfileService;
     private InsulinProfileService insulinProfileService;
     private DiaryEntryService diaryEntryService;
 
@@ -40,15 +39,15 @@ public class InsulinCalculationService {
     public InsulinCalculationService(InsulinCalculator insulinCalculator,
                                      InsulinDecayCurveStrategy decayCurveStrategy,
                                      VolatileValueExtractor volatileValueExtractor,
-                                     PatientProfileService patientProfileService,
                                      InsulinProfileService insulinProfileService,
-                                     DiaryEntryService diaryEntryService) {
+                                     DiaryEntryService diaryEntryService/*,
+                                     DecimalFormat df*/) {
         this.insulinCalculator = insulinCalculator;
         this.diaryEntryService = diaryEntryService;
         this.decayCurveStrategy = decayCurveStrategy;
         this.volatileValueExtractor = volatileValueExtractor;
-        this.patientProfileService = patientProfileService;
         this.insulinProfileService = insulinProfileService;
+       // this.df = df;
     }
 //    public InsulinResult calculateInsulinWithoutGlucoseCorrection(PatientProfile patientProfile,
 //                                                                  InsulinProfile insulinProfile,
@@ -63,8 +62,8 @@ public class InsulinCalculationService {
      * целевого значения targetGlucose c учетом активного инсулина.
      * Активный инсулин определяется на основе последних записей дневника.
      * Расчеты ведутся в соответствии с настройками в инсулиновом профиле.
-     * @param patientId ID пользователя-больного;
-     * @param timeOfDay текущее время дня у больного (точное время дня, как у него, БЕЗ учета смещений и зон!), не null;
+     * @param patientProfile профиль больного;
+     * @param patientTimeOfDay текущее время дня у больного (точное время дня, как у него, БЕЗ учета смещений и зон!), не null;
      * @param considerActiveInsulin учитывать ли активный инсулин (будет рассчитываться исходя
      *                              из недавних записей ввода инсулина);
      * @param correctGlucoseLevel рассчитывать ли дополнительную дозу для корректировки уровня глюкозы
@@ -74,14 +73,14 @@ public class InsulinCalculationService {
      * @param glucose текущий уровень глюкозы для коррекции сахара в крови;
      * @param correction процент коррекции, если необходимо добавить из-за каких-то внешних факторов;
      * @return InsulinResult, содержащий как результат, так и каждый элемент, участвовавший в расчете;
-     * @throws IllegalArgumentException если timeOfDay равны null;
+     * @throws IllegalArgumentException если patientTimeOfDay или patientProfile равны null;
      */
-    public InsulinResult calculateInsulinDose(int patientId, LocalTime timeOfDay,
+    public InsulinResult calculateInsulinDose(PatientProfile patientProfile, LocalTime patientTimeOfDay,
                                               boolean considerActiveInsulin, boolean correctGlucoseLevel,
                                               float carbs, float glucose, float correction) {
-        if (timeOfDay == null) throw new IllegalArgumentException("timeOfDay cannot be null");
+        if (patientTimeOfDay == null) throw new IllegalArgumentException("patientTimeOfDay cannot be null");
+        if (patientProfile == null) throw new IllegalArgumentException("patientProfile cannot be null");
 
-        PatientProfile patientProfile = patientProfileService.getByUserId(patientId);
         InsulinProfile insulinProfile = insulinProfileService.getByPatientProfileId(patientProfile.getUserId());
 
         Instant now = Instant.now();
@@ -89,10 +88,10 @@ public class InsulinCalculationService {
                 diaryEntryService.getDiaryEntriesOfType(DiaryEntryType.INSULIN_ENTRY,
                         patientProfile, now.minus(Duration.ofHours(12)), now) : null;
 
-        float currentIsf = volatileValueExtractor.extractVolatileValue(insulinProfile.getFactorsByTime(), timeOfDay,
-                insulinProfile.getDefaultInsulinSensitivityFactor());
-        float currentIcr = volatileValueExtractor.extractVolatileValue(insulinProfile.getRatiosByTime(), timeOfDay,
-                insulinProfile.getDefaultInsulinToCarbsRatio());
+        float currentIsf = volatileValueExtractor.extractVolatileValue(insulinProfile.getFactorsByTime(),
+                patientTimeOfDay, insulinProfile.getDefaultInsulinSensitivityFactor());
+        float currentIcr = volatileValueExtractor.extractVolatileValue(insulinProfile.getRatiosByTime(),
+                patientTimeOfDay, insulinProfile.getDefaultInsulinToCarbsRatio());
 
         double carbsInsulin = insulinCalculator.calculateCarbDose(carbs, currentIcr);
         double correctionInsulin = 0.0;
@@ -114,27 +113,28 @@ public class InsulinCalculationService {
         double result = carbsInsulin + correctionInsulin;
 
         //TODO лучше округлять уже в слое выше при конвертации в DTO
-        return new InsulinResult(glucose,
+        return new InsulinResult((float) patientProfile.getGlucoseUnit().convertFromMmolPerLiter(glucose),
+                patientProfile.getGlucoseUnit(),
                 currentIsf,
                 Float.valueOf(df.format(correctionInsulin)),
                 Float.valueOf(df.format(activeInsulin)),
-                carbs,
+                (float) patientProfile.getCarbsUnit().convertFromGrams(carbs), patientProfile.getCarbsUnit(),
                 currentIcr,
                 Float.valueOf(df.format(carbsInsulin)),
                 correction,
                 Float.valueOf(df.format(result)));
     }
 
-    public Float calculateActiveInsulin(int patientId) {
-        Instant patientTimestamp = Instant.now();
-
-        PatientProfile patientProfile = patientProfileService.getByUserId(patientId);
-
-        List<DiaryEntry> diaryEntries = diaryEntryService.getDiaryEntriesOfType(DiaryEntryType.INSULIN_ENTRY,
-                patientProfile, patientTimestamp.minus(Duration.ofHours(12)), patientTimestamp);
-
-        return calculateActiveInsulin(patientProfile, diaryEntries, patientTimestamp);
-    }
+//    public Float calculateActiveInsulin(int patientId) {
+//        Instant patientTimestamp = Instant.now();
+//
+//        PatientProfile patientProfile = patientProfileService.getByUserId(patientId);
+//
+//        List<DiaryEntry> diaryEntries = diaryEntryService.getDiaryEntriesOfType(DiaryEntryType.INSULIN_ENTRY,
+//                patientProfile, patientTimestamp.minus(Duration.ofHours(12)), patientTimestamp);
+//
+//        return calculateActiveInsulin(patientProfile, diaryEntries, patientTimestamp);
+//    }
 
     public Float calculateActiveInsulin(PatientProfile patientProfile, List<? extends DiaryEntry> entriesToConsider,
                                         Instant patientTimestamp) {

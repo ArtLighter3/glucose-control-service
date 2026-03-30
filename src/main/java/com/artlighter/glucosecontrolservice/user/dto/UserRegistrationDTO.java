@@ -1,6 +1,6 @@
 package com.artlighter.glucosecontrolservice.user.dto;
 
-import com.artlighter.glucosecontrolservice.auth.util.validation.PasswordsMatch;
+import com.artlighter.glucosecontrolservice.authgateway.util.validation.PasswordsMatch;
 import com.artlighter.glucosecontrolservice.general.TypeGroup;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.GroupSequence;

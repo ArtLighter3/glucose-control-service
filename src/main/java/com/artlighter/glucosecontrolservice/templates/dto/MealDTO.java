@@ -13,7 +13,7 @@ public record MealDTO(
         @NotBlank
         @Length(max = 200)
         String name,
-        @Schema(description = "Количество углеводов на 100 г. веса", example = "50")
+        @Schema(description = "Количество углеводов (в граммах) на 100 г. веса", example = "50")
         @NotNull
         @DecimalMin("0")
         @DecimalMax("300")
