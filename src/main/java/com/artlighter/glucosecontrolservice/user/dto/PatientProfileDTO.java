@@ -24,22 +24,26 @@ public record PatientProfileDTO(
         @Max(2)
         @NotNull
         Integer diabetesType,
-        @Schema(description = "Предельно высокое значение глюкозы (в ммоль/л)")
+        @Schema(description = "Предельно высокое значение глюкозы (в единицах измерения, выставленных пользователем " +
+                "в этом же объекте)")
         @DecimalMin("1")
         @DecimalMax("40")
         @NotNull
         Float hyperGlucose,
-        @Schema(description = "Верхняя граница нормы глюкозы (в ммоль/л)")
+        @Schema(description = "Верхняя граница нормы глюкозы (в единицах измерения, выставленных пользователем " +
+                "в этом же объекте)")
         @DecimalMin("1")
         @DecimalMax("40")
         @NotNull
         Float highGlucose,
-        @Schema(description = "Нижняя граница нормы глюкозы (в ммоль/л)")
+        @Schema(description = "Нижняя граница нормы глюкозы (в единицах измерения, выставленных пользователем " +
+                "в этом же объекте)")
         @DecimalMin("1")
         @DecimalMax("40")
         @NotNull
         Float lowGlucose,
-        @Schema(description = "Предельно низкое значение глюкозы (в ммоль/л)")
+        @Schema(description = "Предельно низкое значение глюкозы (в единицах измерения, выставленных пользователем " +
+                "в этом же объекте)")
         @DecimalMin("1")
         @DecimalMax("40")
         @NotNull

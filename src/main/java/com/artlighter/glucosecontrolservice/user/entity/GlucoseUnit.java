@@ -16,11 +16,15 @@ public enum GlucoseUnit {
         return stringRepresentation;
     }
 
-    public float convertFromMmolPerLiter(float glucoseInMmolPerLiter) {
-        return (float) (glucoseInMmolPerLiter * this.mmolPerLiterToThisUnitCoefficient);
+    public double convertFromMmolPerLiter(double glucoseInMmolPerLiter) {
+        return (glucoseInMmolPerLiter * this.mmolPerLiterToThisUnitCoefficient);
     }
 
-    public float convertToMmolPerLiter(float glucoseInThisUnit) {
-        return (float) (glucoseInThisUnit / this.mmolPerLiterToThisUnitCoefficient);
+    public double convertToMmolPerLiter(double glucoseInThisUnit) {
+        return (glucoseInThisUnit / this.mmolPerLiterToThisUnitCoefficient);
+    }
+
+    public double getMmolPerLiterToThisUnitCoefficient() {
+        return mmolPerLiterToThisUnitCoefficient;
     }
 }

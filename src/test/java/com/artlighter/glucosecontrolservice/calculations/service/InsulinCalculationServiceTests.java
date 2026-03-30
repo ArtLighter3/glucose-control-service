@@ -33,8 +33,6 @@ public class InsulinCalculationServiceTests {
     @MockitoBean
     private DiaryEntryService diaryEntryService;
     @MockitoBean
-    private PatientProfileService patientProfileService;
-    @MockitoBean
     private InsulinProfileService insulinProfileService;
     @Autowired
     private InsulinCalculationService insulinCalculationService;
@@ -142,12 +140,12 @@ public class InsulinCalculationServiceTests {
                 40f, 5.5f, 0.1f, 0f);
         InsulinProfile insulinProfile = new InsulinProfile(0, icr, 1f,
                 3, null, null);
-        InsulinResult expected = new InsulinResult(6f, 1f, 0.0f, 0.0f,
-                carbs, icr, expectedCarbsDose, correction, expectedCarbsDose);
+        InsulinResult expected = new InsulinResult(6f, GlucoseUnit.MILLIMOLES_PER_LITER,
+                1f, 0.0f, 0.0f,
+                carbs, CarbsUnit.GRAMS, icr, expectedCarbsDose, correction, expectedCarbsDose);
         when(insulinProfileService.getByPatientProfileId(patientProfile.getUserId())).thenReturn(insulinProfile);
-        when(patientProfileService.getByUserId(patientProfile.getUserId())).thenReturn(patientProfile);
 
-        InsulinResult actual = insulinCalculationService.calculateInsulinDose(patientProfile.getUser().getId(),
+        InsulinResult actual = insulinCalculationService.calculateInsulinDose(patientProfile,
                 LocalTime.now(), false, false, carbs, 6f, correction);
 
         assertEquals(expected, actual);
@@ -160,12 +158,12 @@ public class InsulinCalculationServiceTests {
                 40f, 5.5f, 0.1f, 0f);
         InsulinProfile insulinProfile = new InsulinProfile(0, defaultIcr, 1f,
                 3, null, ratios);
-        InsulinResult expected = new InsulinResult(6f, 1f, 0.0f, 0.0f,
-                carbs, expectedIcr, expectedCarbsDose, correction, expectedCarbsDose);
+        InsulinResult expected = new InsulinResult(6f, GlucoseUnit.MILLIMOLES_PER_LITER,
+                1f, 0.0f, 0.0f,
+                carbs, CarbsUnit.GRAMS, expectedIcr, expectedCarbsDose, correction, expectedCarbsDose);
         when(insulinProfileService.getByPatientProfileId(patientProfile.getUserId())).thenReturn(insulinProfile);
-        when(patientProfileService.getByUserId(patientProfile.getUserId())).thenReturn(patientProfile);
 
-        InsulinResult actual = insulinCalculationService.calculateInsulinDose(patientProfile.getUser().getId(),
+        InsulinResult actual = insulinCalculationService.calculateInsulinDose(patientProfile,
                 timeOfDay, false, false, carbs, 6f, correction);
 
         assertEquals(expected, actual);

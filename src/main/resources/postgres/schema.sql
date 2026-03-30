@@ -72,7 +72,7 @@ CREATE TABLE Insulin_Entry (
 CREATE TABLE Medication_Entry (
     profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
     name varchar(200) NOT NULL,
-    value real NOT NULL CHECK (value >= 0 AND value <= 1000),
+    value real NOT NULL CHECK (value >= 0.1 AND value <= 1000),
     commited_at timestamptz(0) NOT NULL,
     notes varchar(500),
     PRIMARY KEY (profile_id, commited_at)
@@ -80,7 +80,7 @@ CREATE TABLE Medication_Entry (
 
 CREATE TABLE Carbs_Entry (
     profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
-    value real NOT NULL CHECK (value >= 0 AND value <= 300),
+    value real NOT NULL CHECK (value >= 0.1 AND value <= 300),
     commited_at timestamptz(0) NOT NULL,
     notes varchar(500),
     PRIMARY KEY (profile_id, commited_at)

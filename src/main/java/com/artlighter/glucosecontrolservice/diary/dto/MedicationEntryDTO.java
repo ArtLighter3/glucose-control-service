@@ -13,7 +13,7 @@ import java.time.OffsetDateTime;
 public record MedicationEntryDTO(
         @Schema(description = "Значение принятой дозировки в миллиграммах",
                 example = "150.55")
-        @DecimalMin("0")
+        @DecimalMin("0.1")
         @DecimalMax("1000")
         @NotNull
         Float value,

@@ -157,9 +157,6 @@ public class DelegatingCommonDiaryEntryCollectorTests {
         entry.setValue(2.5);
         entry.setMeasurementType(MeasurementType.AFTER_MEAL);
         entry.setNotes("notes");
-        entry.setCommitedAt(Instant.now());
-        assertThrows(IllegalArgumentException.class, () -> collector.saveOrUpdate(entry));
-
         entry.setCommitedAt(null);
         entry.setProfileId(0);
         assertThrows(IllegalArgumentException.class, () -> collector.saveOrUpdate(entry));
@@ -234,9 +231,6 @@ public class DelegatingCommonDiaryEntryCollectorTests {
         entry.setValue(2.5);
         entry.setMeasurementType(MeasurementType.AFTER_MEAL);
         entry.setNotes("notes");
-        entry.setCommitedAt(Instant.now());
-        assertThrows(IllegalArgumentException.class, () -> collector.exists(entry));
-
         entry.setCommitedAt(null);
         entry.setProfileId(0);
         assertThrows(IllegalArgumentException.class, () -> collector.exists(entry));

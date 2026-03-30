@@ -53,8 +53,10 @@ public class NightscoutTreatmentMapper implements DTOMapper<List<DiaryEntry>, Ni
     private GlucoseEntry createGlucoseEntry(String commitedAt, Float glucose, String notes, String units) {
         GlucoseEntry glucoseEntry = new GlucoseEntry();
 
-        fill(glucoseEntry, commitedAt,
-                units.equals("mmol") ? glucose : GlucoseUnit.MILLIGRAMS_PER_DECILITER.convertToMmolPerLiter(glucose),
+        fill(glucoseEntry,
+                commitedAt,
+                units.equals("mmol") ? glucose :
+                        (float) GlucoseUnit.MILLIGRAMS_PER_DECILITER.convertToMmolPerLiter(glucose),
                 notes);
 
         return glucoseEntry;

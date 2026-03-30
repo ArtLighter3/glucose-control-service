@@ -10,8 +10,10 @@ public class PatientProfileMapper implements DTOMapper<PatientProfile, PatientPr
     @Override
     public PatientProfileDTO mapToDTO(PatientProfile internal) {
         return new PatientProfileDTO(internal.getGlucoseUnit(), internal.getCarbsUnit(), internal.getDiabetesType(),
-                internal.getHyperGlucose(), internal.getHighGlucose(),
-                internal.getLowGlucose(), internal.getHypoGlucose(),
+                (float) internal.getGlucoseUnit().convertFromMmolPerLiter(internal.getHyperGlucose()),
+                (float) internal.getGlucoseUnit().convertFromMmolPerLiter(internal.getHighGlucose()),
+                (float) internal.getGlucoseUnit().convertFromMmolPerLiter(internal.getLowGlucose()),
+                (float) internal.getGlucoseUnit().convertFromMmolPerLiter(internal.getHypoGlucose()),
                 internal.isNightscoutEnabled(), internal.getNightscoutApiSecret());
     }
 
@@ -22,10 +24,13 @@ public class PatientProfileMapper implements DTOMapper<PatientProfile, PatientPr
         patientProfile.setGlucoseUnit(externalDTO.glucoseUnit());
         patientProfile.setCarbsUnit(externalDTO.carbsUnit());
         patientProfile.setDiabetesType(externalDTO.diabetesType());
-        patientProfile.setHyperGlucose(externalDTO.hyperGlucose());
-        patientProfile.setHighGlucose(externalDTO.highGlucose());
-        patientProfile.setLowGlucose(externalDTO.lowGlucose());
-        patientProfile.setHypoGlucose(externalDTO.hypoGlucose());
+
+        patientProfile
+                .setHyperGlucose((float)externalDTO.glucoseUnit().convertToMmolPerLiter(externalDTO.hyperGlucose()));
+        patientProfile.setHighGlucose((float)externalDTO.glucoseUnit().convertToMmolPerLiter(externalDTO.highGlucose()));
+        patientProfile.setLowGlucose((float)externalDTO.glucoseUnit().convertToMmolPerLiter(externalDTO.lowGlucose()));
+        patientProfile.setHypoGlucose((float)externalDTO.glucoseUnit().convertToMmolPerLiter(externalDTO.hypoGlucose()));
+
         patientProfile.setNightscoutEnabled(externalDTO.isNightscoutEnabled());
         patientProfile.setNightscoutApiSecret(externalDTO.nightscoutApiSecret());
 

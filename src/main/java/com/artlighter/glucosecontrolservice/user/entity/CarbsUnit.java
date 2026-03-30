@@ -18,11 +18,15 @@ public enum CarbsUnit {
         return stringRepresentation;
     }
 
-    public float convertToGrams(float carbsInUnit) {
-        return (float) (carbsInUnit * this.gramToThisUnitCoefficient);
+    public double convertToGrams(double carbsInUnit) {
+        return (carbsInUnit * this.gramToThisUnitCoefficient);
     }
 
-    public float convertFromGrams(float carbsInGrams) {
-        return (float) (carbsInGrams / this.gramToThisUnitCoefficient);
+    public double convertFromGrams(double carbsInGrams) {
+        return (carbsInGrams / this.gramToThisUnitCoefficient);
+    }
+
+    public double getGramToThisUnitCoefficient() {
+        return gramToThisUnitCoefficient;
     }
 }
