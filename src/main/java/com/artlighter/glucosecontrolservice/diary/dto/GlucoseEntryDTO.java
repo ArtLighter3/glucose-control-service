@@ -2,8 +2,6 @@ package com.artlighter.glucosecontrolservice.diary.dto;
 
 import com.artlighter.glucosecontrolservice.diary.entity.enumeration.MeasurementType;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.DecimalMax;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.Length;
 
@@ -20,7 +18,7 @@ public record GlucoseEntryDTO(
         @NotNull
         OffsetDateTime commitedAt,
         @Schema(description = "Тип измерения (до еды, после еды)", example = "AFTER_MEAL")
-        MeasurementType type,
+        MeasurementType category,
         @Schema(description = "Комментарий-заметка к записи")
         @Length(max = 500)
         String notes,

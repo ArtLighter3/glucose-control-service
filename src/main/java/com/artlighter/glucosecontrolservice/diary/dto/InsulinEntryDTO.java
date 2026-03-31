@@ -23,7 +23,7 @@ public record InsulinEntryDTO(
         @Schema(description = "Тип инсулина (короткого, длительного действия и т.д.)",
                 example = "LONG")
         @NotNull
-        InsulinType type,
+        InsulinType insulinType,
         @Schema(description = "Комментарий-заметка к записи")
         @Length(max = 500)
         String notes)

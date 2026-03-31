@@ -30,7 +30,7 @@ public class GlucoseEntryMapper extends AbstractEntryMapper<GlucoseEntry, Glucos
                                                           PatientProfile patientProfile) {
         entry.setValue(patientProfile.getGlucoseUnit().convertToMmolPerLiter(entryDTO.value()));
 
-        entry.setMeasurementType(entryDTO.type());
+        entry.setMeasurementType(entryDTO.category());
     }
 
     @Override

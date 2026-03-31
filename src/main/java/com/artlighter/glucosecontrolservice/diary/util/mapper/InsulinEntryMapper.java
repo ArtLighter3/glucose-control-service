@@ -25,7 +25,7 @@ public class InsulinEntryMapper extends AbstractEntryMapper<InsulinEntry, Insuli
     @Override
     protected void fillFieldsOfInternalWithUnitConversion(InsulinEntry entry, InsulinEntryDTO entryDTO,
                                                           PatientProfile patientProfile) {
-        entry.setInsulinType(entryDTO.type());
+        entry.setInsulinType(entryDTO.insulinType());
     }
 
     @Override
