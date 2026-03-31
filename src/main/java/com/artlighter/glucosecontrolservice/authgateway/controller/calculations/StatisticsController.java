@@ -3,6 +3,7 @@ package com.artlighter.glucosecontrolservice.authgateway.controller.calculations
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ExceptionDTO;
 import com.artlighter.glucosecontrolservice.calculations.dto.RecentActivityDTO;
 import com.artlighter.glucosecontrolservice.calculations.service.InsulinCalculationService;
+import com.artlighter.glucosecontrolservice.calculations.util.TimeInterval;
 import com.artlighter.glucosecontrolservice.diary.dto.GlucoseEntryDTO;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.GlucoseEntry;
@@ -65,18 +66,23 @@ public class StatisticsController {
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'GLUCOSE_SHOW_OWN'," +
             "#userId, authentication)")
     public RecentActivityDTO getRecentActivity(@PathVariable int userId,
-                                        @Parameter(description = "UTC-смещение, к которому будут " +
+                                               @Parameter(description = "UTC-смещение, к которому будут " +
                                                 "преобразованы временные отметки записей дневника, а " +
                                                 "также на основе которого будут рассчитаны углеводы за день. " +
-                                                "Если не указать, то отметки записей будут по UTC+0",
-                                                required = false)
-                                        @RequestParam(required = false)
-                                        ZoneOffset outputZoneOffset) {
+                                                "Если не указать, то отметки записей будут по UTC+0", required = false)
+                                               @RequestParam(required = false)
+                                               ZoneOffset outputZoneOffset,
+                                               @Parameter(description = "Интервал, по которому собираются недавние " +
+                                                       "записи дневника (24 часа, 7 дней или 30 дней). " +
+                                                       "Если не указан, то данные собираются за 24 часа.",
+                                                       required = false)
+                                               @RequestParam(required = false)
+                                               TimeInterval interval) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
 
         Instant timestamp = Instant.now();
         List<DiaryEntry> recentEntries = diaryEntryService.getAllDiaryEntries(patientProfile,
-                timestamp.minus(Duration.ofHours(24)), timestamp);
+                timestamp.minus(interval != null ? interval.getDuration() : TimeInterval.DAY.getDuration()), timestamp);
 
         GlucoseEntryDTO lastGlucoseEntry = null;
         DiaryEntry lastEntry = diaryEntryService.findLastEntryOfType(DiaryEntryType.GLUCOSE_ENTRY, patientProfile);
@@ -98,6 +104,8 @@ public class StatisticsController {
                 .mapToDTO(recentEntries, patientProfile, outputZoneOffset), lastGlucoseEntry, activeInsulin/*,
                 carbsOfDay, patientProfile.getCarbsUnit()*/);
     }
+
+
 //
 //    private float calculateCarbs(List<? extends DiaryEntry> entries, Instant localStartOfDay) {
 //        float totalCarbs = 0f;
