@@ -1,7 +1,7 @@
 package com.artlighter.glucosecontrolservice.authgateway.controller.diary;
 
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ExceptionDTO;
-import com.artlighter.glucosecontrolservice.diary.dto.InCollectionDiaryEntryDTO;
+import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryWithTypeDTO;
 import com.artlighter.glucosecontrolservice.diary.service.DiaryEntryService;
 import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDTO;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
@@ -54,10 +54,10 @@ public class DiaryEntryCollectionController {
     @GetMapping
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_SHOW_ALL', 'GLUCOSE_SHOW_ATTACHED', " +
             "'GLUCOSE_SHOW_OWN', #userId, authentication)")
-    public List<DiaryEntryDTO> getAllEntries(@PathVariable int userId,
-                                             @RequestParam(required = false) Instant from,
-                                             @RequestParam(required = false) Instant to,
-                                             @RequestParam(required = false) ZoneOffset outputZoneOffset) {
+    public List<DiaryEntryWithTypeDTO> getAllEntries(@PathVariable int userId,
+                                                     @RequestParam(required = false) Instant from,
+                                                     @RequestParam(required = false) Instant to,
+                                                     @RequestParam(required = false) ZoneOffset outputZoneOffset) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
 
         List<DiaryEntry> entries = diaryEntryService.getAllDiaryEntries(patientProfile, from, to);
@@ -78,7 +78,7 @@ public class DiaryEntryCollectionController {
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_ADD_ALL', 'GLUCOSE_ADD_ATTACHED', " +
             "'GLUCOSE_ADD_OWN', #userId, authentication)")
     public List<DiaryEntryDTO> postAllEntries(@PathVariable int userId,
-                   @RequestBody @Valid List<InCollectionDiaryEntryDTO> entries, BindingResult bindingResult) {
+                                              @RequestBody @Valid List<DiaryEntryWithTypeDTO> entries, BindingResult bindingResult) {
         //TODO
         return Collections.emptyList();
 

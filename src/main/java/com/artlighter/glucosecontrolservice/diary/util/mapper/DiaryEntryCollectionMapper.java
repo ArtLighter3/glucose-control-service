@@ -1,13 +1,14 @@
 package com.artlighter.glucosecontrolservice.diary.util.mapper;
 
 import com.artlighter.glucosecontrolservice.diary.dto.*;
+import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.*;
 import org.springframework.stereotype.Component;
 
 import java.time.ZoneOffset;
 import java.util.List;
-
+//TODO какой-то странной структуры класс
 @Component
 public class DiaryEntryCollectionMapper {
     private GlucoseEntryMapper glucoseEntryMapper;
@@ -23,8 +24,8 @@ public class DiaryEntryCollectionMapper {
         this.medicationEntryMapper = medicationEntryMapper;
     }
 
-    public List<DiaryEntryDTO> mapToDTO(List<DiaryEntry> internalEntries, PatientProfile patientProfile,
-                                        ZoneOffset outputZoneOffset) {
+    public List<DiaryEntryWithTypeDTO> mapToDTO(List<DiaryEntry> internalEntries, PatientProfile patientProfile,
+                                                ZoneOffset outputZoneOffset) {
         ZoneOffset actualOffset = outputZoneOffset == null ? ZoneOffset.UTC : outputZoneOffset;
 
         return internalEntries.stream()
@@ -32,7 +33,7 @@ public class DiaryEntryCollectionMapper {
                 .toList();
     }
 
-    public List<DiaryEntry> mapToInternal(List<InCollectionDiaryEntryDTO> externalEntries,
+    public List<DiaryEntry> mapToInternal(List<DiaryEntryWithTypeDTO> externalEntries,
                                           PatientProfile patientProfile) {
 
         return externalEntries.stream()
@@ -40,16 +41,17 @@ public class DiaryEntryCollectionMapper {
                 .toList();
     }
 
-    private DiaryEntryDTO convert(DiaryEntry entry, PatientProfile patientProfile, ZoneOffset outputZoneOffset) {
+    private DiaryEntryWithTypeDTO convert(DiaryEntry entry,
+                                          PatientProfile patientProfile, ZoneOffset outputZoneOffset) {
         return switch (entry) {
-            case GlucoseEntry glucoseEntry ->
-                    glucoseEntryMapper.mapToDtoWithUnitConversion(glucoseEntry, patientProfile, outputZoneOffset);
-            case InsulinEntry insulinEntry ->
-                    insulinEntryMapper.mapToDtoWithUnitConversion(insulinEntry, patientProfile, outputZoneOffset);
-            case CarbsEntry carbsEntry ->
-                    carbsEntryMapper.mapToDtoWithUnitConversion(carbsEntry, patientProfile, outputZoneOffset);
-            case MedicationEntry medicationEntry ->
-                    medicationEntryMapper.mapToDtoWithUnitConversion(medicationEntry, patientProfile, outputZoneOffset);
+            case GlucoseEntry glucoseEntry -> new DiaryEntryWithTypeDTO(DiaryEntryType.GLUCOSE_ENTRY,
+                    glucoseEntryMapper.mapToDtoWithUnitConversion(glucoseEntry, patientProfile, outputZoneOffset));
+            case InsulinEntry insulinEntry -> new DiaryEntryWithTypeDTO(DiaryEntryType.INSULIN_ENTRY,
+                    insulinEntryMapper.mapToDtoWithUnitConversion(insulinEntry, patientProfile, outputZoneOffset));
+            case CarbsEntry carbsEntry -> new DiaryEntryWithTypeDTO(DiaryEntryType.CARBS_ENTRY,
+                    carbsEntryMapper.mapToDtoWithUnitConversion(carbsEntry, patientProfile, outputZoneOffset));
+            case MedicationEntry medicationEntry -> new DiaryEntryWithTypeDTO(DiaryEntryType.MEDICATION_ENTRY,
+                    medicationEntryMapper.mapToDtoWithUnitConversion(medicationEntry, patientProfile, outputZoneOffset));
             default -> null;
         };
     }

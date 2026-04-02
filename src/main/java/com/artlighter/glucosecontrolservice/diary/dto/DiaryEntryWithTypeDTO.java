@@ -6,7 +6,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 @Schema(name = "InCollectionDiaryEntry", description = "Запись дневника любого типа с информацией о ее типе")
-public record InCollectionDiaryEntryDTO(
+public record DiaryEntryWithTypeDTO(
         @Schema(description = "Тип записи дневника (принятие углеводов, измерение глюкозы и т.д.)",
                 example = "GLUCOSE_ENTRY")
         @NotNull
