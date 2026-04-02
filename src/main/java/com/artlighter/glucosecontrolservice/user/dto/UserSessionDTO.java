@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Set;
 
 /**
- * DTO для выдачи информации о пользователе в текущей сессии.
+ * DTO для выдачи сессионной информации о пользователе в текущей сессии.
  */
 @Schema(name = "UserSession", description = "Информация о сессии текущего пользователя")
 public record UserSessionDTO(

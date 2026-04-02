@@ -11,7 +11,6 @@ public class DoctorProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private int userId;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     @JoinTable(name = "patient_doctor",
             joinColumns = @JoinColumn(name = "doctor_profile_id"),
@@ -26,14 +25,6 @@ public class DoctorProfile {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
     }
 
 //    public Map<Integer, PatientProfile> getAttachedPatients() {

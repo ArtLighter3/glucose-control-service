@@ -57,7 +57,7 @@ public class DoctorProfileService {
 //        DoctorProfile doctorProfile = doctorProfileRepository.findByUserId(doctorId);
 //        if (doctorProfile == null) return false;
 
-        return doctorProfileRepository.existsAttachedPatientsByUserIdAndAttachedPatientsUserId(doctorId, patientId);
+        return doctorProfileRepository.existsAttachedPatientsByIdAndAttachedPatientsUserId(doctorId, patientId);
         //return doctorProfile.getAttachedPatients().containsKey(patientId);
     }
 
@@ -138,7 +138,7 @@ public class DoctorProfileService {
     }
 
     private DoctorProfile getDoctorProfileOrThrowException(int doctorId) {
-        DoctorProfile doctorProfile = doctorProfileRepository.findByUserId(doctorId);
+        DoctorProfile doctorProfile = doctorProfileRepository.findById(doctorId).orElse(null);
         if (doctorProfile == null)
             throw new ResourceNotFoundException(DoctorProfile.class, "doctor with ID '" + doctorId  + "' not found");
 

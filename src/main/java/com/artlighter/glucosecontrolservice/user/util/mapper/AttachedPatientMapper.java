@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 public class AttachedPatientMapper implements DTOMapper<PatientProfile, AttachedPatientDTO> {
     @Override
     public AttachedPatientDTO mapToDTO(PatientProfile internal) {
-        return new AttachedPatientDTO(internal.getUser().getUsername(), internal.getUser().getUsername(),
-                internal.getUser().getUsername(), internal.getUser().getId(), internal.getUserId(),
-                null);
+        return new AttachedPatientDTO(internal.getUser().getLastName(), internal.getUser().getFirstName(),
+                internal.getUser().getMiddleName(), internal.getUser().getId(), internal.getUser().getEmail(),
+                internal.getUser().getBirthDate());
     }
 
     @Override

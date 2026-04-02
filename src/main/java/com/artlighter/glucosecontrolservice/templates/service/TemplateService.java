@@ -4,7 +4,6 @@ import com.artlighter.glucosecontrolservice.general.exception.ResourceAlreadyExi
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.templates.entity.PatientTemplateEntity;
 import com.artlighter.glucosecontrolservice.templates.repository.PatientTemplateEntityRepository;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -123,7 +122,7 @@ public abstract class TemplateService<T extends PatientTemplateEntity> {
         if (pageable == null) pageable = PageRequest.of(0, 10, Sort.by("id.name"));
 
         Page<T> templates = patientTemplateEntityRepository
-                .getAllByIdPatientProfileIdAndIdNameContaining(patientProfileId, searchQuery, pageable);
+                .getAllByIdPatientProfileIdAndIdNameContainingIgnoreCase(patientProfileId, searchQuery, pageable);
         if (templates == null) return Page.empty();
 
         return templates;

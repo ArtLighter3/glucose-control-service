@@ -2,6 +2,8 @@ package com.artlighter.glucosecontrolservice.user.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.LocalDate;
+
 @Schema(name = "AttachedPatient", description = "Информация о прикрепленном к врачу больном")
 public record AttachedPatientDTO(
         @Schema(description = "Фамилия")
@@ -12,9 +14,9 @@ public record AttachedPatientDTO(
         String middleName,
         @Schema(description = "ID больного в системе")
         Integer patientId,
-        @Schema(description = "ID профиля больного в системе")
-        Integer patientProfileId,
         @Schema(description = "Эл. почта")
-        String email
+        String email,
+        @Schema(description = "Дата рождения")
+        LocalDate birthDate
 ) {
 }

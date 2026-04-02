@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -67,6 +68,7 @@ public class DoctorController {
     public Page<AttachedPatientDTO> getAttachedPatientsBySearchQuery(@PathVariable int userId,
                                                         @RequestParam("query") @Parameter(required = true,
                                                                 description = "Поисковая фраза, содержащаяся в ФИО.")
+                                                        @Valid @NotBlank
                                                         String query,
                                                         @PageableDefault(sort = "user.username")
                                                         @Parameter(description = "Данные о странице и сортировке. " +

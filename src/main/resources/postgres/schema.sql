@@ -10,7 +10,8 @@ CREATE TABLE Service_User (
     first_name varchar(255) NOT NULL,
     middle_name varchar(255),
     last_name varchar(255) NOT NULL,
-    email varchar(255)
+    email varchar(255),
+    birth_date date
 );
 
 CREATE TABLE User_Role (

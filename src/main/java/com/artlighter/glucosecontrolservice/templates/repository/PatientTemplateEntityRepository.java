@@ -11,6 +11,6 @@ public interface PatientTemplateEntityRepository<T extends PatientTemplateEntity
         extends JpaRepository<T, PatientTemplateEntity.PatientTemplateEntityID> {
 
     Page<T> getAllByIdPatientProfileId(int patientProfileId, Pageable pageable);
-    Page<T> getAllByIdPatientProfileIdAndIdNameContaining(int patientProfileId, String searchQuery,
-                                                          Pageable pageable);
+    Page<T> getAllByIdPatientProfileIdAndIdNameContainingIgnoreCase(int patientProfileId, String searchQuery,
+                                                                    Pageable pageable);
 }

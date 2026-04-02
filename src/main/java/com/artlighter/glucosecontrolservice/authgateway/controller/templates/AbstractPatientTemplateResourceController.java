@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -94,6 +95,7 @@ public abstract class AbstractPatientTemplateResourceController
     public Page<EXT> getTemplatesBySearchQuery(@PathVariable int userId,
                                                @RequestParam @Parameter(required = true,
                                                        description = "Поисковая фраза, содержащаяся в наименовании.")
+                                               @Valid @NotBlank
                                                String query,
                                                @PageableDefault(size = 10, page = 0, sort = "id.name")
                                                @Parameter(description = "Данные о странице и сортировке. " +

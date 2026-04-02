@@ -36,7 +36,7 @@ public class AuthConfig {
                 .cors(Customizer.withDefaults())
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((requests) ->
-                                requests.requestMatchers("/api/auth/register",
+                                requests.requestMatchers("/api/v1/auth/register",
                                                 //TODO временно
                                                 "/api-docs",
                                                 "/swagger-ui/index.html",

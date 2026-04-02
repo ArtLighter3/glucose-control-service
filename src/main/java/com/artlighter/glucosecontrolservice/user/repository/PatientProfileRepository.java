@@ -3,6 +3,7 @@ package com.artlighter.glucosecontrolservice.user.repository;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,9 +23,14 @@ public interface PatientProfileRepository extends JpaRepository<PatientProfile, 
                                                                   Pageable pageable);
 
     @Query("SELECT pp FROM PatientProfile pp JOIN FETCH pp.user u " +
-            "JOIN pp.doctors d WHERE u.username LIKE :searchQuery AND d.id = :doctorProfileId")
+            "JOIN pp.doctors d WHERE LOWER(u.lastName) LIKE LOWER(CONCAT('%', :searchQuery, '%')) " +
+            "AND d.id = :doctorProfileId")
     Page<PatientProfile> searchPatientsAttachedToDoctorByDoctorId(@Param("doctorProfileId") int doctorProfileId,
                                                                @Param("searchQuery") String searchQuery,
                                                                Pageable pageable);
+
+    @Query("SELECT pp FROM PatientProfile pp JOIN FETCH pp.user u " +
+            "WHERE LOWER(u.lastName) LIKE LOWER(CONCAT('%', :searchQuery, '%'))")
+    Slice<PatientProfile> searchPatients(@Param("searchQuery") String searchQuery, Pageable pageable);
 }
 
