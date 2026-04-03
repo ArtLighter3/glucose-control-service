@@ -49,10 +49,10 @@ public class DoctorController {
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('ATTACHED_PATIENT_SHOW_ALL', " +
             "null, 'ATTACHED_PATIENT_SHOW_OWN', #userId, authentication)")
     public Page<AttachedPatientDTO> getAttachedPatients(@PathVariable int userId,
-                                                        @PageableDefault(sort = "user.username")
+                                                        @PageableDefault(sort = "user.lastName")
                                                         @Parameter(description = "Данные о странице и сортировке." +
                                                                 "По-умолчанию сортируется " +
-                                                                "по имени пользователя (возр.)")
+                                                                "по фамилии пользователя (возр.)")
                                                         Pageable pageable) {
         Page<PatientProfile> attachedPatients = doctorProfileService.getAttachedPatients(userId, pageable);
 
@@ -70,10 +70,10 @@ public class DoctorController {
                                                                 description = "Поисковая фраза, содержащаяся в ФИО.")
                                                         @Valid @NotBlank
                                                         String query,
-                                                        @PageableDefault(sort = "user.username")
+                                                        @PageableDefault(sort = "user.lastName")
                                                         @Parameter(description = "Данные о странице и сортировке. " +
                                                                 "По-умолчанию сортируется " +
-                                                                "по имени пользователя (возр.)")
+                                                                "по фамилии пользователя (возр.)")
                                                         Pageable pageable) {
         Page<PatientProfile> attachedPatients = doctorProfileService.searchAttachedPatients(userId, query, pageable);
 

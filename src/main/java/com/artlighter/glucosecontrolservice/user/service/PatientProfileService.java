@@ -151,12 +151,12 @@ public class PatientProfileService {
     public Page<PatientProfile> getPatientsAttachedToDoctor(int doctorProfileId, @Nullable String searchQuery,
                                                             Pageable pageable) {
         if (pageable == null)
-            pageable = PageRequest.of(0, 10, Sort.by("user.username"));
+            pageable = PageRequest.of(0, 10, Sort.by("user.lastName"));
 
         Page<PatientProfile> patientProfiles = searchQuery == null ?
                 patientProfileRepository.getPatientsAttachedToDoctorByDoctorId(doctorProfileId, pageable) :
                 patientProfileRepository.searchPatientsAttachedToDoctorByDoctorId(doctorProfileId,
-                        "%" + searchQuery + "%", pageable);
+                        searchQuery, pageable);
         if (patientProfiles == null) return Page.empty(pageable);
 
         return patientProfiles;
