@@ -10,10 +10,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PatientProfileRepository extends JpaRepository<PatientProfile, Integer> {
+public interface PatientProfileRepository
+        extends JpaRepository<PatientProfile, Integer> {
+
     PatientProfile findByUserId(int userId);
     PatientProfile findByUserUsername(String username);
-    //Integer getPatientProfileIdByUserId(int userId);
     boolean existsByUserId(int userId);
     void deleteByUserId(int userId);
 

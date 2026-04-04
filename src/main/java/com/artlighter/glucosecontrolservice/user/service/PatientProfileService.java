@@ -104,7 +104,12 @@ public class PatientProfileService {
 
         patientProfile.setUser(user);
         patientProfile.setCarbsUnit(CarbsUnit.GRAMS);
-        patientProfile.setDiabetesType(1);patientProfile.setGlucoseUnit(GlucoseUnit.MILLIMOLES_PER_LITER);
+        patientProfile.setDiabetesType(1);
+        patientProfile.setGlucoseUnit(GlucoseUnit.MILLIMOLES_PER_LITER);
+        patientProfile.setHyperGlucose(15);
+        patientProfile.setHighGlucose(8);
+        patientProfile.setLowGlucose(4);
+        patientProfile.setHypoGlucose(2);
 
         return patientProfileRepository.save(patientProfile);
     }
@@ -115,8 +120,11 @@ public class PatientProfileService {
      * @param userId ID пользователя-больного;
      * @return обновленный профиль больного;
      * @throws ResourceNotFoundException если профиль больного не существует;
+     * @throws IllegalArgumentException если patientProfile равен null;
      */
     public PatientProfile updateProfileForPatient(PatientProfile patientProfile, int userId) {
+        if (patientProfile == null) throw new IllegalArgumentException("patientProfile cannot be null");
+
         PatientProfile existingProfile = patientProfileRepository.findByUserId(userId);
         if (existingProfile == null)
             throw new ResourceNotFoundException(PatientProfile.class,
