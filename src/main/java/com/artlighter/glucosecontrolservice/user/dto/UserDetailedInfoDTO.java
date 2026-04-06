@@ -12,9 +12,9 @@ import java.util.Collection;
 import java.util.Set;
 
 /**
- * DTO для выдачи подробной информации о пользователе
+ * DTO для выдачи подробной информации о пользователе администраторам
  */
-@Schema(name = "UserDetailedInfo", description = "Подробная информация о пользователе")
+@Schema(name = "UserDetailedInfo", description = "Подробная информация о пользователе для администраторов")
 public record UserDetailedInfoDTO(
         @Schema(description = "ID пользователя в системе")
         int id,

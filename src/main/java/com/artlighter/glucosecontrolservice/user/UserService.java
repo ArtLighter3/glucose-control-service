@@ -1,6 +1,7 @@
 package com.artlighter.glucosecontrolservice.user;
 
 import com.artlighter.glucosecontrolservice.general.exception.ResourceAlreadyExistsException;
+import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.user.entity.User;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
@@ -110,6 +111,23 @@ public class UserService {
     }
 
     /**
+     * Получает пользователя в системе по его ID. В отличие от findUserById, не возвращает null в случае ненахождения, а
+     * выбрасывает исключение.
+     * @param id идентификатор пользователя в системе;
+     * @return объект пользователя;
+     * @throws com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException если пользователь с
+     *  этим id не был найден;
+     */
+    @Transactional(readOnly = true)
+    public User getUserById(int id) {
+        User user = userRepository.findById(id).orElse(null);
+
+        if (user == null) throw new ResourceNotFoundException(User.class, "user with ID '" + id + "' not found");
+
+        return user;
+    }
+
+    /**
      * Определяет, есть ли у пользователя роль без необходимости загрузки всего пользователя
      * @param id идентификатор пользователя в системе
      * @param role роль
@@ -134,5 +152,29 @@ public class UserService {
         if (users == null) return Page.empty();
 
         return users;
+    }
+
+    /**
+     * Обновляет профиль больного. Поля с ID, ролями, паролем и логином не учитываются при обновлении этим методом.
+     * @param userWithNewInfo информация о пользователе, не учитывая id, роли, пароль и логин;
+     * @param userId ID пользователя-больного;
+     * @return обновленный профиль больного;
+     * @throws ResourceNotFoundException если пользователь с этим ID не существует;
+     * @throws IllegalArgumentException если userWithNewInfo равен null;
+     */
+    public User updateUserInfo(User userWithNewInfo, int userId) {
+        if (userWithNewInfo == null) throw new IllegalArgumentException("userWithNewInfo cannot be null");
+
+        User existingUser = userRepository.findById(userId).orElse(null);
+        if (existingUser == null)
+            throw new ResourceNotFoundException(User.class, "user with ID '" + userId + "' not found");
+
+        existingUser.setEmail(userWithNewInfo.getEmail());
+        existingUser.setFirstName(userWithNewInfo.getFirstName());
+        existingUser.setMiddleName(userWithNewInfo.getMiddleName());
+        existingUser.setLastName(userWithNewInfo.getLastName());
+        existingUser.setBirthDate(userWithNewInfo.getBirthDate());
+
+        return userRepository.save(existingUser);
     }
 }

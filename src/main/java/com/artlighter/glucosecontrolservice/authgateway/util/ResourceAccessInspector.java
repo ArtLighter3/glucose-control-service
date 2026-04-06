@@ -51,14 +51,14 @@ public class ResourceAccessInspector {
      * предусмотрено только право на личный доступ, ни врачи не смогут получить доступ к этому типу ресурса у
      * прикрепленного пациента, ни админы к этому же типу ресурса у любого пользователя).
      * @param authorityToAccessAll право на доступ (модификацию) к ресурсам типа всех пользователей; может быть null,
-     *                             для пропуска проверки на это право
+     *                             для пропуска проверки на это право;
      * @param authorityToAccessAttached право на доступ (модификацию) к ресурсам типа прикрепленных пользователей; может быть null,
-     *                                  для пропуска проверки на это право
+     *                                  для пропуска проверки на это право;
      * @param authorityToAccessOnlyOwn право на доступ (модификацию) к собственному ресурсу типа; может быть null,
-     *                                 для пропуска проверки на это право
-     * @param resourceOwnerId идентификационный номер владельца ресурса
-     * @param actualCurrentUserAuthentication объект с текущим пользователем, претендующем на ресурс
-     * @return true, если в результате вышеперечисленных проверок доступ разрешается; иначе false
+     *                                 для пропуска проверки на это право;
+     * @param resourceOwnerId идентификационный номер владельца ресурса;
+     * @param actualCurrentUserAuthentication объект с текущим пользователем, претендующем на ресурс;
+     * @return true, если в результате вышеперечисленных проверок доступ разрешается; иначе false;
      */
     public boolean hasPermissionForResource(@Nullable String authorityToAccessAll,
                                             @Nullable String authorityToAccessAttached,
@@ -72,7 +72,8 @@ public class ResourceAccessInspector {
         Object detailsObject = actualCurrentUserAuthentication.getPrincipal();
         if (!(detailsObject instanceof UserDetails currentUserDetails)) return false;
 
-        if (authorityToAccessOnlyOwn != null && hasAuthority(actualCurrentUserAuthentication, authorityToAccessOnlyOwn)) {
+        if (authorityToAccessOnlyOwn != null &&
+                hasAuthority(actualCurrentUserAuthentication, authorityToAccessOnlyOwn)) {
             boolean check = checkIfUserIsResourceOwner(resourceOwnerId, currentUserDetails);
             //не сразу возвращаем, если пользователь - не владелец ресурса, ведь у него может быть доступ
             //к прикрепленным пользователям
@@ -83,6 +84,22 @@ public class ResourceAccessInspector {
             return checkIfResourceOwnerIsAttachedToCurrentUser(resourceOwnerId, currentUserDetails);
 
         return false;
+    }
+
+    /**
+     * Проверяет, является ли текущий пользователь в сессии (actualCurrentUserAuthentication) владельцем ресурса по
+     * ID владельца ресурса.
+     * @param resourceOwnerId идентификационный номер владельца ресурса
+     * @param actualCurrentUserAuthentication объект с текущим пользователем, претендующем на ресурс;
+     * @return true, ID пользователя в сессии и владельца ресурса совпадают; иначе false;
+     */
+    public boolean isOwnerOfResource(int resourceOwnerId, Authentication actualCurrentUserAuthentication) {
+        if (actualCurrentUserAuthentication == null) return false;
+
+        Object detailsObject = actualCurrentUserAuthentication.getPrincipal();
+        if (!(detailsObject instanceof UserDetails currentUserDetails)) return false;
+
+        return checkIfUserIsResourceOwner(resourceOwnerId, currentUserDetails);
     }
 
     private boolean checkIfUserIsResourceOwner(int resourceOwnerId, UserDetails currentUserDetails) {
