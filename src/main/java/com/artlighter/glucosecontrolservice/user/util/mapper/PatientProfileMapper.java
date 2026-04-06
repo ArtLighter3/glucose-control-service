@@ -5,15 +5,27 @@ import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.general.DTOMapper;
 import org.springframework.stereotype.Component;
 
+import java.text.DecimalFormat;
+
 @Component
 public class PatientProfileMapper implements DTOMapper<PatientProfile, PatientProfileDTO> {
+    private DecimalFormat decimalOutputFormat;
+
+    public PatientProfileMapper(DecimalFormat decimalOutputFormat) {
+        this.decimalOutputFormat = decimalOutputFormat;
+    }
+
     @Override
     public PatientProfileDTO mapToDTO(PatientProfile internal) {
         return new PatientProfileDTO(internal.getGlucoseUnit(), internal.getCarbsUnit(), internal.getDiabetesType(),
-                (float) internal.getGlucoseUnit().convertFromMmolPerLiter(internal.getHyperGlucose()),
-                (float) internal.getGlucoseUnit().convertFromMmolPerLiter(internal.getHighGlucose()),
-                (float) internal.getGlucoseUnit().convertFromMmolPerLiter(internal.getLowGlucose()),
-                (float) internal.getGlucoseUnit().convertFromMmolPerLiter(internal.getHypoGlucose()),
+                Float.valueOf(decimalOutputFormat
+                        .format(internal.getGlucoseUnit().convertFromMmolPerLiter(internal.getHyperGlucose()))),
+                Float.valueOf(decimalOutputFormat
+                        .format(internal.getGlucoseUnit().convertFromMmolPerLiter(internal.getHighGlucose()))),
+                Float.valueOf(decimalOutputFormat
+                        .format(internal.getGlucoseUnit().convertFromMmolPerLiter(internal.getLowGlucose()))),
+                Float.valueOf(decimalOutputFormat
+                        .format(internal.getGlucoseUnit().convertFromMmolPerLiter(internal.getHypoGlucose()))),
                 internal.isNightscoutEnabled(), internal.getNightscoutApiSecret());
     }
 

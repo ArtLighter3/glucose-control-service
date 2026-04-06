@@ -1,5 +1,7 @@
 package com.artlighter.glucosecontrolservice.authgateway.controller.calculations;
 
+import com.artlighter.glucosecontrolservice.authgateway.util.ConvertableValueRangeValidator;
+import com.artlighter.glucosecontrolservice.authgateway.util.exception.ConvertableValueValidationException;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ExceptionDTO;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ValidationIsFailedException;
 import com.artlighter.glucosecontrolservice.calculations.dto.InsulinProfileDTO;
@@ -20,6 +22,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalTime;
+import java.util.Map;
+
 @Tag(name = "calculations", description = "методы для модификации инсулиновых профилей и для расчетов инсулина, " +
         "подсчета статистики")
 @ApiResponses(value =
@@ -33,13 +38,16 @@ public class InsulinProfileController {
     private PatientProfileService patientProfileService;
     private InsulinProfileService insulinProfileService;
     private InsulinProfileMapper insulinProfileMapper;
+    private ConvertableValueRangeValidator convertableValueRangeValidator;
 
     public InsulinProfileController(PatientProfileService patientProfileService,
                                     InsulinProfileService insulinProfileService,
-                                    InsulinProfileMapper insulinProfileMapper) {
+                                    InsulinProfileMapper insulinProfileMapper,
+                                    ConvertableValueRangeValidator convertableValueRangeValidator) {
         this.patientProfileService = patientProfileService;
         this.insulinProfileService = insulinProfileService;
         this.insulinProfileMapper = insulinProfileMapper;
+        this.convertableValueRangeValidator = convertableValueRangeValidator;
     }
 
     @Operation(summary = "Получить инсулиновый профиль больного.", description = "Для доступа к своему профилю" +
@@ -50,10 +58,10 @@ public class InsulinProfileController {
     @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('INSULIN_PROFILE_SHOW_ALL', " +
             "'INSULIN_PROFILE_SHOW_ATTACHED', 'INSULIN_PROFILE_SHOW_OWN', #userId, authentication)")
     public InsulinProfileDTO getInsulinProfile(@PathVariable int userId) {
-       // PatientProfile patientProfile = patientProfileService.getByUserId(userId);
+        PatientProfile patientProfile = patientProfileService.getByUserId(userId);
         InsulinProfile insulinProfile = insulinProfileService.getByPatientProfileId(userId);
 
-        return insulinProfileMapper.mapToDTO(insulinProfile);
+        return insulinProfileMapper.mapToDTOWithUnitConversion(insulinProfile, patientProfile.getGlucoseUnit());
     }
 
     @Operation(summary = "Создать инсулиновый профиль больного.", description = "Для создания своего профиля" +
@@ -77,13 +85,14 @@ public class InsulinProfileController {
         if (bindingResult.hasErrors())
             throw new ValidationIsFailedException(bindingResult, "insulin profile is invalid");
 
-        //Здесь все же проверяется наличие профиля пациента, чтобы пользователь получил нашу
-        //NOT FOUND ошибку, а не от базы данных, при попытке создания для несуществующего профиля пациента
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
+        validateISF(insulinProfileDTO, patientProfile, bindingResult);
 
-        insulinProfileService.createInsulinProfile(insulinProfileMapper.mapToInternal(insulinProfileDTO),
+        InsulinProfile added = insulinProfileService.createInsulinProfile(insulinProfileMapper
+                        .mapToInternalWithUnitConversion(insulinProfileDTO, patientProfile.getGlucoseUnit()),
                 patientProfile.getUserId());
-        return insulinProfileDTO;
+
+        return insulinProfileMapper.mapToDTOWithUnitConversion(added, patientProfile.getGlucoseUnit());
     }
 
     @Operation(summary = "Обновить инсулиновый профиль больного.", description = "Для обновления своего профиля" +
@@ -101,10 +110,43 @@ public class InsulinProfileController {
         if (bindingResult.hasErrors())
             throw new ValidationIsFailedException(bindingResult, "insulin profile is invalid");
 
-        //PatientProfile patientProfile = patientProfileService.getByUserId(userId);
+        PatientProfile patientProfile = patientProfileService.getByUserId(userId);
+        validateISF(insulinProfileDTO, patientProfile, bindingResult);
 
         InsulinProfile updated = insulinProfileService
-                .updateInsulinProfile(insulinProfileMapper.mapToInternal(insulinProfileDTO), userId);
-        return insulinProfileMapper.mapToDTO(updated);
+                .updateInsulinProfile(insulinProfileMapper.mapToInternalWithUnitConversion(insulinProfileDTO,
+                                patientProfile.getGlucoseUnit()),
+                        userId);
+
+        return insulinProfileMapper.mapToDTOWithUnitConversion(updated, patientProfile.getGlucoseUnit());
+    }
+
+    private void validateISF(InsulinProfileDTO insulinProfileDTO,
+                             PatientProfile patientProfile,
+                             BindingResult bindingResult) {
+        boolean defaultISFInvalid = false, byTimeISFInvalid = false;
+
+        try {
+            convertableValueRangeValidator.isISFValid(insulinProfileDTO.defaultInsulinSensitivityFactor(),
+                    patientProfile.getGlucoseUnit());
+        } catch (ConvertableValueValidationException ex) {
+            bindingResult.rejectValue("defaultInsulinSensitivityFactor", "not_in_range", ex.getMessage());
+            defaultISFInvalid = true;
+        }
+
+        if (insulinProfileDTO.factorsByTime() != null) {
+            for (Map.Entry<LocalTime, Float> entry : insulinProfileDTO.factorsByTime().entrySet()) {
+                try {
+                    convertableValueRangeValidator.isISFValid(entry.getValue(), patientProfile.getGlucoseUnit());
+                } catch (ConvertableValueValidationException ex) {
+                    bindingResult.rejectValue(String.format("factorsByTime[%s]", entry.getKey().toString()),
+                            "not_in_range", ex.getMessage());
+                    byTimeISFInvalid = true;
+                }
+            }
+        }
+
+        if (defaultISFInvalid || byTimeISFInvalid)
+            throw new ValidationIsFailedException(bindingResult);
     }
 }

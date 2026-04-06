@@ -30,7 +30,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "users", description = "администраторские методы для управления пользователями")
+@Tag(name = "users", description = "методы для управления пользователями, общей информацией о них")
 @ApiResponses(value =
         {@ApiResponse(responseCode = "200", description = "В случае успеха."),
         @ApiResponse(responseCode = "500", description = "Ошибка сервера.",

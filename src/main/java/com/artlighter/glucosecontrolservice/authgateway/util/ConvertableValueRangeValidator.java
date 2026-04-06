@@ -51,6 +51,23 @@ public class ConvertableValueRangeValidator {
         if (!isValid(value, min, max)) throw new ConvertableValueValidationException(value, min, max);
     }
 
+    /**
+     * Проверяет, входит ли значение в диапазон допустимых значений углеводов в зависимости от единицы измерения,
+     * заданной в профиле больного. Не возвращает логическое значение, а выкидывает исключение!
+     * @param value значение фактора чувствительности к инсулину (ISF);
+     * @param glucoseUnit единицы измерения глюкозы, заданные пользователем;
+     * @throws ConvertableValueValidationException если валидация не была пройдена;
+     * @throws IllegalArgumentException если glucoseUnit равен null;
+     */
+    public void isISFValid(double value, GlucoseUnit glucoseUnit) {
+        if (glucoseUnit == null) throw new IllegalArgumentException("glucoseUnit cannot be null");
+
+        double min = glucoseUnit.convertFromMmolPerLiter(0.2);
+        double max = glucoseUnit.convertFromMmolPerLiter(55.5);
+
+        if (!isValid(value, min, max)) throw new ConvertableValueValidationException(value, min, max);
+    }
+
     private boolean isValid(double value, double min, double max) {
         return value >= min && value <= max;
     }
