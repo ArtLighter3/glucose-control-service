@@ -30,9 +30,6 @@ public class PatientProfile {
     private float highGlucose;
     private float lowGlucose;
     private float hypoGlucose;
-    @Column(name = "is_nightscout_enabled")
-    private boolean nightscoutEnabled;
-    private String nightscoutApiSecret;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "attachedPatients")
     Set<DoctorProfile> doctors;
@@ -61,14 +58,6 @@ public class PatientProfile {
         this.highGlucose = highGlucose;
         this.lowGlucose = lowGlucose;
         this.hypoGlucose = hypoGlucose;
-    }
-
-    public PatientProfile(int userId, User user, GlucoseUnit glucoseUnit, CarbsUnit carbsUnit, int diabetesType,
-                          float hyperGlucose, float highGlucose, float lowGlucose, float hypoGlucose,
-                          boolean nightscoutEnabled, String nightscoutApiSecret) {
-        this(userId, user, glucoseUnit, carbsUnit, diabetesType, hyperGlucose, highGlucose, lowGlucose, hypoGlucose);
-        this.nightscoutEnabled = nightscoutEnabled;
-        this.nightscoutApiSecret = nightscoutApiSecret;
     }
 
     public PatientProfile() {
@@ -160,22 +149,6 @@ public class PatientProfile {
 
     public void setDoctors(Set<DoctorProfile> doctors) {
         this.doctors = doctors;
-    }
-
-    public boolean isNightscoutEnabled() {
-        return nightscoutEnabled;
-    }
-
-    public void setNightscoutEnabled(boolean nightscoutEnabled) {
-        this.nightscoutEnabled = nightscoutEnabled;
-    }
-
-    public String getNightscoutApiSecret() {
-        return nightscoutApiSecret;
-    }
-
-    public void setNightscoutApiSecret(String nightscoutApiSecret) {
-        this.nightscoutApiSecret = nightscoutApiSecret;
     }
 
     @Override

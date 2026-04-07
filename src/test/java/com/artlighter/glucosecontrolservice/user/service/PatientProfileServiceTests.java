@@ -32,7 +32,7 @@ public class PatientProfileServiceTests {
     @Test
     public void getByUserId_RepositoryFindsProfile_ReturnsCorrectPatientProfile() {
         PatientProfile expected = new PatientProfile(0, new User(),
-                GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS, 1, 15f, 12f, 8f, 4f, false, null);
+                GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS, 1, 15f, 12f, 8f, 4f);
         when(patientProfileRepository.findByUserId(0)).thenReturn(expected);
 
         PatientProfile actual = patientProfileService.getByUserId(0);
@@ -43,7 +43,7 @@ public class PatientProfileServiceTests {
     @Test
     public void getByUserId_RepositoryReturnsNull_ThrowsResourceNotFoundException() {
         PatientProfile existing = new PatientProfile(0, new User(),
-                GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS, 1, 15f, 12f, 8f, 4f, false, null);
+                GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS, 1, 15f, 12f, 8f, 4f);
         when(patientProfileRepository.findByUserId(0)).thenReturn(existing);
 
         assertThrows(ResourceNotFoundException.class, () -> patientProfileService.getByUserId(2));
@@ -56,7 +56,7 @@ public class PatientProfileServiceTests {
         User user = new User();
         user.setUsername("username1");
         PatientProfile expected = new PatientProfile(user.getId(), user,
-                GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS, 1, 15f, 12f, 8f, 4f, false, null);
+                GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS, 1, 15f, 12f, 8f, 4f);
         when(patientProfileRepository.findByUserUsername(user.getUsername())).thenReturn(expected);
 
         PatientProfile actual = patientProfileService.getByUsername("username1");
@@ -69,7 +69,7 @@ public class PatientProfileServiceTests {
         User user = new User();
         user.setUsername("username1");
         PatientProfile existing = new PatientProfile(user.getId(), user,
-                GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS, 1, 15f, 12f, 8f, 4f, false, null);
+                GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS, 1, 15f, 12f, 8f, 4f);
         when(patientProfileRepository.findByUserUsername(user.getUsername())).thenReturn(existing);
 
         assertThrows(ResourceNotFoundException.class, () -> patientProfileService.getByUsername("username2"));
@@ -113,7 +113,7 @@ public class PatientProfileServiceTests {
         user.setId(1);
         user.setRoles(Set.of(Role.ROLE_PATIENT));
         PatientProfile expected = new PatientProfile(user.getId(), user,
-                GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS, 1, 15f, 12f, 8f, 4f, false, null);
+                GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS, 1, 15f, 12f, 8f, 4f);
         when(patientProfileRepository.save(expected)).thenReturn(expected);
 
         PatientProfile actual = patientProfileService.createProfileForPatient(expected, user);
@@ -156,7 +156,7 @@ public class PatientProfileServiceTests {
         user.setId(1);
         user.setRoles(Set.of(Role.ROLE_PATIENT));
         PatientProfile expected = new PatientProfile(user.getId(), user,
-                GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS, 1, 15f, 8f, 4f, 2f, false, null);
+                GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS, 1, 15f, 8f, 4f, 2f);
         when(patientProfileRepository.save(any())).thenReturn(expected);
 
         PatientProfile actual = patientProfileService.createDefaultProfileForPatient(user);
@@ -193,9 +193,9 @@ public class PatientProfileServiceTests {
         user.setId(1);
         user.setRoles(Set.of(Role.ROLE_PATIENT));
         PatientProfile expected = new PatientProfile(user.getId(), user,
-                GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS, 1, 15f, 8f, 4f, 2f, false, null);
+                GlucoseUnit.MILLIMOLES_PER_LITER, CarbsUnit.GRAMS, 1, 15f, 8f, 4f, 2f);
         PatientProfile existing = new PatientProfile(user.getId(), user,
-                GlucoseUnit.MILLIGRAMS_PER_DECILITER, CarbsUnit.BREAD_UNITS_10, 2, 12f, 8f, 4f, 2f, false, null);
+                GlucoseUnit.MILLIGRAMS_PER_DECILITER, CarbsUnit.BREAD_UNITS_10, 2, 12f, 8f, 4f, 2f);
         when(patientProfileRepository.save(expected)).thenReturn(expected);
         when(patientProfileRepository.findByUserId(user.getId())).thenReturn(existing);
 

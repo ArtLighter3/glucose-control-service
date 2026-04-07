@@ -25,8 +25,7 @@ public class PatientProfileMapper implements DTOMapper<PatientProfile, PatientPr
                 Float.valueOf(decimalOutputFormat
                         .format(internal.getGlucoseUnit().convertFromMmolPerLiter(internal.getLowGlucose()))),
                 Float.valueOf(decimalOutputFormat
-                        .format(internal.getGlucoseUnit().convertFromMmolPerLiter(internal.getHypoGlucose()))),
-                internal.isNightscoutEnabled(), internal.getNightscoutApiSecret());
+                        .format(internal.getGlucoseUnit().convertFromMmolPerLiter(internal.getHypoGlucose()))));
     }
 
     @Override
@@ -42,9 +41,6 @@ public class PatientProfileMapper implements DTOMapper<PatientProfile, PatientPr
         patientProfile.setHighGlucose((float)externalDTO.glucoseUnit().convertToMmolPerLiter(externalDTO.highGlucose()));
         patientProfile.setLowGlucose((float)externalDTO.glucoseUnit().convertToMmolPerLiter(externalDTO.lowGlucose()));
         patientProfile.setHypoGlucose((float)externalDTO.glucoseUnit().convertToMmolPerLiter(externalDTO.hypoGlucose()));
-
-        patientProfile.setNightscoutEnabled(externalDTO.isNightscoutEnabled());
-        patientProfile.setNightscoutApiSecret(externalDTO.nightscoutApiSecret());
 
         return patientProfile;
     }

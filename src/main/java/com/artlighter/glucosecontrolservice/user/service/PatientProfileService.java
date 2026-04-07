@@ -170,26 +170,13 @@ public class PatientProfileService {
         return patientProfiles;
     }
 
-    /**
-     * Находит ключ к Nightscout API определенного больного по его имени пользователя.
-     * @param patientUsername имя пользователя больного;
-     * @return API-ключ к Nightscout; null, если у пользователя отключено Nightscout API,
-     *         либо не было найдено ключа или профиля больного;
-     */
-    public String getNightscoutApiSecretIfEnabled(String patientUsername) {
-        PatientProfile patientProfile = patientProfileRepository.findByUserUsername(patientUsername);
-        if (patientProfile == null || !patientProfile.isNightscoutEnabled()) return null;
-
-        return patientProfile.getNightscoutApiSecret();
-    }
-
-    /**
-     * Удаляет профиль больного. Проигнорирует, если профиль уже не существует.
-     * @param userId ID пользователя-больного;
-     */
-    public void deletePatientProfile(int userId) {
-        patientProfileRepository.deleteByUserId(userId);
-    }
+//    /**
+//     * Удаляет профиль больного. Проигнорирует, если профиль уже не существует.
+//     * @param userId ID пользователя-больного;
+//     */
+//    public void deletePatientProfile(int userId) {
+//        patientProfileRepository.deleteByUserId(userId);
+//    }
 
 //    private void checkArguments(PatientProfile patientProfile) {
 //        if (patientProfile == null) throw new IllegalArgumentException("patientProfile cannot be null");

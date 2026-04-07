@@ -1,4 +1,4 @@
-package com.artlighter.glucosecontrolservice.nightscout.util.validation;
+package com.artlighter.glucosecontrolservice.integration.util.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

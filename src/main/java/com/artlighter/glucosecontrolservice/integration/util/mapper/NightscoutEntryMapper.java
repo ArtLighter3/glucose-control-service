@@ -1,8 +1,8 @@
-package com.artlighter.glucosecontrolservice.nightscout.util.mapper;
+package com.artlighter.glucosecontrolservice.integration.util.mapper;
 
 import com.artlighter.glucosecontrolservice.diary.entity.entry.GlucoseEntry;
 import com.artlighter.glucosecontrolservice.general.DTOMapper;
-import com.artlighter.glucosecontrolservice.nightscout.dto.NightscoutEntryDTO;
+import com.artlighter.glucosecontrolservice.integration.dto.NightscoutEntryDTO;
 import com.artlighter.glucosecontrolservice.user.entity.GlucoseUnit;
 import org.springframework.stereotype.Component;
 

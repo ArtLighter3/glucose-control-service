@@ -1,7 +1,7 @@
-package com.artlighter.glucosecontrolservice.nightscout.dto;
+package com.artlighter.glucosecontrolservice.integration.dto;
 
 import com.artlighter.glucosecontrolservice.general.TypeGroup;
-import com.artlighter.glucosecontrolservice.nightscout.util.validation.GlucoseValueForTypeExists;
+import com.artlighter.glucosecontrolservice.integration.util.validation.GlucoseValueForTypeExists;
 import jakarta.validation.GroupSequence;
 import jakarta.validation.constraints.*;
 

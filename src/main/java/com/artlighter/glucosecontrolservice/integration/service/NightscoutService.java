@@ -1,13 +1,12 @@
-package com.artlighter.glucosecontrolservice.nightscout.service;
+package com.artlighter.glucosecontrolservice.integration.service;
 
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.GlucoseEntry;
 import com.artlighter.glucosecontrolservice.diary.service.DiaryEntryService;
-import com.artlighter.glucosecontrolservice.nightscout.dto.NightscoutEntryDTO;
-import com.artlighter.glucosecontrolservice.nightscout.dto.NightscoutTreatmentDTO;
-import com.artlighter.glucosecontrolservice.nightscout.util.mapper.NightscoutEntryMapper;
-import com.artlighter.glucosecontrolservice.nightscout.util.mapper.NightscoutTreatmentMapper;
-import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
+import com.artlighter.glucosecontrolservice.integration.dto.NightscoutEntryDTO;
+import com.artlighter.glucosecontrolservice.integration.dto.NightscoutTreatmentDTO;
+import com.artlighter.glucosecontrolservice.integration.util.mapper.NightscoutEntryMapper;
+import com.artlighter.glucosecontrolservice.integration.util.mapper.NightscoutTreatmentMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

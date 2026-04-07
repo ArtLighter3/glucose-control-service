@@ -57,6 +57,8 @@ public class InsulinProfileServiceTests {
 
     @Test
     public void createInsulinProfile_CallsRepositoryToSaveInsulinProfileAndReturnsSaved() {
+        //ID = 0, чтобы проверить, что сервис выставляет ID из аргументов метода независимо от ID, стоящего во входном
+        //профиле
         InsulinProfile expected = new InsulinProfile(0, 30f, 30f, 5, null, null);
         when(insulinProfileRepository.save(expected)).thenReturn(expected);
 

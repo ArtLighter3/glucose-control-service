@@ -2,7 +2,6 @@ package com.artlighter.glucosecontrolservice.user.dto;
 
 import com.artlighter.glucosecontrolservice.user.entity.CarbsUnit;
 import com.artlighter.glucosecontrolservice.user.entity.GlucoseUnit;
-import com.artlighter.glucosecontrolservice.user.util.validation.CorrectApiSettings;
 import com.artlighter.glucosecontrolservice.user.util.validation.CorrectGlucoseIntervals;
 import com.artlighter.glucosecontrolservice.general.TypeGroup;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,7 +12,6 @@ import org.hibernate.validator.constraints.Length;
 @Schema(name = "PatientProfile", description = "Профиль больного с его настройками")
 @GroupSequence({PatientProfileDTO.class, TypeGroup.class})
 @CorrectGlucoseIntervals(groups = {TypeGroup.class})
-@CorrectApiSettings(groups = {TypeGroup.class})
 public record PatientProfileDTO(
         @Schema(description = "Единицы измерения глюкозы при ведении дневника")
         GlucoseUnit glucoseUnit,
@@ -47,13 +45,6 @@ public record PatientProfileDTO(
         @DecimalMin("1")
         @DecimalMax("40")
         @NotNull
-        Float hypoGlucose,
-        @Schema(description = "Включено ли API для интеграции с загрузчиками Nightscout. Если true, то " +
-                "обязательно должен быть передан nightscoutApiSecret.")
-        @NotNull
-        Boolean isNightscoutEnabled,
-        @Schema(description = "API-ключ для загрузчиков Nightscout")
-        @Length(min = 12)
-        String nightscoutApiSecret
+        Float hypoGlucose
 ) {
 }

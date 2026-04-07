@@ -38,10 +38,7 @@ CREATE TABLE Patient_Profile (
                              DEFAULT 8,
     low_glucose real NOT NULL CHECK (low_glucose >= 0.5 AND low_glucose <= 40 AND low_glucose >= hypo_glucose)
                              DEFAULT 4,
-    hypo_glucose real NOT NULL CHECK (hypo_glucose >= 0.5 AND hypo_glucose <= 40) DEFAULT 2,
-    is_nightscout_enabled bool NOT NULL DEFAULT false,
-    nightscout_api_secret varchar CHECK ((nightscout_api_secret IS NOT NULL AND length(nightscout_api_secret) >= 12)
-                                                       OR is_nightscout_enabled = false)
+    hypo_glucose real NOT NULL CHECK (hypo_glucose >= 0.5 AND hypo_glucose <= 40) DEFAULT 2
 );
 
 -- CREATE TABLE Diary_Entry (
@@ -132,4 +129,11 @@ CREATE TABLE Patient_Medication (
     milligrams_in_portion real NOT NULL CHECK (milligrams_in_portion >= 0 AND milligrams_in_portion <= 1000),
     default_portions int NOT NULL CHECK (default_portions >= 1 AND default_portions <= 20) DEFAULT 1,
     PRIMARY KEY (profile_id, name)
+);
+
+CREATE TABLE Integration_Profile (
+    patient_profile_id int PRIMARY KEY REFERENCES Patient_Profile(id) ON DELETE CASCADE,
+    is_nightscout_enabled bool NOT NULL DEFAULT false,
+    nightscout_api_secret varchar CHECK ((nightscout_api_secret IS NOT NULL AND length(nightscout_api_secret) >= 12)
+        OR is_nightscout_enabled = false)
 );

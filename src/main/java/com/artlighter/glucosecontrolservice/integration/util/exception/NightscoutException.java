@@ -1,4 +1,4 @@
-package com.artlighter.glucosecontrolservice.nightscout.util.exception;
+package com.artlighter.glucosecontrolservice.integration.util.exception;
 
 /**
  * Общее исключение, выбрасываемое при невозможности сохранить значения, которые передал загрузчик Nightscout

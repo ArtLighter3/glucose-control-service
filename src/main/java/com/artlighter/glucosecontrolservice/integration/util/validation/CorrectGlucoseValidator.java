@@ -1,7 +1,6 @@
-package com.artlighter.glucosecontrolservice.nightscout.util.validation;
+package com.artlighter.glucosecontrolservice.integration.util.validation;
 
-import com.artlighter.glucosecontrolservice.nightscout.dto.NightscoutTreatmentDTO;
-import com.artlighter.glucosecontrolservice.user.dto.PatientProfileDTO;
+import com.artlighter.glucosecontrolservice.integration.dto.NightscoutTreatmentDTO;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

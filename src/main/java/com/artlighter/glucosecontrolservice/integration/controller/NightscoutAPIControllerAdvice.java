@@ -1,7 +1,7 @@
-package com.artlighter.glucosecontrolservice.nightscout.controller;
+package com.artlighter.glucosecontrolservice.integration.controller;
 
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
-import com.artlighter.glucosecontrolservice.nightscout.util.exception.NightscoutException;
+import com.artlighter.glucosecontrolservice.integration.util.exception.NightscoutException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;

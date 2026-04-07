@@ -8,5 +8,4 @@ import org.springframework.stereotype.Repository;
 public interface InsulinProfileRepository extends JpaRepository<InsulinProfile, Integer> {
     InsulinProfile findByPatientProfileId(int profileId);
     boolean existsByPatientProfileId(int profileId);
-    void deleteByPatientProfileId(int profileId);
 }

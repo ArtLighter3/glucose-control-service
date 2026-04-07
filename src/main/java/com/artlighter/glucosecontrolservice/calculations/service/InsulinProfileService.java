@@ -24,7 +24,7 @@ public class InsulinProfileService {
     }
 
     /**
-     * Находит инсулиновый профиль по ID профиля больного (не по ID самого больного!).
+     * Находит инсулиновый профиль по ID профиля больного.
      * @param patientProfileId - ID профиля больного
      * @return инсулиновый профиль InsulinProfile; никогда не null;
      * @throws ResourceNotFoundException если инсулиновый профиль не был найден;
@@ -50,7 +50,7 @@ public class InsulinProfileService {
     /**
      * Создает инсулиновый профиль для больного.
      * @param insulinProfile создаваемый инсулиновый профиль, не null;
-     * @param patientProfileId ID профиля больного (не ID самого больного!);
+     * @param patientProfileId ID профиля больного;
      * @return созданный InsulinProfile;
      * @throws IllegalArgumentException если insulinProfile равен null;
      * @throws ResourceAlreadyExistsException если инсулиновый профиль для больного уже существует;
@@ -59,7 +59,8 @@ public class InsulinProfileService {
         if (insulinProfile == null) throw new IllegalArgumentException("insulinProfile cannot be null");
 
         if (insulinProfileRepository.existsByPatientProfileId(patientProfileId))
-            throw new ResourceAlreadyExistsException(insulinProfile, "insulin profile for this user already exists");
+            throw new ResourceAlreadyExistsException(insulinProfile,
+                    "insulin profile for for patient profile with ID '" + patientProfileId + "' already exists");
 
         insulinProfile.setPatientProfileId(patientProfileId);
         return insulinProfileRepository.save(insulinProfile);
@@ -68,7 +69,7 @@ public class InsulinProfileService {
     /**
      * Обновляет инсулиновый профиль для больного.
      * @param insulinProfile обновляемый инсулиновый профиль, не null;
-     * @param patientProfileId ID профиля больного (не ID самого больного!);
+     * @param patientProfileId ID профиля больного;
      * @return обновленный InsulinProfile;
      * @throws IllegalArgumentException если insulinProfile равен null;
      * @throws ResourceNotFoundException если инсулиновый профиль для больного не существует;
