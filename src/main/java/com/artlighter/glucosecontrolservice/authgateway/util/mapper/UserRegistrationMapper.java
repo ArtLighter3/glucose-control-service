@@ -1,6 +1,6 @@
 package com.artlighter.glucosecontrolservice.authgateway.util.mapper;
 
-import com.artlighter.glucosecontrolservice.user.dto.UserRegistrationDTO;
+import com.artlighter.glucosecontrolservice.user.dto.userinfo.UserRegistrationDTO;
 import com.artlighter.glucosecontrolservice.general.DTOMapper;
 import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.user.entity.User;

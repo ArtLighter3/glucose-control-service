@@ -50,7 +50,7 @@ public class InsulinProfileController {
         this.convertableValueRangeValidator = convertableValueRangeValidator;
     }
 
-    @Operation(summary = "Получить инсулиновый профиль больного.", description = "Для доступа к своему профилю" +
+    @Operation(summary = "Получить инсулиновый профиль больного.", description = "Для доступа к своему профилю " +
             "необходимо право INSULIN_PROFILE_SHOW_OWN; для доступа к профилям прикрепленных больных - " +
             "INSULIN_PROFILE_SHOW_ATTACHED; для доступа к профилям всех больных - INSULIN_PROFILE_SHOW_ALL")
     @ApiResponses(value = @ApiResponse(responseCode = "200", description = "В случае успеха."))
@@ -64,7 +64,9 @@ public class InsulinProfileController {
         return insulinProfileMapper.mapToDTOWithUnitConversion(insulinProfile, patientProfile.getGlucoseUnit());
     }
 
-    @Operation(summary = "Создать инсулиновый профиль больного.", description = "Для создания своего профиля" +
+    @Operation(summary = "Создать инсулиновый профиль больного. Инсулиновый профиль, в отличие от обычного профиля " +
+            "больного НЕ создается автоматически, его необходимо перед обновлениями сначала создать",
+            description = "Для создания своего профиля " +
             "необходимо право INSULIN_PROFILE_ADD_OWN; для создания профиля прикрепленных больных - " +
             "INSULIN_PROFILE_ADD_ATTACHED; для создания профиля любого больного - INSULIN_PROFILE_ADD_ALL")
     @ApiResponses(value =
@@ -95,7 +97,9 @@ public class InsulinProfileController {
         return insulinProfileMapper.mapToDTOWithUnitConversion(added, patientProfile.getGlucoseUnit());
     }
 
-    @Operation(summary = "Обновить инсулиновый профиль больного.", description = "Для обновления своего профиля" +
+    @Operation(summary = "Обновить инсулиновый профиль больного. Инсулиновый профиль, в отличие от обычного профиля " +
+            "больного НЕ создается автоматически, его необходимо перед обновлениями сначала создать",
+            description = "Для обновления своего профиля " +
             "необходимо право INSULIN_PROFILE_UPDATE_OWN; для обновления профиля прикрепленных больных - " +
             "INSULIN_PROFILE_UPDATE_ATTACHED; для обновления профиля любого больного - INSULIN_PROFILE_UPDATE_ALL")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "В случае успеха."),

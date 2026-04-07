@@ -2,10 +2,10 @@ package com.artlighter.glucosecontrolservice.authgateway.controller.auth;
 
 import com.artlighter.glucosecontrolservice.authgateway.ServiceUserDetails;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
-import com.artlighter.glucosecontrolservice.user.dto.UserRegistrationDTO;
+import com.artlighter.glucosecontrolservice.user.dto.userinfo.UserRegistrationDTO;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ExceptionDTO;
 import com.artlighter.glucosecontrolservice.authgateway.util.mapper.UserRegistrationMapper;
-import com.artlighter.glucosecontrolservice.user.dto.UserSessionDTO;
+import com.artlighter.glucosecontrolservice.user.dto.userinfo.UserSessionDTO;
 import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.user.entity.User;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ValidationIsFailedException;

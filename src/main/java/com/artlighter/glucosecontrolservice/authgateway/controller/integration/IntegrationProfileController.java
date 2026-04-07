@@ -53,7 +53,8 @@ public class IntegrationProfileController {
         return integrationProfileMapper.mapToDTO(integrationProfile);
     }
 
-    @Operation(summary = "Создать профиль интеграций больного.")
+    @Operation(summary = "Создать профиль интеграций больного. Профиль интеграций, в отличие от обычного профиля " +
+            "больного НЕ создается автоматически, его необходимо перед обновлениями сначала создать")
     @ApiResponses(value =
             {@ApiResponse(responseCode = "201", description = "Если профиль был успешно создан."),
             @ApiResponse(responseCode = "400", description = "Если тело запроса некорректное.",
@@ -79,7 +80,8 @@ public class IntegrationProfileController {
         return integrationProfileMapper.mapToDTO(added);
     }
 
-    @Operation(summary = "Обновить профиль интеграций больного.")
+    @Operation(summary = "Обновить профиль интеграций больного. Профиль интеграций, в отличие от обычного профиля " +
+            "больного НЕ создается автоматически, его необходимо перед обновлениями сначала создать")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "В случае успеха."),
             @ApiResponse(responseCode = "400", description = "Если тело запроса некорректное.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})

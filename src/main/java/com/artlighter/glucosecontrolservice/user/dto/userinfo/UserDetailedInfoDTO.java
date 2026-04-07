@@ -1,15 +1,10 @@
-package com.artlighter.glucosecontrolservice.user.dto;
+package com.artlighter.glucosecontrolservice.user.dto.userinfo;
 
 import com.artlighter.glucosecontrolservice.user.entity.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Set;
 
 /**
  * DTO для выдачи подробной информации о пользователе администраторам

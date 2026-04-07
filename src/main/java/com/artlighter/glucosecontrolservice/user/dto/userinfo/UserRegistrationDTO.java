@@ -1,4 +1,4 @@
-package com.artlighter.glucosecontrolservice.user.dto;
+package com.artlighter.glucosecontrolservice.user.dto.userinfo;
 
 import com.artlighter.glucosecontrolservice.authgateway.util.validation.PasswordsMatch;
 import com.artlighter.glucosecontrolservice.general.TypeGroup;

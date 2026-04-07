@@ -1,6 +1,6 @@
 package com.artlighter.glucosecontrolservice.authgateway.util.validation;
 
-import com.artlighter.glucosecontrolservice.user.dto.UserRegistrationDTO;
+import com.artlighter.glucosecontrolservice.user.dto.userinfo.UserRegistrationDTO;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

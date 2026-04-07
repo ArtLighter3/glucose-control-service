@@ -1,7 +1,7 @@
 package com.artlighter.glucosecontrolservice.user.util.mapper;
 
 import com.artlighter.glucosecontrolservice.general.DTOMapper;
-import com.artlighter.glucosecontrolservice.user.dto.UserCreationDTO;
+import com.artlighter.glucosecontrolservice.user.dto.userinfo.UserCreationDTO;
 import com.artlighter.glucosecontrolservice.user.entity.User;
 import org.springframework.stereotype.Component;
 
