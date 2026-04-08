@@ -43,11 +43,9 @@ public class DoctorController {
     }
 
     @Operation(summary = "Получить список прикрепленных к врачу больных.", description = "Возвращает список " +
-            "постранично с возможностью сортировки по определенному полю. Для доступа к списку своих больных требует" +
-            "право ATTACHED_PATIENT_SHOW_OWN. Для доступа ко всем - ATTACHED_PATIENT_SHOW_ALL.")
+            "постранично с возможностью сортировки по определенному полю.")
     @GetMapping("/attached-patients")
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('ATTACHED_PATIENT_SHOW_ALL', " +
-            "null, 'ATTACHED_PATIENT_SHOW_OWN', #userId, authentication)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
     public Page<AttachedPatientDTO> getAttachedPatients(@PathVariable int userId,
                                                         @PageableDefault(sort = "user.lastName")
                                                         @Parameter(description = "Данные о странице и сортировке." +
@@ -60,11 +58,10 @@ public class DoctorController {
     }
 
     @Operation(summary = "Найти прикрепленных к врачу больных по их ФИО.", description = "Возвращает список " +
-            "постранично с возможностью сортировки по определенному полю. Для доступа к списку своих больных требует " +
-            "право ATTACHED_PATIENT_SHOW_OWN. Для доступа ко всем - ATTACHED_PATIENT_SHOW_ALL.")
+            "постранично с возможностью сортировки по определенному полю.")
     @GetMapping("/attached-patients/search")
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('ATTACHED_PATIENT_SHOW_ALL', " +
-            "null, 'ATTACHED_PATIENT_SHOW_OWN', #userId, authentication)")
+    @PreAuthorize("hasRole('ADMIN') or " +
+            "(hasRole('DOCTOR') and @resourceAccessInspector.isOwnerOfResource(#userId, authentication))")
     public Page<AttachedPatientDTO> getAttachedPatientsBySearchQuery(@PathVariable int userId,
                                                         @RequestParam("query") @Parameter(required = true,
                                                                 description = "Поисковая фраза, содержащаяся в ФИО.")
@@ -80,8 +77,7 @@ public class DoctorController {
         return attachedPatients.map(attachedPatientMapper::mapToDTO);
     }
 
-    @Operation(summary = "Прикрепить больного к врачу.", description = "Для прикрепления больного необходимо " +
-            "право ATTACHED_PATIENT_ATTACH_DETACH.")
+    @Operation(summary = "Прикрепить больного к врачу.")
     @ApiResponses(value =
             {@ApiResponse(responseCode = "400", description = "Если тело запроса неверное.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
@@ -90,7 +86,7 @@ public class DoctorController {
             @ApiResponse(responseCode = "409", description = "Если больной уже прикреплен к врачу.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PostMapping("/attached-patients")
-    @PreAuthorize("hasAuthority('ATTACHED_PATIENT_ATTACH_DETACH')")
+    @PreAuthorize("hasRole('ADMIN')")
     public PatientAttachDetachDTO attachPatient(@PathVariable int userId,
                                                 @RequestBody @Valid PatientAttachDetachDTO attachDetachDTO,
                                                 BindingResult bindingResult) {
@@ -101,8 +97,7 @@ public class DoctorController {
         return attachDetachDTO;
     }
 
-    @Operation(summary = "Открепить больного от врача.", description = "Для открепления больного необходимо " +
-            "право ATTACHED_PATIENT_ATTACH_DETACH.")
+    @Operation(summary = "Открепить больного от врача.")
     @ApiResponses(value =
             {@ApiResponse(responseCode = "400", description = "Если параметры запроса некорректны.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
@@ -110,9 +105,9 @@ public class DoctorController {
                             "либо если больной уже откреплен от врача.",
                             content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @DeleteMapping("/attached-patients")
-    @PreAuthorize("hasAuthority('ATTACHED_PATIENT_ATTACH_DETACH')")
+    @PreAuthorize("hasRole('ADMIN')")
     public void detachPatient(@PathVariable int userId,
-                              @RequestParam @Parameter(required = true, description = "ID пользователя больного")
+                              @RequestParam @Parameter(required = true, description = "ID пользователя-больного")
                               Integer patientId) {
         doctorProfileService.detachPatientFromDoctor(userId, patientId);
     }

@@ -52,8 +52,7 @@ public class DiaryEntryCollectionController {
                     "периода выборки, то выберутся записи в течение недели до верхней границы. " +
                     "Если не указать верхнюю границу, то верхней границей считается текущий момент времени.")
     @GetMapping
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_SHOW_ALL', 'GLUCOSE_SHOW_ATTACHED', " +
-            "'GLUCOSE_SHOW_OWN', #userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, true, false)")
     public List<DiaryEntryWithTypeDTO> getAllEntries(@PathVariable int userId,
                                                      @RequestParam(required = false) Instant from,
                                                      @RequestParam(required = false) Instant to,
@@ -75,8 +74,7 @@ public class DiaryEntryCollectionController {
                     "В случае некорректности одной из записей она будет возвращена в ответе с кодом 200.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PostMapping
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_ADD_ALL', 'GLUCOSE_ADD_ATTACHED', " +
-            "'GLUCOSE_ADD_OWN', #userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     public List<DiaryEntryDTO> postAllEntries(@PathVariable int userId,
                                               @RequestBody @Valid List<DiaryEntryWithTypeDTO> entries, BindingResult bindingResult) {
         //TODO

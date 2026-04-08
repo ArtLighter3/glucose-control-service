@@ -1,6 +1,6 @@
 package com.artlighter.glucosecontrolservice.authgateway.controller.calculations;
 
-import com.artlighter.glucosecontrolservice.authgateway.util.ConvertableValueRangeValidator;
+import com.artlighter.glucosecontrolservice.authgateway.util.validation.ConvertableValueRangeValidator;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ConvertableValueValidationException;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ExceptionDTO;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ValidationIsFailedException;
@@ -55,8 +55,7 @@ public class InsulinProfileController {
             "INSULIN_PROFILE_SHOW_ATTACHED; для доступа к профилям всех больных - INSULIN_PROFILE_SHOW_ALL")
     @ApiResponses(value = @ApiResponse(responseCode = "200", description = "В случае успеха."))
     @GetMapping
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('INSULIN_PROFILE_SHOW_ALL', " +
-            "'INSULIN_PROFILE_SHOW_ATTACHED', 'INSULIN_PROFILE_SHOW_OWN', #userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, true, true)")
     public InsulinProfileDTO getInsulinProfile(@PathVariable int userId) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
         InsulinProfile insulinProfile = insulinProfileService.getByPatientProfileId(userId);
@@ -78,8 +77,7 @@ public class InsulinProfileController {
             @ApiResponse(responseCode = "409", description = "Если инсулиновый профиль для больного уже существует.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PostMapping
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('INSULIN_PROFILE_ADD_ALL', " +
-            "'INSULIN_PROFILE_ADD_ATTACHED', 'INSULIN_PROFILE_ADD_OWN', #userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, true, false)")
     @ResponseStatus(HttpStatus.CREATED)
     public InsulinProfileDTO postInsulinProfile(@PathVariable int userId,
                                                @RequestBody @Valid InsulinProfileDTO insulinProfileDTO,
@@ -106,8 +104,7 @@ public class InsulinProfileController {
             @ApiResponse(responseCode = "400", description = "Если тело запроса некорректное.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PutMapping
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('INSULIN_PROFILE_UPDATE_ALL', " +
-            "'INSULIN_PROFILE_UPDATE_ATTACHED', 'INSULIN_PROFILE_UPDATE_OWN', #userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, true, false)")
     public InsulinProfileDTO putInsulinProfile(@PathVariable int userId,
                                                @RequestBody @Valid InsulinProfileDTO insulinProfileDTO,
                                                BindingResult bindingResult) {

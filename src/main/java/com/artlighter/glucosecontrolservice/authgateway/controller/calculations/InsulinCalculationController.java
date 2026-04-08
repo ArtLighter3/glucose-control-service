@@ -1,6 +1,6 @@
 package com.artlighter.glucosecontrolservice.authgateway.controller.calculations;
 
-import com.artlighter.glucosecontrolservice.authgateway.util.ConvertableValueRangeValidator;
+import com.artlighter.glucosecontrolservice.authgateway.util.validation.ConvertableValueRangeValidator;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ConvertableValueValidationException;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ExceptionDTO;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ValidationIsFailedException;
@@ -47,13 +47,11 @@ public class InsulinCalculationController {
 
     @Operation(summary = "Рассчитать количество единиц инсулина для больного на основе его профиля и записей дневника.",
             description = "Могут учитываться предыдущие вводы инсулина, " +
-                    "если указан соответствующий параметр в теле запроса. Необходимо право INSULIN_CALCULATE_OWN, " +
-                    "доступ только у самого больного.")
+                    "если указан соответствующий параметр в теле запроса. Доступ только у самого больного.")
     @ApiResponses(value = @ApiResponse(responseCode = "400", description = "Если параметры запроса некорректны.",
             content = @Content(schema = @Schema(implementation = ExceptionDTO.class))))
     @GetMapping("/calculate")
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'INSULIN_CALCULATE_OWN'," +
-            "#userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     public InsulinResult calculate(@PathVariable int userId,
                                    @Valid InsulinCalculationRequestDTO calculationRequest,
                                    BindingResult bindingResult) {

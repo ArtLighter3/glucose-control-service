@@ -1,11 +1,8 @@
 package com.artlighter.glucosecontrolservice.authgateway.service;
 
-import com.artlighter.glucosecontrolservice.user.entity.Authority;
 import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.user.entity.User;
 import com.artlighter.glucosecontrolservice.user.UserService;
-import com.artlighter.glucosecontrolservice.user.service.AuthorityService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,33 +26,33 @@ import static org.mockito.Mockito.*;
 public class UserDetailsFromUserServiceTests {
     @MockitoBean
     private UserService userService;
-    @MockitoBean
-    private AuthorityService authorityService;
+//    @MockitoBean
+//    private AuthorityService authorityService;
     @Autowired
     private UserDetailsFromUserService userDetailsService;
 
-    private Set<Authority> patientAuthorities = new HashSet<>();
-    private Set<Authority> adminAuthorities = new HashSet<>();
-    @BeforeEach
-    public void setUp() {
-        //Изначальные условия: роли Больной и Админ содержат по три разных роли
-        patientAuthorities.add(Authority.GLUCOSE_ADD_OWN);
-        patientAuthorities.add(Authority.GLUCOSE_SHOW_OWN);
-        patientAuthorities.add(Authority.GLUCOSE_SHOW_ALL);
-
-        adminAuthorities.add(Authority.GLUCOSE_ADD_ATTACHED);
-        adminAuthorities.add(Authority.GLUCOSE_SHOW_ATTACHED);
-        adminAuthorities.add(Authority.GLUCOSE_ADD_ALL);
-
-        when(authorityService.getAllRoles()).thenReturn(Arrays.stream(Role.values()).collect(Collectors.toSet()));
-        when(authorityService.getAllAuthorities()).thenReturn(Arrays.stream(Authority.values())
-                .collect(Collectors.toSet()));
-        when(authorityService.getRoleAuthorities(eq(Role.ROLE_ADMIN))).thenReturn(adminAuthorities);
-        when(authorityService.getRoleAuthorities(eq(Role.ROLE_PATIENT))).thenReturn(patientAuthorities);
-        when(authorityService.getRoleAuthorities(eq(Role.ROLE_SUPERUSER)))
-                .thenReturn(Arrays.stream(Authority.values()).collect(Collectors.toSet()));
-
-    }
+//    private Set<Authority> patientAuthorities = new HashSet<>();
+//    private Set<Authority> adminAuthorities = new HashSet<>();
+//    @BeforeEach
+//    public void setUp() {
+//        //Изначальные условия: роли Больной и Админ содержат по три разных роли
+//        patientAuthorities.add(Authority.GLUCOSE_ADD_OWN);
+//        patientAuthorities.add(Authority.GLUCOSE_SHOW_OWN);
+//        patientAuthorities.add(Authority.GLUCOSE_SHOW_ALL);
+//
+//        adminAuthorities.add(Authority.GLUCOSE_ADD_ATTACHED);
+//        adminAuthorities.add(Authority.GLUCOSE_SHOW_ATTACHED);
+//        adminAuthorities.add(Authority.GLUCOSE_ADD_ALL);
+//
+//        when(authorityService.getAllRoles()).thenReturn(Arrays.stream(Role.values()).collect(Collectors.toSet()));
+//        when(authorityService.getAllAuthorities()).thenReturn(Arrays.stream(Authority.values())
+//                .collect(Collectors.toSet()));
+//        when(authorityService.getRoleAuthorities(eq(Role.ROLE_ADMIN))).thenReturn(adminAuthorities);
+//        when(authorityService.getRoleAuthorities(eq(Role.ROLE_PATIENT))).thenReturn(patientAuthorities);
+//        when(authorityService.getRoleAuthorities(eq(Role.ROLE_SUPERUSER)))
+//                .thenReturn(Arrays.stream(Authority.values()).collect(Collectors.toSet()));
+//
+//    }
 
     @Test
     public void loadUserByUsername_CannotFindUser_ThrowsUsernameNotFoundException() {
@@ -67,24 +64,24 @@ public class UserDetailsFromUserServiceTests {
 
     @Test
     public void loadUserByUsername_UserHasNonSuperuserRole_ReturnsUserDetailsWithCorrectGrantedAuthorities() {
-        testReturningUserDetails("patient_user", Set.of(Role.ROLE_PATIENT), patientAuthorities, false);
-        testReturningUserDetails("admin_user", Set.of(Role.ROLE_ADMIN), adminAuthorities, false);
+        testReturningUserDetails("patient_user", Set.of(Role.ROLE_PATIENT),/* patientAuthorities,*/ false);
+        testReturningUserDetails("admin_user", Set.of(Role.ROLE_ADMIN),/* adminAuthorities,*/ false);
 
-        Set<Authority> mixedAuthorities = new HashSet<>(patientAuthorities);
-        mixedAuthorities.addAll(adminAuthorities);
-        testReturningUserDetails("patient_admin_user", Set.of(Role.ROLE_ADMIN, Role.ROLE_PATIENT), mixedAuthorities,
+        //Set<Authority> mixedAuthorities = new HashSet<>(patientAuthorities);
+        //mixedAuthorities.addAll(adminAuthorities);
+        testReturningUserDetails("patient_admin_user", Set.of(Role.ROLE_ADMIN, Role.ROLE_PATIENT),
                 false);
     }
 
     @Test
     public void loadUserByUsername_UserHasSuperuserRole_ReturnsUserDetailsWithAllRolesAndAuthorities() {
-        testReturningUserDetails("su_user", Set.of(Role.ROLE_SUPERUSER), null, true);
-        testReturningUserDetails("admin_su_user", Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERUSER), null, true);
+        testReturningUserDetails("su_user", Set.of(Role.ROLE_SUPERUSER), true);
+        testReturningUserDetails("admin_su_user",
+                Set.of(Role.ROLE_ADMIN, Role.ROLE_SUPERUSER), true);
 
     }
 
-    private void testReturningUserDetails(String username, Set<Role> roles, Set<Authority> expectedAuthorities,
-                                          boolean isSuperuser) {
+    private void testReturningUserDetails(String username, Set<Role> roles, boolean isSuperuser) {
         User user = new User();
         user.setUsername(username);
         user.setRoles(roles);
@@ -93,21 +90,40 @@ public class UserDetailsFromUserServiceTests {
 
         Set<Role> initialRolesToConstruct = isSuperuser ?
                 Arrays.stream(Role.values()).collect(Collectors.toSet()) : roles;
-        Set<Authority> initialAuthoritiesToConstruct = isSuperuser ?
-                Arrays.stream(Authority.values()).collect(Collectors.toSet()) : expectedAuthorities;
 
         Set<GrantedAuthority> expectedGrantedAuthorities = initialRolesToConstruct.stream().map(role ->
                 new SimpleGrantedAuthority(role.name())).collect(Collectors.toSet());
-        expectedGrantedAuthorities.addAll(initialAuthoritiesToConstruct.stream().map(authority ->
-                new SimpleGrantedAuthority(authority.name())).collect(Collectors.toSet()));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         assertNotNull(userDetails);
+        assertSetEquals(expectedGrantedAuthorities, new HashSet<>(userDetails.getAuthorities()));
+    }
+
+//    private void testReturningUserDetails(String username, Set<Role> roles, Set<Authority> expectedAuthorities,
+//                                          boolean isSuperuser) {
+//        User user = new User();
+//        user.setUsername(username);
+//        user.setRoles(roles);
+//
+//        when(userService.findUserByUsername(eq(username))).thenReturn(user);
+//
+//        Set<Role> initialRolesToConstruct = isSuperuser ?
+//                Arrays.stream(Role.values()).collect(Collectors.toSet()) : roles;
+//        Set<Authority> initialAuthoritiesToConstruct = isSuperuser ?
+//                Arrays.stream(Authority.values()).collect(Collectors.toSet()) : expectedAuthorities;
+//
+//        Set<GrantedAuthority> expectedGrantedAuthorities = initialRolesToConstruct.stream().map(role ->
+//                new SimpleGrantedAuthority(role.name())).collect(Collectors.toSet());
+//        expectedGrantedAuthorities.addAll(initialAuthoritiesToConstruct.stream().map(authority ->
+//                new SimpleGrantedAuthority(authority.name())).collect(Collectors.toSet()));
+//
+//        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+//        assertNotNull(userDetails);
 //        assertIterableEquals(userDetails.getAuthorities().stream().collect(Collectors.toSet()),
 //                expectedGrantedAuthorities);
-        //assertI
-        assertSetEquals(expectedGrantedAuthorities, userDetails.getAuthorities().stream().collect(Collectors.toSet()));
-    }
+//        //assertI
+//        assertSetEquals(expectedGrantedAuthorities, new HashSet<>(userDetails.getAuthorities()));
+//    }
 
     private <T> void assertSetEquals(Set<T> expected, Set<T> actual) {
         assertTrue(expected.size() == actual.size());

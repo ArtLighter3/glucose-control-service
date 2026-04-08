@@ -1,6 +1,6 @@
 package com.artlighter.glucosecontrolservice.authgateway.controller.diary;
 
-import com.artlighter.glucosecontrolservice.authgateway.util.ConvertableValueRangeValidator;
+import com.artlighter.glucosecontrolservice.authgateway.util.validation.ConvertableValueRangeValidator;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ConvertableValueValidationException;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ValidationIsFailedException;
 import com.artlighter.glucosecontrolservice.diary.service.DiaryEntryService;

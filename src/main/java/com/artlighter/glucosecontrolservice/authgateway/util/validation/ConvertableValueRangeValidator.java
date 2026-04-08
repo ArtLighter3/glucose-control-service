@@ -1,9 +1,8 @@
-package com.artlighter.glucosecontrolservice.authgateway.util;
+package com.artlighter.glucosecontrolservice.authgateway.util.validation;
 
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ConvertableValueValidationException;
 import com.artlighter.glucosecontrolservice.user.entity.CarbsUnit;
 import com.artlighter.glucosecontrolservice.user.entity.GlucoseUnit;
-import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import org.springframework.stereotype.Component;
 
 /**

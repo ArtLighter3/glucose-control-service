@@ -1,6 +1,6 @@
 package com.artlighter.glucosecontrolservice.authgateway.controller.user;
 
-import com.artlighter.glucosecontrolservice.authgateway.util.ConvertableValueRangeValidator;
+import com.artlighter.glucosecontrolservice.authgateway.util.validation.ConvertableValueRangeValidator;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ConvertableValueValidationException;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ExceptionDTO;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ValidationIsFailedException;
@@ -44,8 +44,7 @@ public class PatientProfileController {
     @Operation(summary = "Получить профиль больного с его настройками.", description = "Доступно только самим" +
             "владельцам профиля с ролью больного")
     @GetMapping
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, " +
-            "'ROLE_PATIENT', #userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     public PatientProfileDTO getPatientProfile(@PathVariable int userId) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
 
@@ -57,8 +56,7 @@ public class PatientProfileController {
     @ApiResponses(value = {@ApiResponse(responseCode = "400", description = "Если тело запроса некорректное.",
             content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PutMapping
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, " +
-            "'ROLE_PATIENT', #userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     public PatientProfileDTO putPatientProfile(@PathVariable int userId,
                                                @RequestBody @Valid PatientProfileDTO patientProfileDTO,
                                                BindingResult bindingResult) {

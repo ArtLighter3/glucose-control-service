@@ -1,10 +1,6 @@
 package com.artlighter.glucosecontrolservice.authgateway.config;
 
-import com.artlighter.glucosecontrolservice.user.service.AuthorityService;
-import com.artlighter.glucosecontrolservice.user.entity.Authority;
-import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.authgateway.service.UserDetailsFromUserService;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -35,8 +31,8 @@ public class AuthConfig {
         return http
                 .cors(Customizer.withDefaults())
                 .csrf((csrf) -> csrf.disable())
-                .authorizeHttpRequests((requests) ->
-                                requests.requestMatchers("/api/v1/auth/register",
+                .authorizeHttpRequests(requests -> requests
+                        .requestMatchers("/api/v1/auth/register",
                                                 //TODO временно
                                                 "/api-docs",
                                                 "/swagger-ui/index.html",
@@ -45,14 +41,16 @@ public class AuthConfig {
                         //        .requestMatchers("/api/auth/process-login").permitAll()
                 .exceptionHandling(exception ->
                         exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                .formLogin(form ->
-                        form.loginProcessingUrl("/api/v1/auth/process-login")
+                .formLogin(form -> form
+                                .loginProcessingUrl("/api/v1/auth/process-login")
                              //   .successForwardUrl("/api/v1/auth/get-current-user")
                              //   .failureForwardUrl("/api/v1/auth/get-current-user")
                                 .defaultSuccessUrl("/api/v1/auth/get-current-user", true)
                                 .failureHandler(new AuthenticationEntryPointFailureHandler(
                                         new HttpStatusEntryPoint(HttpStatus.BAD_REQUEST)))
                                 .permitAll())
+                .logout(logout -> logout
+                                .logoutUrl("/api/v1/auth/logout"))
                 .userDetailsService(userDetailsService)
                 .sessionManagement(session ->
                         session.maximumSessions(1).sessionRegistry(sessionRegistry()))
@@ -85,23 +83,18 @@ public class AuthConfig {
     }
 
 //    @Bean
-//    public AuthenticationEventPublisher authenticationEventPublisher(ApplicationEventPublisher appEventPublisher) {
-//        return new DefaultAuthenticationEventPublisher(appEventPublisher);
+//    public ApplicationRunner initAuthorities(AuthorityService authorityService) {
+//        return args -> {
+//            authorityService.addUndeletableAuthorities(Role.ROLE_PATIENT,
+//                    Authority.GLUCOSE_SHOW_OWN, Authority.GLUCOSE_ADD_OWN, Authority.GLUCOSE_UPDATE_OWN,
+//                    Authority.INSULIN_PROFILE_SHOW_OWN, Authority.INSULIN_PROFILE_UPDATE_OWN,
+//                    Authority.INSULIN_PROFILE_ADD_OWN,
+//                    Authority.INSULIN_CALCULATE_OWN, Authority.ACTIVITY_SHOW_OWN,
+//                    Authority.TEMPLATE_ADD_OWN, Authority.TEMPLATE_SHOW_OWN,
+//                    Authority.TEMPLATE_DELETE_OWN, Authority.TEMPLATE_UPDATE_OWN);
+//
+//            authorityService.addUndeletableAuthorities(Role.ROLE_DOCTOR, Authority.GLUCOSE_SHOW_ATTACHED,
+//                    Authority.ATTACHED_PATIENT_SHOW_OWN);
+//        };
 //    }
-
-    @Bean
-    public ApplicationRunner initAuthorities(AuthorityService authorityService) {
-        return args -> {
-            authorityService.addUndeletableAuthorities(Role.ROLE_PATIENT,
-                    Authority.GLUCOSE_SHOW_OWN, Authority.GLUCOSE_ADD_OWN, Authority.GLUCOSE_UPDATE_OWN,
-                    Authority.INSULIN_PROFILE_SHOW_OWN, Authority.INSULIN_PROFILE_UPDATE_OWN,
-                    Authority.INSULIN_PROFILE_ADD_OWN,
-                    Authority.INSULIN_CALCULATE_OWN, Authority.ACTIVITY_SHOW_OWN,
-                    Authority.TEMPLATE_ADD_OWN, Authority.TEMPLATE_SHOW_OWN,
-                    Authority.TEMPLATE_DELETE_OWN, Authority.TEMPLATE_UPDATE_OWN);
-
-            authorityService.addUndeletableAuthorities(Role.ROLE_DOCTOR, Authority.GLUCOSE_SHOW_ATTACHED,
-                    Authority.ATTACHED_PATIENT_SHOW_OWN);
-        };
-    }
 }

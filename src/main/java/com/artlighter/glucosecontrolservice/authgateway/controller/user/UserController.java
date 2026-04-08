@@ -73,7 +73,7 @@ public class UserController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "В случае успеха."),
             @ApiResponse(responseCode = "404", description = "Если пользователь с таким ID не найден.")})
     @GetMapping("/{userId}")
-    @PreAuthorize("hasRole('ADMIN') or @resourceAccessInspector.isOwnerOfResource(#userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, true)")
     public UserUpdatableInfoDTO getUser(@PathVariable int userId) {
         return userUpdatableInfoMapper.mapToDTO(userService.getUserById(userId));
     }
@@ -104,7 +104,7 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
             @ApiResponse(responseCode = "404", description = "Если пользователь с таким ID не найден.")})
     @PutMapping("/{userId}")
-    @PreAuthorize("hasRole('ADMIN') or @resourceAccessInspector.isOwnerOfResource(#userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, true)")
     public UserUpdatableInfoDTO putUser(@PathVariable int userId,
                                         @RequestBody @Valid UserUpdatableInfoDTO userUpdatableInfoDTO,
                                         BindingResult bindingResult) {

@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,6 +81,7 @@ public class MedicationController extends AbstractPatientTemplateResourceControl
     @Operation(summary = "Рассчитать общее количество миллиграмм дозировки препаратов " +
             "на основе названий переданных препаратов и их порций.")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "В случае успеха.")})
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     @PostMapping("/medications/calculate")
     public MedicationResult calculateMilligrams(@PathVariable int userId, @RequestBody Map<String, Integer> portions) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);

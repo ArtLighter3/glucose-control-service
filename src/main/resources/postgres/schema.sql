@@ -2,6 +2,7 @@ CREATE TYPE glucose_unit AS ENUM ('MILLIMOLES_PER_LITER', 'MILLIGRAMS_PER_DECILI
 CREATE TYPE carbs_unit AS ENUM ('GRAMS', 'BREAD_UNITS_10', 'BREAD_UNITS_12', 'BREAD_UNITS_15');
 CREATE TYPE insulin_type AS ENUM ('LONG', 'SHORT_CARBS', 'SHORT_CORRECTION');
 CREATE TYPE measurement_type AS ENUM ('BEFORE_MEAL', 'AFTER_MEAL');
+CREATE TYPE role AS ENUM ('ROLE_PATIENT', 'ROLE_DOCTOR', 'ROLE_ADMIN', 'ROLE_SUPERUSER');
 
 CREATE TABLE Service_User (
     id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -16,15 +17,8 @@ CREATE TABLE Service_User (
 
 CREATE TABLE User_Role (
     user_id int REFERENCES service_user(id) ON DELETE CASCADE,
-    role varchar,
+    role role,
     PRIMARY KEY (user_id, role)
-);
-
-CREATE TABLE Role_Authority (
-    role varchar,
-    authority varchar,
-    is_deletable bool DEFAULT false,
-    PRIMARY KEY (role, authority)
 );
 
 CREATE TABLE Patient_Profile (

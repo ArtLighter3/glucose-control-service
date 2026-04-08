@@ -73,8 +73,7 @@ public abstract class AbstractPatientTemplateResourceController
 //    }
 
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "В случае успеха.")})
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'TEMPLATE_SHOW_OWN', " +
-            "#userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     @GetMapping("/defaults")
     public Page<EXT> getTemplates(@PathVariable int userId,
                                   @PageableDefault(size = 10, page = 0, sort = "id.name")
@@ -89,8 +88,7 @@ public abstract class AbstractPatientTemplateResourceController
     }
 
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "В случае успеха.")})
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'TEMPLATE_SHOW_OWN', " +
-            "#userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     @GetMapping("/defaults/search")
     public Page<EXT> getTemplatesBySearchQuery(@PathVariable int userId,
                                                @RequestParam @Parameter(required = true,
@@ -115,8 +113,7 @@ public abstract class AbstractPatientTemplateResourceController
             @ApiResponse(responseCode = "409", description = "Если заготовка этого типа с этим именем" +
                             "для этого пользователя уже существует.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'TEMPLATE_ADD_OWN', " +
-            "#userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     @PostMapping("/defaults")
     @ResponseStatus(HttpStatus.CREATED)
     public EXT postTemplate(@PathVariable int userId, @RequestBody @Valid EXT template, BindingResult bindingResult) {
@@ -130,8 +127,7 @@ public abstract class AbstractPatientTemplateResourceController
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
             @ApiResponse(responseCode = "404", description = "Если больной или обновляемая заготовка не были найдены.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'TEMPLATE_UPDATE_OWN', " +
-            "#userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     @PutMapping("/defaults")
     public EXT putTemplate(@PathVariable int userId, @RequestBody @Valid EXT template, BindingResult bindingResult) {
         INT updated = update(userId, template, bindingResult);
@@ -142,8 +138,7 @@ public abstract class AbstractPatientTemplateResourceController
             {@ApiResponse(responseCode = "200", description = "Заготовка удалена, либо ее и не существовало."),
             @ApiResponse(responseCode = "400", description = "Если параметры запроса некорректны.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'TEMPLATE_DELETE_OWN', " +
-            "#userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     @DeleteMapping("/defaults")
     public void deleteTemplate(@PathVariable int userId, @RequestParam String name) {
         PatientProfile patientProfile = getPatientProfileOrThrowException(userId);

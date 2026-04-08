@@ -5,7 +5,6 @@ import com.artlighter.glucosecontrolservice.authgateway.util.exception.*;
 import com.artlighter.glucosecontrolservice.diary.util.exception.NoRepositoryForEntryTypeException;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceAlreadyExistsException;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
-import com.artlighter.glucosecontrolservice.user.util.exception.AuthoritiesException;
 import com.artlighter.glucosecontrolservice.user.util.exception.NoSuchEnumerableConstantException;
 import com.artlighter.glucosecontrolservice.user.util.exception.UserIsNotPatientException;
 import org.springframework.http.HttpStatus;
@@ -70,11 +69,11 @@ public class AppControllerAdvice {
                 .body(ExceptionOutputUtils.createOutputException(HttpStatus.NOT_FOUND, ex, false));
     }
 
-    @ExceptionHandler(AuthoritiesException.class)
-    public ResponseEntity<ExceptionDTO> authoritiesException(AuthoritiesException ex) {
-        return ResponseEntity.badRequest()
-                .body(ExceptionOutputUtils.createOutputException(HttpStatus.BAD_REQUEST, ex, false));
-    }
+//    @ExceptionHandler(AuthoritiesException.class)
+//    public ResponseEntity<ExceptionDTO> authoritiesException(AuthoritiesException ex) {
+//        return ResponseEntity.badRequest()
+//                .body(ExceptionOutputUtils.createOutputException(HttpStatus.BAD_REQUEST, ex, false));
+//    }
 
     @ExceptionHandler(NoSuchEnumerableConstantException.class)
     public ResponseEntity<ExceptionDTO> noSuchEnum(NoSuchEnumerableConstantException ex) {

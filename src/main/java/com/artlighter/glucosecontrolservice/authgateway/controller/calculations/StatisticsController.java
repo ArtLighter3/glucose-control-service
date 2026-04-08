@@ -63,8 +63,7 @@ public class StatisticsController {
     @ApiResponses(value = @ApiResponse(responseCode = "400", description = "Если параметры запроса некорректны.",
             content = @Content(schema = @Schema(implementation = ExceptionDTO.class))))
     @GetMapping
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource(null, null, 'GLUCOSE_SHOW_OWN'," +
-            "#userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, true, false)")
     public RecentActivityDTO getRecentActivity(@PathVariable int userId,
                                                @Parameter(description = "UTC-смещение, к которому будут " +
                                                 "преобразованы временные отметки записей дневника, а " +

@@ -1,6 +1,5 @@
 package com.artlighter.glucosecontrolservice.authgateway.controller.diary;
 
-import com.artlighter.glucosecontrolservice.authgateway.util.ConvertableValueRangeValidator;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ExceptionDTO;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ValidationIsFailedException;
 import com.artlighter.glucosecontrolservice.diary.service.DiaryEntryService;
@@ -78,8 +77,7 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
 
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "В случае успеха.")})
     @GetMapping("/default")
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_SHOW_ALL', 'GLUCOSE_SHOW_ATTACHED', " +
-            "'GLUCOSE_SHOW_OWN', #userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, true, false)")
     public List<EXT> getDiaryEntries(@PathVariable int userId,
                                      @RequestParam(required = false)
                                      @Parameter(description = "Нижняя граница временного периода выборки записей." +
@@ -105,8 +103,7 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
                     " для этого пользователя уже существует.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PostMapping("/default")
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_ADD_ALL', 'GLUCOSE_ADD_ATTACHED', " +
-            "'GLUCOSE_ADD_OWN', #userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     @ResponseStatus(HttpStatus.CREATED)
     public EXT postDiaryEntry(@PathVariable int userId, @RequestBody @Valid EXT entryDTO,
                                BindingResult bindingResult) {
@@ -120,8 +117,7 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
             @ApiResponse(responseCode = "404", description = "Если больной или обновляемая запись не были найдены.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PutMapping("/default")
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_UPDATE_ALL', " +
-            "'GLUCOSE_UPDATE_ATTACHED','GLUCOSE_UPDATE_OWN', #userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     public EXT putDiaryEntry(@PathVariable int userId, @RequestBody @Valid EXT entryDTO,
                                     BindingResult bindingResult) {
         return updateEntry(userId, entryDTO, bindingResult);
@@ -132,8 +128,7 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
             @ApiResponse(responseCode = "400", description = "Если параметры запроса некорректны.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @DeleteMapping("/default")
-    @PreAuthorize("@resourceAccessInspector.hasPermissionForResource('GLUCOSE_DELETE_ALL', " +
-            "'GLUCOSE_DELETE_ATTACHED','GLUCOSE_DELETE_OWN', #userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     public void deleteDiaryEntry(@PathVariable int userId,
                                  @RequestParam @Parameter(required = true,
                                          description = "Временная отметка записи этого типа, которую надо удалить.")

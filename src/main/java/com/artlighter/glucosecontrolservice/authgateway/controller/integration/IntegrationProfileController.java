@@ -44,8 +44,7 @@ public class IntegrationProfileController {
     @Operation(summary = "Получить профиль интеграций больного.")
     @ApiResponses(value = @ApiResponse(responseCode = "200", description = "В случае успеха."))
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or (hasRole('PATIENT') " +
-            "and @resourceAccessInspector.isOwnerOfResource(#userId, authentication))")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     public IntegrationProfileDTO getIntegrationProfile(@PathVariable int userId) {
         //PatientProfile patientProfile = patientProfileService.getByUserId(userId);
         IntegrationProfile integrationProfile = integrationProfileService.getByPatientProfileId(userId);
@@ -64,8 +63,7 @@ public class IntegrationProfileController {
             @ApiResponse(responseCode = "409", description = "Если инсулиновый профиль для больного уже существует.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN') or (hasRole('PATIENT') " +
-            "and @resourceAccessInspector.isOwnerOfResource(#userId, authentication))")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     @ResponseStatus(HttpStatus.CREATED)
     public IntegrationProfileDTO postIntegrationProfile(@PathVariable int userId,
                                                @RequestBody @Valid IntegrationProfileDTO integrationProfileDTO,
@@ -86,8 +84,7 @@ public class IntegrationProfileController {
             @ApiResponse(responseCode = "400", description = "Если тело запроса некорректное.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PutMapping
-    @PreAuthorize("hasRole('ADMIN') or (hasRole('PATIENT') " +
-            "and @resourceAccessInspector.isOwnerOfResource(#userId, authentication))")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     public IntegrationProfileDTO putIntegrationProfile(@PathVariable int userId,
                                                @RequestBody @Valid IntegrationProfileDTO integrationProfileDTO,
                                                BindingResult bindingResult) {
