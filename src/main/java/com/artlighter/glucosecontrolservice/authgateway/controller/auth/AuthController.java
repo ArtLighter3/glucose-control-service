@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -75,5 +76,11 @@ public class AuthController {
             throw new ResourceNotFoundException(ServiceUserDetails.class, "no user for this session");
 
         return userSessionMapper.mapToDTO(serviceUserDetails);
+    }
+
+    @Operation(summary = "Метод, возвращающий CSRF-токен, необходимый для POST, DELETE, PUT запросов")
+    @GetMapping("/csrf")
+    public CsrfToken getCsrf(CsrfToken csrfToken) {
+        return csrfToken;
     }
 }

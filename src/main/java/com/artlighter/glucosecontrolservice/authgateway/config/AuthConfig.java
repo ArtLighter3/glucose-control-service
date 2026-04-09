@@ -13,6 +13,9 @@ import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationEntryPointFailureHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.csrf.CsrfTokenRequestHandler;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -30,13 +33,14 @@ public class AuthConfig {
             throws Exception {
         return http
                 .cors(Customizer.withDefaults())
-                .csrf((csrf) -> csrf.disable())
+                .csrf((csrf) -> csrf
+                        //.disable())
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/api/v1/auth/register",
-                                                //TODO временно
-                                                "/api-docs",
-                                                "/swagger-ui/index.html",
-                                                "/nightscout/**").permitAll()
+                                "/api/v1/auth/csrf",
+                                "/nightscout/**").permitAll()
                                         .anyRequest().authenticated())
                         //        .requestMatchers("/api/auth/process-login").permitAll()
                 .exceptionHandling(exception ->
