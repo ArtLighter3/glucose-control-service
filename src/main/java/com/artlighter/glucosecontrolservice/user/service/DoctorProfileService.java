@@ -54,11 +54,7 @@ public class DoctorProfileService {
      */
     @Transactional(readOnly = true)
     public boolean isPatientAttached(int doctorId, int patientId) {
-//        DoctorProfile doctorProfile = doctorProfileRepository.findByUserId(doctorId);
-//        if (doctorProfile == null) return false;
-
         return doctorProfileRepository.existsAttachedPatientsByIdAndAttachedPatientsUserId(doctorId, patientId);
-        //return doctorProfile.getAttachedPatients().containsKey(patientId);
     }
 
     /**

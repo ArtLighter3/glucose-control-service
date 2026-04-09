@@ -45,7 +45,8 @@ public class DoctorController {
     @Operation(summary = "Получить список прикрепленных к врачу больных.", description = "Возвращает список " +
             "постранично с возможностью сортировки по определенному полю.")
     @GetMapping("/attached-patients")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
+    @PreAuthorize("hasRole('ADMIN') or " +
+            "(hasRole('DOCTOR') and @resourceAccessInspector.isOwnerOfResource(#userId, authentication))")
     public Page<AttachedPatientDTO> getAttachedPatients(@PathVariable int userId,
                                                         @PageableDefault(sort = "user.lastName")
                                                         @Parameter(description = "Данные о странице и сортировке." +

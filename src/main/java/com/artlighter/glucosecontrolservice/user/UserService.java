@@ -53,7 +53,9 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         if (role == Role.ROLE_PATIENT) {
-            //patientProfileService.createDefaultProfileForPatient(user.getId());
+            // если по какой-то ошибке не создастся профиль пациента при создании пользователя (отчего может полететь
+            // много функционала), то нахождение в одной транзакции не создаст и пользователя, так что все должно быть
+            // норм
             try {
                 patientProfileService.createDefaultProfileForPatient(user);
             } catch (ResourceAlreadyExistsException ignored) {}

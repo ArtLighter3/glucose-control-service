@@ -62,8 +62,6 @@ public class AuthController {
 
         User addedUser = userService.addUser(userRegistrationMapper.mapToInternal(userRegistrationDTO),
                 Role.ROLE_PATIENT);
-
-       // return ResponseEntity.status(HttpStatus.CREATED).body(null);
     }
 
     @Operation(summary = "Получить информацию о пользователе в текущей сессии.",
