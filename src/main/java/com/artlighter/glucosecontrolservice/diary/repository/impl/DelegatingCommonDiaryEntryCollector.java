@@ -1,6 +1,5 @@
 package com.artlighter.glucosecontrolservice.diary.repository.impl;
 
-import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.repository.*;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryRepositoryCollection;

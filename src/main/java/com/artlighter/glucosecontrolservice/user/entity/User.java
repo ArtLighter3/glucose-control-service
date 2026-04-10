@@ -1,6 +1,8 @@
 package com.artlighter.glucosecontrolservice.user.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 import org.jspecify.annotations.Nullable;
 
 import java.time.LocalDate;
@@ -21,6 +23,7 @@ public class User {
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
    // @Transient
     private Set<Role> roles;
     private String firstName;

@@ -15,6 +15,7 @@ public class ConvertableValueValidationException extends RuntimeException {
     }
 
     public ConvertableValueValidationException(Number actual, Number min, Number max) {
-        this(actual, min, max, String.format("value should be in range from %s to %s", min, max));
+        this(actual, min, max,
+                String.format("value should be in range from %.2f to %.2f", min.floatValue(), max.floatValue()));
     }
 }
