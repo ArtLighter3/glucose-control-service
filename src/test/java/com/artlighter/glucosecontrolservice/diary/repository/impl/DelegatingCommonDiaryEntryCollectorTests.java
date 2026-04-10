@@ -64,7 +64,7 @@ public class DelegatingCommonDiaryEntryCollectorTests {
                 .thenReturn(expected);
 
         List<DiaryEntry> actual = collector.getAllOfTypeBetweenDates(DiaryEntryType.GLUCOSE_ENTRY,
-                new PatientProfile(), from, to, Sort.unsorted());
+                0, from, to, Sort.unsorted());
 
         assertNotNull(actual);
         actual = actual.stream().map((entry) -> (GlucoseEntry) entry).collect(Collectors.toList());
@@ -81,7 +81,7 @@ public class DelegatingCommonDiaryEntryCollectorTests {
                 .thenReturn(expected2);
 
         List<DiaryEntry> actual2 = collector.getAllOfTypeBetweenDates(DiaryEntryType.INSULIN_ENTRY,
-                new PatientProfile(), from, to, Sort.unsorted());
+                0, from, to, Sort.unsorted());
 
         assertNotNull(actual2);
         actual2 = actual2.stream().map((entry) -> (InsulinEntry) entry).collect(Collectors.toList());
@@ -107,18 +107,10 @@ public class DelegatingCommonDiaryEntryCollectorTests {
         when(insulinRepository.getAllByProfileIdAndCommitedAtBetween(anyInt(), eq(from), eq(to)))
                 .thenReturn(insulinEntries);
 
-        List<DiaryEntry> actual = collector.getAllOfTypeBetweenDates(null,
-                new PatientProfile(), from, to, Sort.unsorted());
+        List<DiaryEntry> actual = collector.getAllOfTypeBetweenDates(null, 0, from, to, Sort.unsorted());
 
         assertNotNull(actual);
         assertIterableEquals(expected, actual);
-    }
-
-    @Test
-    public void getAllOfTypeBetweenDates_PatientProfileIsNull_ThrowsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () ->
-                collector.getAllOfTypeBetweenDates(DiaryEntryType.GLUCOSE_ENTRY, null,
-                        Instant.now(), Instant.now(), Sort.unsorted()));
     }
 
     @Test

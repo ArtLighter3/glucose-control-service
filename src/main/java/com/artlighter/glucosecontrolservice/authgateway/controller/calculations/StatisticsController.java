@@ -80,11 +80,12 @@ public class StatisticsController {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
 
         Instant timestamp = Instant.now();
-        List<DiaryEntry> recentEntries = diaryEntryService.getAllDiaryEntries(patientProfile,
+        List<DiaryEntry> recentEntries = diaryEntryService.getAllDiaryEntries(patientProfile.getUserId(),
                 timestamp.minus(interval != null ? interval.getDuration() : TimeInterval.DAY.getDuration()), timestamp);
 
         GlucoseEntryDTO lastGlucoseEntry = null;
-        DiaryEntry lastEntry = diaryEntryService.findLastEntryOfType(DiaryEntryType.GLUCOSE_ENTRY, patientProfile);
+        DiaryEntry lastEntry = diaryEntryService.findLastEntryOfType(DiaryEntryType.GLUCOSE_ENTRY,
+                patientProfile.getUserId());
         if (lastEntry instanceof GlucoseEntry)
             lastGlucoseEntry = glucoseEntryMapper.mapToDtoWithUnitConversion((GlucoseEntry) lastEntry,
                     patientProfile, outputZoneOffset);

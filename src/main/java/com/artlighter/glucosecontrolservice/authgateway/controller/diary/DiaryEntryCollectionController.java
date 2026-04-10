@@ -59,7 +59,7 @@ public class DiaryEntryCollectionController {
                                                      @RequestParam(required = false) ZoneOffset outputZoneOffset) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
 
-        List<DiaryEntry> entries = diaryEntryService.getAllDiaryEntries(patientProfile, from, to);
+        List<DiaryEntry> entries = diaryEntryService.getAllDiaryEntries(patientProfile.getUserId(), from, to);
 
         return collectionMapper.mapToDTO(entries, patientProfile, outputZoneOffset);
     }

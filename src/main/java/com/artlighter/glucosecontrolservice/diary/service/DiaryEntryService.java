@@ -111,7 +111,7 @@ public class DiaryEntryService {
 
     /**
      * Находит все записи дневника самоконтроля ВСЕХ типов в заданном периоде времени.
-     * @param patientProfile профиль больного, не null;
+     * @param patientProfileId ID профиля больного;
      * @param from нижняя граница временного периода выборки по UTC+0;
      *             если null, то выберутся записи в течение недели до верхней границы to;
      * @param to верхняя граница временного периода выборки по UTC+0; если null, то верхней границей считается
@@ -119,14 +119,14 @@ public class DiaryEntryService {
      * @return список записей дневника всех типов; никогда не null;
      */
     @Transactional(readOnly = true)
-    public List<DiaryEntry> getAllDiaryEntries(PatientProfile patientProfile, Instant from, Instant to) {
-        return getDiaryEntriesOfType(null, patientProfile, from, to);
+    public List<DiaryEntry> getAllDiaryEntries(int patientProfileId, Instant from, Instant to) {
+        return getDiaryEntriesOfType(null, patientProfileId, from, to);
     }
 
     /**
      * Находит все записи дневника самоконтроля определенного типа в заданном периоде времени.
      * @param entryType тип записи дневника самоконтроля; если null, то выбираются записи ВСЕХ типов;
-     * @param patientProfile профиль больного, не null;
+     * @param patientProfileId ID профиля больного;
      * @param from нижняя граница временного периода выборки по UTC+0;
      *             если null, то выберутся записи в течение недели до верхней границы to;
      * @param to верхняя граница временного периода выборки по UTC+0; если null, то верхней границей считается
@@ -134,31 +134,28 @@ public class DiaryEntryService {
      * @return список записей дневника соответствующего типа; никогда не null;
      */
     @Transactional(readOnly = true)
-    public List<DiaryEntry> getDiaryEntriesOfType(DiaryEntryType entryType, PatientProfile patientProfile,
+    public List<DiaryEntry> getDiaryEntriesOfType(DiaryEntryType entryType, int patientProfileId,
                                                   Instant from, Instant to) {
-        //if (patientProfile == null) throw new IllegalArgumentException("PatientProfile cannot be null");
         if (to == null) to = Instant.now();
         if (from == null) from = to.minus(Duration.ofDays(defaultDatePeriodInDays));
 
-        List<DiaryEntry> entries = commonDiaryEntryDAO.getAllOfTypeBetweenDates(entryType,
-                patientProfile, from, to, Sort.by("commitedAt").descending());
+        List<DiaryEntry> entries = commonDiaryEntryDAO.getAllOfTypeBetweenDates(entryType, patientProfileId, from, to,
+                Sort.by("commitedAt").descending());
 
         if (entries == null) return Collections.emptyList();
 
         return entries;
-//        return entries.stream().map((entry) -> (DiaryEntry) entry)
-//                .collect(Collectors.toList());
     }
 
     /**
      * Находит последнюю по временной отметке запись дневника определенного типа.
      * @param entryType тип записи дневника самоконтроля; не null;
-     * @param patientProfile профиль больного, не null;
+     * @param patientProfileId ID профиля больного;
      * @return Последнюю запись дневника этого типа; null, если не было найдено;
      */
     @Transactional(readOnly = true)
-    public DiaryEntry findLastEntryOfType(DiaryEntryType entryType, PatientProfile patientProfile) {
-        DiaryEntry entry = commonDiaryEntryDAO.findLastEntryOfType(entryType, patientProfile,
+    public DiaryEntry findLastEntryOfType(DiaryEntryType entryType, int patientProfileId) {
+        DiaryEntry entry = commonDiaryEntryDAO.findLastEntryOfType(entryType, patientProfileId,
                 Sort.by("commitedAt").descending());
 
         return entry;

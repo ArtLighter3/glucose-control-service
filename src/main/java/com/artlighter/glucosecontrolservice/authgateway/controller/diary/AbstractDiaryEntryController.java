@@ -176,7 +176,8 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
                                  Instant from, Instant to, ZoneOffset outputZoneOffset) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
 
-        List<DiaryEntry> entries = diaryEntryService.getDiaryEntriesOfType(entryType, patientProfile, from, to);
+        List<DiaryEntry> entries = diaryEntryService
+                .getDiaryEntriesOfType(entryType, patientProfile.getUserId(), from, to);
 
         return entryMapper.mapToDtoCollectionWithUnitConversion(entries, patientProfile, outputZoneOffset);
     }

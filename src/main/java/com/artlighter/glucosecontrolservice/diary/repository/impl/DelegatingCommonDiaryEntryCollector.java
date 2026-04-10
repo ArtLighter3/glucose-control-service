@@ -30,31 +30,25 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
         this.repositories = repositories;
     }
 
-    /**
-     * @throws IllegalArgumentException если PatientProfile равен null;
-     */
     @Override
     public List<DiaryEntry> getAllOfTypeBetweenDates(DiaryEntryType entryType,
-                                                     PatientProfile patientProfile, Instant from, Instant to,
+                                                     int patientProfileId, Instant from, Instant to,
                                                      Sort sort) {
-        if (patientProfile == null) throw new IllegalArgumentException("patientProfile cannot be null");
-
-        if (entryType == null) return collectAllBetweenDates(patientProfile, from, to, sort);
+        if (entryType == null) return collectAllBetweenDates(patientProfileId, from, to, sort);
 
         ParticularDiaryEntryRepository repository = repositories.getRepositoryForType(entryType);
-        return repository.getAllByProfileIdAndCommitedAtBetween(patientProfile.getUserId(), from, to, sort);
+        return repository.getAllByProfileIdAndCommitedAtBetween(patientProfileId, from, to, sort);
     }
 
     /**
-     * @throws IllegalArgumentException если patientProfile или entryType равны null;
+     * @throws IllegalArgumentException если entryType равен null;
      */
     @Override
-    public DiaryEntry findLastEntryOfType(DiaryEntryType entryType, PatientProfile patientProfile, Sort sort) {
-        if (patientProfile == null) throw new IllegalArgumentException("patientProfile cannot be null");
+    public DiaryEntry findLastEntryOfType(DiaryEntryType entryType, int patientProfileId, Sort sort) {
         if (entryType == null) throw new IllegalArgumentException("entryType cannot be null");
 
         ParticularDiaryEntryRepository repository = repositories.getRepositoryForType(entryType);
-        return  repository.findFirstByProfileId(patientProfile.getUserId(), sort);
+        return  repository.findFirstByProfileId(patientProfileId, sort);
     }
 
     /**
@@ -96,13 +90,12 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
         return repository.existsById(new DiaryEntry.DiaryEntryID(entry.getProfileId(), entry.getCommitedAt()));
     }
 
-    private List<DiaryEntry> collectAllBetweenDates(PatientProfile patientProfile, Instant from, Instant to,
+    private List<DiaryEntry> collectAllBetweenDates(int patientProfileId, Instant from, Instant to,
                                                     Sort sort) {
         List<DiaryEntry> diaryEntries = new ArrayList<>();
         //TODO можно просто добавить отдельный DAO, в котором будет один запрос с UNION для получения всех записей
         for (ParticularDiaryEntryRepository repository : repositories.getAllRepositories()) {
-            diaryEntries.addAll(repository.getAllByProfileIdAndCommitedAtBetween(patientProfile.getUserId(),
-                    from, to));
+            diaryEntries.addAll(repository.getAllByProfileIdAndCommitedAtBetween(patientProfileId, from, to));
         }
         //TODO реализовать сортировку по Sort
         diaryEntries.sort((entry1, entry2) ->

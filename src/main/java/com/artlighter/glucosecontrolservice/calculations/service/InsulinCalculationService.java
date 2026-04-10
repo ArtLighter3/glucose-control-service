@@ -87,7 +87,7 @@ public class InsulinCalculationService {
         Instant now = Instant.now();
         List<DiaryEntry> entriesToConsider = considerActiveInsulin ?
                 diaryEntryService.getDiaryEntriesOfType(DiaryEntryType.INSULIN_ENTRY,
-                        patientProfile, now.minus(Duration.ofHours(12)), now) : null;
+                        patientProfile.getUserId(), now.minus(Duration.ofHours(12)), now) : null;
 
         float currentIsf = volatileValueExtractor.extractVolatileValue(insulinProfile.getFactorsByTime(),
                 patientTimeOfDay, insulinProfile.getDefaultInsulinSensitivityFactor());
