@@ -91,15 +91,24 @@ public class InsulinResult {
         return result;
     }
 
+    public GlucoseUnit getGlucoseUnit() {
+        return glucoseUnit;
+    }
+
+    public CarbsUnit getCarbsUnit() {
+        return carbsUnit;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         InsulinResult that = (InsulinResult) o;
         return Objects.equals(glucose, that.glucose) &&
+                glucoseUnit == that.glucoseUnit &&
                 Objects.equals(insulinSensitivityFactor, that.insulinSensitivityFactor) &&
                 Objects.equals(correctionInsulin, that.correctionInsulin) &&
                 Objects.equals(activeInsulin, that.activeInsulin) &&
-                Objects.equals(carbs, that.carbs) &&
+                Objects.equals(carbs, that.carbs) && carbsUnit == that.carbsUnit &&
                 Objects.equals(insulinToCarbsRatio, that.insulinToCarbsRatio) &&
                 Objects.equals(carbsInsulin, that.carbsInsulin) &&
                 Objects.equals(correction, that.correction) &&
@@ -109,10 +118,12 @@ public class InsulinResult {
     @Override
     public int hashCode() {
         return Objects.hash(glucose,
+                glucoseUnit,
                 insulinSensitivityFactor,
                 correctionInsulin,
                 activeInsulin,
                 carbs,
+                carbsUnit,
                 insulinToCarbsRatio,
                 carbsInsulin,
                 correction,
@@ -123,10 +134,12 @@ public class InsulinResult {
     public String toString() {
         return "InsulinResult{" +
                 "glucose=" + glucose +
+                ", glucoseUnit=" + glucoseUnit +
                 ", insulinSensitivityFactor=" + insulinSensitivityFactor +
                 ", correctionInsulin=" + correctionInsulin +
                 ", activeInsulin=" + activeInsulin +
                 ", carbs=" + carbs +
+                ", carbsUnit=" + carbsUnit +
                 ", insulinToCarbsRatio=" + insulinToCarbsRatio +
                 ", carbsInsulin=" + carbsInsulin +
                 ", correction=" + correction +

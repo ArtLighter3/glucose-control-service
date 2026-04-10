@@ -2,7 +2,6 @@ package com.artlighter.glucosecontrolservice.diary.service;
 
 import com.artlighter.glucosecontrolservice.general.exception.ResourceAlreadyExistsException;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
-import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.repository.*;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;

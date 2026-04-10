@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.GroupSequence;
 import jakarta.validation.constraints.*;
 
-import java.time.LocalTime;
 import java.time.ZoneOffset;
 
 @Schema(name = "InsulinCalculationRequest",
@@ -26,7 +25,7 @@ public record InsulinCalculationRequestDTO(
         @Schema(description = "UTC-смещение зоны пользователя. " +
                 "Нужно для правильного определения параметров, изменяемых по времени суток " +
                 "(ISF, ICR...).",
-                example = "+7:30")
+                example = "+07:30")
         @NotNull
         ZoneOffset patientZoneOffset,
         @Schema(description = "Учитывать ли активный инсулин. Активный инсулин будет рассчитываться " +
