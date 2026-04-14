@@ -26,18 +26,11 @@ import java.util.Set;
 public class DoctorProfileService {
     private DoctorProfileRepository doctorProfileRepository;
     private PatientProfileService patientProfileService;
-    private UserService userService;
-
-    private final PatientProfileRepository patientProfileRepository;
 
     public DoctorProfileService(DoctorProfileRepository doctorProfileRepository,
-                                PatientProfileService patientProfileService,
-                                UserService userService,
-                                PatientProfileRepository patientProfileRepository) {
+                                PatientProfileService patientProfileService) {
         this.doctorProfileRepository = doctorProfileRepository;
         this.patientProfileService = patientProfileService;
-        this.userService = userService;
-        this.patientProfileRepository = patientProfileRepository;
     }
 
     /**
@@ -84,23 +77,16 @@ public class DoctorProfileService {
     }
 
     /**
-     * Прикрепляет больного к врачу.
+     * Прикрепляет больного к врачу. Не проверяет наличие права врача или пациента!
      * @param doctorId ID врача;
      * @param patientId ID больного;
-     * @return профиль врача, к которому было произведено прикрепление;
+     * @return обновленный профиль врача, к которому было произведено прикрепление;
      * @throws ResourceNotFoundException если врач или пациент с переданными ID не были найдены;
      * @throws ResourceAlreadyExistsException если больной уже был прикреплен к врачу;
-     * @throws UserIsNotDoctorException если пользователь с ID doctorId не является врачом;
-     * @throws UserIsNotPatientException если пользователь с ID patientId не является больным;
      */
     public DoctorProfile attachPatientToDoctor(int doctorId, int patientId) {
-        DoctorProfile doctorProfile = getDoctorProfileOrThrowException(doctorId);
+        DoctorProfile doctorProfile = getByUserId(doctorId);
         PatientProfile patientProfile = patientProfileService.getByUserId(patientId);
-
-        if (!userService.hasRole(doctorId, Role.ROLE_DOCTOR))
-            throw new UserIsNotDoctorException(doctorId);
-        if (!userService.hasRole(patientId, Role.ROLE_PATIENT))
-            throw new UserIsNotPatientException(patientId);
 
         Set<PatientProfile> attachedPatients = doctorProfile.getAttachedPatients();
         boolean attached = attachedPatients.add(patientProfile);
@@ -114,12 +100,12 @@ public class DoctorProfileService {
      * Открепляет больного от врача.
      * @param doctorId ID врача;
      * @param patientId ID больного;
-     * @return профиль врача, у которого был удален прикрепленный больной;
+     * @return обновленный профиль врача, у которого был удален прикрепленный больной;
      * @throws ResourceNotFoundException если врач или пациент с переданными ID не были найдены, либо если
      *                                   больной уже откреплен;
      */
     public DoctorProfile detachPatientFromDoctor(int doctorId, int patientId) {
-        DoctorProfile doctorProfile = getDoctorProfileOrThrowException(doctorId);
+        DoctorProfile doctorProfile = getByUserId(doctorId);
         PatientProfile patientProfile = patientProfileService.getByUserId(patientId);
 
         Set<PatientProfile> attachedPatients = doctorProfile.getAttachedPatients();
@@ -139,7 +125,7 @@ public class DoctorProfileService {
      * @throws ResourceNotFoundException если врач не был найден в системе;
      */
     public Page<PatientProfile> getAttachedPatients(int doctorId, Pageable pageable) {
-        DoctorProfile doctorProfile = getDoctorProfileOrThrowException(doctorId);
+        DoctorProfile doctorProfile = getByUserId(doctorId);
 
         return patientProfileService.getPatientsAttachedToDoctor(doctorProfile.getId(), pageable);
     }
@@ -154,16 +140,41 @@ public class DoctorProfileService {
      * @throws ResourceNotFoundException если врач не был найден в системе;
      */
     public Page<PatientProfile> searchAttachedPatients(int doctorId, String searchQuery, Pageable pageable) {
-        DoctorProfile doctorProfile = getDoctorProfileOrThrowException(doctorId);
+        DoctorProfile doctorProfile = getByUserId(doctorId);
 
         return patientProfileService.getPatientsAttachedToDoctor(doctorProfile.getId(), searchQuery, pageable);
     }
 
-    private DoctorProfile getDoctorProfileOrThrowException(int doctorId) {
+    /**
+     * Находит профиль врача по ID этого врача.
+     * @param doctorId ID пользователя-врача;
+     * @return DoctorProfile, соответствующий ID врача; никогда не null;
+     * @throws ResourceNotFoundException если не было найдено профиля врача для этого doctorId;
+     */
+    public DoctorProfile getByUserId(int doctorId) {
         DoctorProfile doctorProfile = doctorProfileRepository.findById(doctorId).orElse(null);
         if (doctorProfile == null)
             throw new ResourceNotFoundException(DoctorProfile.class, "doctor with ID '" + doctorId  + "' not found");
 
         return doctorProfile;
     }
+
+
+//    /**
+//     * Сохраняет профиль врача.
+//     * @param doctorProfile обновляемый профиль врача;
+//     * @param userId ID пользователя-врача;
+//     * @return обновленный профиль врача;
+//     * @throws ResourceNotFoundException если профиль врача не существует;
+//     * @throws IllegalArgumentException если doctorProfile равен null;
+//     */
+//    public DoctorProfile up(DoctorProfile doctorProfile) {
+//        if (doctorProfile == null) throw new IllegalArgumentException("doctorProfile cannot be null");
+//
+//        DoctorProfile existingProfile = getByUserId(userId);
+//
+//        //patientProfile.setUserId(userId);
+//        doctorProfile.setId(userId);
+//        return doctorProfileRepository.save(doctorProfile);
+//    }
 }

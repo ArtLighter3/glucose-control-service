@@ -2,11 +2,16 @@ package com.artlighter.glucosecontrolservice.user;
 
 import com.artlighter.glucosecontrolservice.general.exception.ResourceAlreadyExistsException;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
+import com.artlighter.glucosecontrolservice.user.entity.DoctorProfile;
+import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.user.entity.User;
+import com.artlighter.glucosecontrolservice.user.repository.DoctorProfileRepository;
 import com.artlighter.glucosecontrolservice.user.service.DoctorProfileService;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.user.repository.UserRepository;
+import com.artlighter.glucosecontrolservice.user.util.exception.UserIsNotDoctorException;
+import com.artlighter.glucosecontrolservice.user.util.exception.UserIsNotPatientException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.security.crypto.password.PasswordEncoder;

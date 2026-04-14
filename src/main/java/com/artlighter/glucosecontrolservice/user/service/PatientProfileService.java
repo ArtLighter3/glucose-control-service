@@ -125,10 +125,7 @@ public class PatientProfileService {
     public PatientProfile updateProfileForPatient(PatientProfile patientProfile, int userId) {
         if (patientProfile == null) throw new IllegalArgumentException("patientProfile cannot be null");
 
-        PatientProfile existingProfile = patientProfileRepository.findByUserId(userId);
-        if (existingProfile == null)
-            throw new ResourceNotFoundException(PatientProfile.class,
-                    "patient profile for user with ID '" + userId + "' not found");
+        PatientProfile existingProfile = getByUserId(userId);
 
         //patientProfile.setUserId(userId);
         patientProfile.setUser(new User(userId));

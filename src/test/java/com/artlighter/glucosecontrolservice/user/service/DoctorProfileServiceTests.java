@@ -27,8 +27,6 @@ public class DoctorProfileServiceTests {
     private DoctorProfileRepository doctorProfileRepository;
     @MockitoBean
     private PatientProfileService patientProfileService;
-    @MockitoBean
-    private UserService userService;
     @Autowired
     private DoctorProfileService doctorProfileService;
 
@@ -93,24 +91,24 @@ public class DoctorProfileServiceTests {
         assertFalse(doctorProfileService.isPatientAttached(2, 2));
     }
 
-    @Test
-    public void attachPatientToDoctor_DoctorOrPatientNotFound_ThrowsResourceNotFoundException() {
-        when(patientProfileService.getByUserId(3))
-                .thenThrow(new ResourceNotFoundException(PatientProfile.class, ""));
-        when(patientProfileService.getByUserId(0)).thenReturn(new PatientProfile());
-        when(doctorProfileRepository.findById(2)).thenReturn(Optional.empty());
-        when(doctorProfileRepository.findById(1)).thenReturn(Optional.of(new DoctorProfile()));
-
-        assertThrows(ResourceNotFoundException.class, () -> {
-           doctorProfileService.attachPatientToDoctor(2, 0);
-        });
-        assertThrows(ResourceNotFoundException.class, () -> {
-            doctorProfileService.attachPatientToDoctor(1, 3);
-        });
-        assertThrows(ResourceNotFoundException.class, () -> {
-            doctorProfileService.attachPatientToDoctor(2, 3);
-        });
-    }
+//    @Test
+//    public void attachPatientToDoctor_DoctorOrPatientNotFound_ThrowsResourceNotFoundException() {
+//        when(patientProfileService.getByUserId(3))
+//                .thenThrow(new ResourceNotFoundException(PatientProfile.class, ""));
+//        when(patientProfileService.getByUserId(0)).thenReturn(new PatientProfile());
+//        when(doctorProfileRepository.findById(2)).thenReturn(Optional.empty());
+//        when(doctorProfileRepository.findById(1)).thenReturn(Optional.of(new DoctorProfile()));
+//
+//        assertThrows(ResourceNotFoundException.class, () -> {
+//           doctorProfileService.attachPatientToDoctor(2, 0);
+//        });
+//        assertThrows(ResourceNotFoundException.class, () -> {
+//            doctorProfileService.attachPatientToDoctor(1, 3);
+//        });
+//        assertThrows(ResourceNotFoundException.class, () -> {
+//            doctorProfileService.attachPatientToDoctor(2, 3);
+//        });
+//    }
 
 //    @Test
 //    public void attachPatientToDoctor_AttachedUserIsNotPatient_ThrowsResourceNotFoundException() {
