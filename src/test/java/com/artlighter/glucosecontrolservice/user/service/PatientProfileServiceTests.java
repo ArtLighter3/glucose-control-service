@@ -1,6 +1,5 @@
 package com.artlighter.glucosecontrolservice.user.service;
 
-import com.artlighter.glucosecontrolservice.calculations.entity.InsulinProfile;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceAlreadyExistsException;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.user.entity.*;
