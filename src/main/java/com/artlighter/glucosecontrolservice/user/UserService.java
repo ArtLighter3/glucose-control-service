@@ -4,6 +4,7 @@ import com.artlighter.glucosecontrolservice.general.exception.ResourceAlreadyExi
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.user.entity.User;
+import com.artlighter.glucosecontrolservice.user.service.DoctorProfileService;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +22,18 @@ import java.util.Set;
 @Transactional
 public class UserService {
     private PatientProfileService patientProfileService;
+    private DoctorProfileService doctorProfileService;
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserService(UserRepository userRepository,
                        PatientProfileService patientProfileService,
+                       DoctorProfileService doctorProfileService,
                        PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.patientProfileService = patientProfileService;
+        this.doctorProfileService = doctorProfileService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -84,6 +88,12 @@ public class UserService {
         if (user.getRoles().contains(Role.ROLE_PATIENT)) {
             try {
                 patientProfileService.createDefaultProfileForPatient(user);
+            } catch (ResourceAlreadyExistsException ignored) {}
+        }
+
+        if (user.getRoles().contains(Role.ROLE_DOCTOR)) {
+            try {
+                doctorProfileService.createDefaultProfileForDoctor(user);
             } catch (ResourceAlreadyExistsException ignored) {}
         }
 

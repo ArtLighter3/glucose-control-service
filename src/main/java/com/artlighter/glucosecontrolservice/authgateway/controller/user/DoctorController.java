@@ -23,7 +23,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "doctors", description = "методы для получения и модификации врачей, получения и модификации" +
+@Tag(name = "doctors", description = "методы для получения и модификации врачей, получения и модификации " +
         "прикрепленных к ним больных")
 @ApiResponses(value =
         {@ApiResponse(responseCode = "200", description = "В случае успеха."),

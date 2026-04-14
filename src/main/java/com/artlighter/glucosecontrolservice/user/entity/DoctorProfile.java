@@ -19,6 +19,18 @@ public class DoctorProfile {
 //    private Map<Integer, PatientProfile> attachedPatients;
     private Set<PatientProfile> attachedPatients;
 
+    public DoctorProfile() {
+    }
+
+    public DoctorProfile(int id) {
+        this.id = id;
+    }
+
+    public DoctorProfile(int id, Set<PatientProfile> attachedPatients) {
+        this.id = id;
+        this.attachedPatients = attachedPatients;
+    }
+
     public int getId() {
         return id;
     }
