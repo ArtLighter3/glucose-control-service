@@ -28,12 +28,16 @@ public class DoctorProfileService {
     private PatientProfileService patientProfileService;
     private UserService userService;
 
+    private final PatientProfileRepository patientProfileRepository;
+
     public DoctorProfileService(DoctorProfileRepository doctorProfileRepository,
                                 PatientProfileService patientProfileService,
-                                UserService userService) {
+                                UserService userService,
+                                PatientProfileRepository patientProfileRepository) {
         this.doctorProfileRepository = doctorProfileRepository;
         this.patientProfileService = patientProfileService;
         this.userService = userService;
+        this.patientProfileRepository = patientProfileRepository;
     }
 
     /**
