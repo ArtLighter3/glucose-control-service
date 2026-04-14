@@ -28,12 +28,36 @@ public class DoctorProfileService {
     private PatientProfileService patientProfileService;
     private UserService userService;
 
+    private final PatientProfileRepository patientProfileRepository;
+
     public DoctorProfileService(DoctorProfileRepository doctorProfileRepository,
                                 PatientProfileService patientProfileService,
-                                UserService userService) {
+                                UserService userService,
+                                PatientProfileRepository patientProfileRepository) {
         this.doctorProfileRepository = doctorProfileRepository;
         this.patientProfileService = patientProfileService;
         this.userService = userService;
+        this.patientProfileRepository = patientProfileRepository;
+    }
+
+    /**
+     * Создает стандартный профиль врача для пользователя.
+     * @param user пользователь, для которого нужно сохранить профиль врача;
+     * @return сохраненный DoctorProfile;
+     * @throws ResourceAlreadyExistsException если профиль врача уже существует для этого пользователя.
+     * @throws IllegalArgumentException если user равен null;
+     * @throws UserIsNotDoctorException если пользователь не является врачом;
+     */
+    public DoctorProfile createDefaultProfileForDoctor(User user) {
+        if (user == null) throw new IllegalArgumentException("user cannot be null");
+
+        if (doctorProfileRepository.existsById(user.getId()))
+            throw new ResourceAlreadyExistsException(new DoctorProfile(user.getId()),
+                    "doctor profile for this user already exists");
+        if (!user.getRoles().contains(Role.ROLE_DOCTOR))
+            throw new UserIsNotDoctorException(user.getId());
+
+        return doctorProfileRepository.save(new DoctorProfile(user.getId()));
     }
 
     /**
