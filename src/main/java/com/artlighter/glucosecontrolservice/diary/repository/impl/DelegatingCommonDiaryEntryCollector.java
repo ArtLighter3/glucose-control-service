@@ -47,7 +47,7 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
         if (entryType == null) throw new IllegalArgumentException("entryType cannot be null");
 
         ParticularDiaryEntryRepository repository = repositories.getRepositoryForType(entryType);
-        return  repository.findFirstByProfileId(patientProfileId, sort);
+        return  repository.findFirstByProfileIdAndCommitedAtBefore(patientProfileId, Instant.now(), sort);
     }
 
     /**

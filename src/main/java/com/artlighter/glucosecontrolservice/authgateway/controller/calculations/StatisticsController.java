@@ -77,6 +77,7 @@ public class StatisticsController {
                                                        required = false)
                                                @RequestParam(required = false)
                                                TimeInterval interval) {
+        //TODO поместить в сервис
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
 
         Instant timestamp = Instant.now();
@@ -84,8 +85,8 @@ public class StatisticsController {
                 timestamp.minus(interval != null ? interval.getDuration() : TimeInterval.DAY.getDuration()), timestamp);
 
         GlucoseEntryDTO lastGlucoseEntry = null;
-        DiaryEntry lastEntry = diaryEntryService.findLastEntryOfType(DiaryEntryType.GLUCOSE_ENTRY,
-                patientProfile.getUserId());
+        DiaryEntry lastEntry =
+                diaryEntryService.findLastEntryOfType(DiaryEntryType.GLUCOSE_ENTRY, patientProfile.getUserId());
         if (lastEntry instanceof GlucoseEntry)
             lastGlucoseEntry = glucoseEntryMapper.mapToDtoWithUnitConversion((GlucoseEntry) lastEntry,
                     patientProfile, outputZoneOffset);
