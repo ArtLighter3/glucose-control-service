@@ -24,14 +24,16 @@ public interface PatientProfileRepository
                                                                   Pageable pageable);
 
     @Query("SELECT pp FROM PatientProfile pp JOIN FETCH pp.user u " +
-            "JOIN pp.doctors d WHERE LOWER(u.lastName) LIKE LOWER(CONCAT('%', :searchQuery, '%')) " +
+            "JOIN pp.doctors d WHERE LOWER(CONCAT(u.lastName, ' ', u.firstName, ' ', COALESCE(u.middleName, ''))) " +
+            "LIKE LOWER(CONCAT('%', :searchQuery, '%')) " +
             "AND d.id = :doctorProfileId")
-    Page<PatientProfile> searchPatientsAttachedToDoctorByDoctorId(@Param("doctorProfileId") int doctorProfileId,
-                                                               @Param("searchQuery") String searchQuery,
-                                                               Pageable pageable);
+    Page<PatientProfile> searchPatientsAttachedToDoctorByFullName(@Param("doctorProfileId") int doctorProfileId,
+                                                                  @Param("searchQuery") String searchQuery,
+                                                                  Pageable pageable);
 
     @Query("SELECT pp FROM PatientProfile pp JOIN FETCH pp.user u " +
-            "WHERE LOWER(u.lastName) LIKE LOWER(CONCAT('%', :searchQuery, '%'))")
-    Slice<PatientProfile> searchPatients(@Param("searchQuery") String searchQuery, Pageable pageable);
+            "WHERE LOWER(CONCAT(u.lastName, ' ', u.firstName, ' ', COALESCE(u.middleName, ''))) " +
+            "LIKE LOWER(CONCAT('%', :searchQuery, '%'))")
+    Slice<PatientProfile> searchPatientsByFullName(@Param("searchQuery") String searchQuery, Pageable pageable);
 }
 

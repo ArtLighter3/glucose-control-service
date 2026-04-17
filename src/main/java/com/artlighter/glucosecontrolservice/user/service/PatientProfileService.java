@@ -145,8 +145,8 @@ public class PatientProfileService {
     }
 
     /**
-     * Находит прикрепленных к врачу больных (их профилей) по ID профиля врача, в ФИО которых содержится поисковая фраза
-     * searchQueru.
+     * Находит прикрепленных к врачу больных (их профилей) по ID профиля врача, в фа которых содержится поисковая фраза
+     * searchQuery.
      * @param doctorProfileId ID врача в системе;
      * @param searchQuery поисковая фраза для поиска по ФИО; если null, то находятся все больные;
      * @param pageable объект с информацией о пагинации;
@@ -156,11 +156,12 @@ public class PatientProfileService {
     public Page<PatientProfile> getPatientsAttachedToDoctor(int doctorProfileId, @Nullable String searchQuery,
                                                             Pageable pageable) {
         if (pageable == null)
-            pageable = PageRequest.of(0, 10, Sort.by("user.lastName"));
+            pageable = PageRequest.of(0, 10,
+                    Sort.by("user.lastName", "user.firstName", "user.middleName"));
 
         Page<PatientProfile> patientProfiles = searchQuery == null ?
                 patientProfileRepository.getPatientsAttachedToDoctorByDoctorId(doctorProfileId, pageable) :
-                patientProfileRepository.searchPatientsAttachedToDoctorByDoctorId(doctorProfileId,
+                patientProfileRepository.searchPatientsAttachedToDoctorByFullName(doctorProfileId,
                         searchQuery, pageable);
         if (patientProfiles == null) return Page.empty(pageable);
 

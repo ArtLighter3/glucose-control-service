@@ -2,16 +2,11 @@ package com.artlighter.glucosecontrolservice.user;
 
 import com.artlighter.glucosecontrolservice.general.exception.ResourceAlreadyExistsException;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
-import com.artlighter.glucosecontrolservice.user.entity.DoctorProfile;
-import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.user.entity.User;
-import com.artlighter.glucosecontrolservice.user.repository.DoctorProfileRepository;
 import com.artlighter.glucosecontrolservice.user.service.DoctorProfileService;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.user.repository.UserRepository;
-import com.artlighter.glucosecontrolservice.user.util.exception.UserIsNotDoctorException;
-import com.artlighter.glucosecontrolservice.user.util.exception.UserIsNotPatientException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -156,16 +151,17 @@ public class UserService {
     }
 
     /**
-     * Находит всех пользователей постранично, в фамилии которых содержится поисковый запрос searchQuery.
+     * Находит всех пользователей (постранично), в ФИО которых содержится поисковый запрос searchQuery.
      * @param searchQuery поисковая фраза;
      * @param pageable объект с информацией о пагинации;
      * @return текущая страница с пользователями; пустая коллекция, если ничего не было найдено;
      */
     @Transactional(readOnly = true)
-    public Slice<User> searchByLastName(String searchQuery, Pageable pageable) {
-        if (pageable == null) pageable = PageRequest.of(0, 10, Sort.by("lastName"));
+    public Slice<User> searchByFullName(String searchQuery, Pageable pageable) {
+        if (pageable == null) pageable = PageRequest
+                .of(0, 10, Sort.by("lastName", "firstName", "middleName"));
 
-        Slice<User> users = userRepository.searchAllByLastNameContainingIgnoreCase(searchQuery, pageable);
+        Slice<User> users = userRepository.searchUsersByFullName(searchQuery, pageable);
         if (users == null) return Page.empty();
 
         return users;

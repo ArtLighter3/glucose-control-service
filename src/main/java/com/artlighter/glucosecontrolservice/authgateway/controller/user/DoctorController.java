@@ -48,10 +48,11 @@ public class DoctorController {
     @PreAuthorize("hasRole('ADMIN') or " +
             "(hasRole('DOCTOR') and @resourceAccessInspector.isOwnerOfResource(#userId, authentication))")
     public Page<AttachedPatientDTO> getAttachedPatients(@PathVariable int userId,
-                                                        @PageableDefault(sort = "user.lastName")
+                                                        @PageableDefault(sort =
+                                                                {"user.lastName", "user.firstName", "user.middleName"})
                                                         @Parameter(description = "Данные о странице и сортировке." +
                                                                 "По-умолчанию сортируется " +
-                                                                "по фамилии пользователя (возр.)")
+                                                                "по ФИО пользователя (возр.)")
                                                         Pageable pageable) {
         Page<PatientProfile> attachedPatients = doctorProfileService.getAttachedPatients(userId, pageable);
 
@@ -68,7 +69,8 @@ public class DoctorController {
                                                                 description = "Поисковая фраза, содержащаяся в ФИО.")
                                                         @Valid @NotBlank
                                                         String query,
-                                                        @PageableDefault(sort = "user.lastName")
+                                                        @PageableDefault(sort =
+                                                                {"user.lastName", "user.firstName", "user.middleName"})
                                                         @Parameter(description = "Данные о странице и сортировке. " +
                                                                 "По-умолчанию сортируется " +
                                                                 "по фамилии пользователя (возр.)")

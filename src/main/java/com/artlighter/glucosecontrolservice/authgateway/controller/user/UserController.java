@@ -48,7 +48,7 @@ public class UserController {
         this.userUpdatableInfoMapper = userUpdatableInfoMapper;
     }
 
-    @Operation(summary = "Найти пользователей по фамилиям (для администраторов).", description = "Возвращает список " +
+    @Operation(summary = "Найти пользователей по ФИО (для администраторов).", description = "Возвращает список " +
             "постранично с возможностью сортировки по определенному полю.")
     @ApiResponses(@ApiResponse(responseCode = "200", description = "В случае успеха."))
     @GetMapping("/search")
@@ -56,15 +56,16 @@ public class UserController {
     public Slice<UserDetailedInfoDTO> getUsersBySearchQuery(@RequestParam
                                                             @Parameter(required = true,
                                                                     description = "Поисковая фраза, " +
-                                                                            "содержащаяся в фамилии.")
+                                                                            "содержащаяся в ФИО.")
                                                                 @Valid @NotBlank
                                                                 String query,
-                                                  @PageableDefault(size = 10, page = 0, sort = "lastName")
+                                                  @PageableDefault(size = 10, page = 0,
+                                                          sort = {"lastName", "firstName", "middleName"})
                                                         @Parameter(description = "Данные о странице и сортировке." +
                                                                 "По-умолчанию сортируется " +
                                                                 "по фамилии пользователя (возр.)")
                                                         Pageable pageable) {
-        Slice<User> users = userService.searchByLastName(query, pageable);
+        Slice<User> users = userService.searchByFullName(query, pageable);
 
         return users.map(userDetailedInfoMapper::mapToDTO);
     }
