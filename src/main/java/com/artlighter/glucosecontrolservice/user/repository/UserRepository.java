@@ -27,7 +27,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 //    Slice<User> findAllByRolesContaining(Role role, Pageable pageable);
     //TODO сделать так, чтобы hibernate не выводил HHH90003004
     @EntityGraph(attributePaths = {"roles"})
-    @Query("SELECT u FROM User u WHERE LOWER(u.lastName) " +
-            "LIKE LOWER(CONCAT(u.lastName, ' ', u.firstName, ' ', COALESCE(u.middleName, '')))")
-    Slice<User> searchUsersByFullName(@Param("query") String query, Pageable pageable);
+    @Query("SELECT u FROM User u WHERE LOWER(CONCAT(u.lastName, ' ', u.firstName, ' ', COALESCE(u.middleName, ''))) " +
+            "LIKE LOWER(CONCAT('%', :searchQuery, '%'))")
+    Slice<User> searchUsersByFullName(@Param("searchQuery") String searchQuery, Pageable pageable);
 }
