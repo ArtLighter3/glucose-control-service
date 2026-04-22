@@ -190,4 +190,12 @@ public class UserService {
 
         return userRepository.save(existingUser);
     }
+
+    /**
+     * Удаляет пользователя из системы. Проигнорирует, если пользователя уже не существует.
+     * @param userId ID пользователя, которого необходимо удалить;
+     */
+    public void deleteUser(int userId) {
+        userRepository.deleteById(userId);
+    }
 }

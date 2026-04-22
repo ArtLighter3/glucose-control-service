@@ -117,4 +117,13 @@ public class UserController {
 
         return userUpdatableInfoMapper.mapToDTO(updatedUser);
     }
+
+    @Operation(summary = "Удалить пользователя. Только для администраторов")
+    @ApiResponses(value =
+            {@ApiResponse(responseCode = "200", description = "Пользователь удален, либо его и не существовало.")})
+    @DeleteMapping("/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public void deleteUser(@PathVariable int userId) {
+        userService.deleteUser(userId);
+    }
 }
