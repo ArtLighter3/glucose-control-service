@@ -83,8 +83,8 @@ CREATE TABLE Doctor_Profile (
 );
 
 CREATE TABLE Patient_Doctor (
-    doctor_profile_id int REFERENCES Doctor_Profile(id),
-    patient_profile_id int REFERENCES Patient_Profile(id),
+    doctor_profile_id int REFERENCES Doctor_Profile(id) ON DELETE CASCADE,
+    patient_profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
     PRIMARY KEY (doctor_profile_id, patient_profile_id)
 );
 
