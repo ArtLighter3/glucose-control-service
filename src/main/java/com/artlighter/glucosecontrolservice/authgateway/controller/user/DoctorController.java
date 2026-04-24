@@ -2,6 +2,7 @@ package com.artlighter.glucosecontrolservice.authgateway.controller.user;
 
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ExceptionDTO;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ValidationIsFailedException;
+import com.artlighter.glucosecontrolservice.user.UserService;
 import com.artlighter.glucosecontrolservice.user.dto.AttachedPatientDTO;
 import com.artlighter.glucosecontrolservice.user.dto.PatientAttachDetachDTO;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
@@ -35,10 +36,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/doctors/{userId}")
 public class DoctorController {
     private DoctorProfileService doctorProfileService;
+    private UserService userService;
     private AttachedPatientMapper attachedPatientMapper;
 
-    public DoctorController(DoctorProfileService doctorProfileService, AttachedPatientMapper attachedPatientMapper) {
+    public DoctorController(DoctorProfileService doctorProfileService, UserService userService,
+                            AttachedPatientMapper attachedPatientMapper) {
         this.doctorProfileService = doctorProfileService;
+        this.userService = userService;
         this.attachedPatientMapper = attachedPatientMapper;
     }
 
@@ -96,7 +100,7 @@ public class DoctorController {
         if (bindingResult.hasErrors())
             throw new ValidationIsFailedException(bindingResult, "request body is invalid");
 
-        doctorProfileService.attachPatientToDoctor(userId, attachDetachDTO.patientId());
+        userService.attachPatientToDoctor(userId, attachDetachDTO.patientId());
         return attachDetachDTO;
     }
 
@@ -112,6 +116,6 @@ public class DoctorController {
     public void detachPatient(@PathVariable int userId,
                               @RequestParam @Parameter(required = true, description = "ID пользователя-больного")
                               Integer patientId) {
-        doctorProfileService.detachPatientFromDoctor(userId, patientId);
+        userService.detachPatientFromDoctor(userId, patientId);
     }
 }

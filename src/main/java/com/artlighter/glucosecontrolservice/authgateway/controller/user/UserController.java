@@ -6,6 +6,7 @@ import com.artlighter.glucosecontrolservice.user.UserService;
 import com.artlighter.glucosecontrolservice.user.dto.userinfo.UserCreationDTO;
 import com.artlighter.glucosecontrolservice.user.dto.userinfo.UserDetailedInfoDTO;
 import com.artlighter.glucosecontrolservice.user.dto.userinfo.UserUpdatableInfoDTO;
+import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.user.entity.User;
 import com.artlighter.glucosecontrolservice.user.util.mapper.UserCreationMapper;
 import com.artlighter.glucosecontrolservice.user.util.mapper.UserDetailedInfoMapper;
@@ -13,12 +14,14 @@ import com.artlighter.glucosecontrolservice.user.util.mapper.UserUpdatableInfoMa
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.web.PageableDefault;
@@ -53,19 +56,23 @@ public class UserController {
     @ApiResponses(@ApiResponse(responseCode = "200", description = "В случае успеха."))
     @GetMapping("/search")
     @PreAuthorize("hasRole('ADMIN')")
-    public Slice<UserDetailedInfoDTO> getUsersBySearchQuery(@RequestParam
+    public Page<UserDetailedInfoDTO> getUsersBySearchQuery(@RequestParam
                                                             @Parameter(required = true,
-                                                                    description = "Поисковая фраза, " +
+                                                                        description = "Поисковая фраза, " +
                                                                             "содержащаяся в ФИО.")
                                                                 @Valid @NotBlank
                                                                 String query,
+                                                            @RequestParam(required = false)
+                                                            @Parameter(required = false,
+                                                                       description = "Фильтрация по роли в системе")
+                                                            Role role,
                                                   @PageableDefault(size = 10, page = 0,
                                                           sort = {"lastName", "firstName", "middleName"})
                                                         @Parameter(description = "Данные о странице и сортировке." +
                                                                 "По-умолчанию сортируется " +
                                                                 "по фамилии пользователя (возр.)")
                                                         Pageable pageable) {
-        Slice<User> users = userService.searchByFullName(query, pageable);
+        Page<User> users = userService.searchByFullNameAndRole(query, role, pageable);
 
         return users.map(userDetailedInfoMapper::mapToDTO);
     }

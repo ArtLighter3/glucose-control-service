@@ -2,11 +2,16 @@ package com.artlighter.glucosecontrolservice.user;
 
 import com.artlighter.glucosecontrolservice.general.exception.ResourceAlreadyExistsException;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
+import com.artlighter.glucosecontrolservice.user.entity.DoctorProfile;
+import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.user.entity.User;
+import com.artlighter.glucosecontrolservice.user.repository.DoctorProfileRepository;
 import com.artlighter.glucosecontrolservice.user.service.DoctorProfileService;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.user.repository.UserRepository;
+import com.artlighter.glucosecontrolservice.user.util.exception.UserIsNotDoctorException;
+import com.artlighter.glucosecontrolservice.user.util.exception.UserIsNotPatientException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -157,11 +162,25 @@ public class UserService {
      * @return текущая страница с пользователями; пустая коллекция, если ничего не было найдено;
      */
     @Transactional(readOnly = true)
-    public Slice<User> searchByFullName(String searchQuery, Pageable pageable) {
+    public Page<User> searchByFullName(String searchQuery, Pageable pageable) {
+        return searchByFullNameAndRole(searchQuery, null, pageable);
+    }
+
+    /**
+     * Находит всех пользователей (постранично) с ролью role, в ФИО которых содержится поисковый запрос searchQuery.
+     * @param searchQuery поисковая фраза;
+     * @param role роль для фильтрации; если null, то производится поиск по всем ролям;
+     * @param pageable объект с информацией о пагинации;
+     * @return текущая страница с пользователями; пустая коллекция, если ничего не было найдено;
+     */
+    @Transactional(readOnly = true)
+    public Page<User> searchByFullNameAndRole(String searchQuery, Role role, Pageable pageable) {
         if (pageable == null) pageable = PageRequest
                 .of(0, 10, Sort.by("lastName", "firstName", "middleName"));
 
-        Slice<User> users = userRepository.searchUsersByFullName(searchQuery, pageable);
+        Page<User> users = role != null ?
+                userRepository.searchUsersByFullNameAndRolesContaining(searchQuery, role, pageable) :
+                userRepository.searchUsersByFullNameWithRoles(searchQuery, pageable);
         if (users == null) return Page.empty();
 
         return users;
@@ -197,5 +216,36 @@ public class UserService {
      */
     public void deleteUser(int userId) {
         userRepository.deleteById(userId);
+    }
+
+    /**
+     * Прикрепляет больного к врачу с проверкой ролей.
+     * @param doctorId ID врача;
+     * @param patientId ID больного;
+     * @return обновленный профиль врача, к которому было произведено прикрепление;
+     * @throws ResourceNotFoundException если врач или пациент с переданными ID не были найдены;
+     * @throws ResourceAlreadyExistsException если больной уже был прикреплен к врачу;
+     * @throws com.artlighter.glucosecontrolservice.user.util.exception.UserIsNotDoctorException если пользователь, к
+     * которому прикрепляется больной, не является врачом в системе.
+     * @throws com.artlighter.glucosecontrolservice.user.util.exception.UserIsNotPatientException если прикрепляемый
+     * пользователь не является пользователем-больным в системе.
+     */
+    public DoctorProfile attachPatientToDoctor(int doctorId, int patientId) {
+        if (!hasRole(doctorId, Role.ROLE_DOCTOR)) throw new UserIsNotDoctorException(doctorId);
+        if (!hasRole(patientId, Role.ROLE_PATIENT)) throw new UserIsNotPatientException(patientId);
+
+        return doctorProfileService.attachPatientToDoctor(doctorId, patientId);
+    }
+
+    /**
+     * Открепляет больного от врача.
+     * @param doctorId ID врача;
+     * @param patientId ID больного;
+     * @return обновленный профиль врача, у которого был удален прикрепленный больной;
+     * @throws ResourceNotFoundException если врач или пациент с переданными ID не были найдены, либо если
+     *                                   больной уже откреплен;
+     */
+    public DoctorProfile detachPatientFromDoctor(int doctorId, int patientId) {
+        return doctorProfileService.detachPatientFromDoctor(doctorId, patientId);
     }
 }
