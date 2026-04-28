@@ -6,6 +6,7 @@ import com.artlighter.glucosecontrolservice.diary.util.exception.NoRepositoryFor
 import com.artlighter.glucosecontrolservice.general.exception.ResourceAlreadyExistsException;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
 import com.artlighter.glucosecontrolservice.user.util.exception.NoSuchEnumerableConstantException;
+import com.artlighter.glucosecontrolservice.user.util.exception.UserIsNotDoctorException;
 import com.artlighter.glucosecontrolservice.user.util.exception.UserIsNotPatientException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,12 @@ public class AppControllerAdvice {
 
     @ExceptionHandler(UserIsNotPatientException.class)
     public ResponseEntity userIsNotPatientException(UserIsNotPatientException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ExceptionOutputUtils.createOutputException(HttpStatus.BAD_REQUEST, ex, false));
+    }
+
+    @ExceptionHandler(UserIsNotDoctorException.class)
+    public ResponseEntity userIsNotDoctorException(UserIsNotDoctorException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ExceptionOutputUtils.createOutputException(HttpStatus.BAD_REQUEST, ex, false));
     }
