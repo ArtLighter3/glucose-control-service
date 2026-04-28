@@ -9,7 +9,6 @@ import java.util.Set;
 @Table(name = "doctor_profile")
 public class DoctorProfile {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     @JoinTable(name = "patient_doctor",

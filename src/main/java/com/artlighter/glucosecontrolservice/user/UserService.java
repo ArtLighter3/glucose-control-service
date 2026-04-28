@@ -89,20 +89,21 @@ public class UserService {
             throw new ResourceAlreadyExistsException(user, "user with this username already exists");
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User savedUser = userRepository.save(user);
 
         if (user.getRoles().contains(Role.ROLE_PATIENT)) {
             try {
-                patientProfileService.createDefaultProfileForPatient(user);
+                patientProfileService.createDefaultProfileForPatient(savedUser);
             } catch (ResourceAlreadyExistsException ignored) {}
         }
 
         if (user.getRoles().contains(Role.ROLE_DOCTOR)) {
             try {
-                doctorProfileService.createDefaultProfileForDoctor(user);
+                doctorProfileService.createDefaultProfileForDoctor(savedUser);
             } catch (ResourceAlreadyExistsException ignored) {}
         }
 
-        return userRepository.save(user);
+        return savedUser;
     }
 
     /**
