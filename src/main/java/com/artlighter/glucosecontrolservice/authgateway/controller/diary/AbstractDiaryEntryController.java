@@ -81,15 +81,15 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
     public List<EXT> getDiaryEntries(@PathVariable int userId,
                                      @RequestParam(required = false)
                                      @Parameter(description = "Нижняя граница временного периода выборки записей." +
-                                             "Если не указана, то нижняя граница выбирается как точка за неделю до" +
+                                             "Если не указана, то нижняя граница выбирается как точка за неделю до " +
                                              "верхней.")
                                      Instant from,
                                      @RequestParam(required = false)
-                                     @Parameter(description = "Верхняя граница временного периода выборки записей." +
+                                     @Parameter(description = "Верхняя граница временного периода выборки записей. " +
                                              "Если не указана, то определяется текущим моментом времени.")
                                      Instant to,
                                      @RequestParam(required = false) @Parameter(description = "UTC-смещение, к" +
-                                             " которому будут преобразованы временные отметки записей на выходе." +
+                                             " которому будут преобразованы временные отметки записей на выходе. " +
                                              "Если не указано, то результаты показываются по UTC+0.")
                                      ZoneOffset outputZoneOffset) {
         return getEntries(getEntryType(), userId, from, to, outputZoneOffset);

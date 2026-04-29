@@ -1,7 +1,8 @@
-package com.artlighter.glucosecontrolservice.authgateway.controller.calculations;
+package com.artlighter.glucosecontrolservice.authgateway.statistics;
 
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ExceptionDTO;
-import com.artlighter.glucosecontrolservice.calculations.dto.RecentActivityDTO;
+import com.artlighter.glucosecontrolservice.statistics.dto.GlucoseDistributionDTO;
+import com.artlighter.glucosecontrolservice.statistics.dto.RecentActivityDTO;
 import com.artlighter.glucosecontrolservice.calculations.service.InsulinCalculationService;
 import com.artlighter.glucosecontrolservice.calculations.util.TimeInterval;
 import com.artlighter.glucosecontrolservice.diary.dto.GlucoseEntryDTO;
@@ -12,6 +13,7 @@ import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import com.artlighter.glucosecontrolservice.diary.util.mapper.DiaryEntryCollectionMapper;
 import com.artlighter.glucosecontrolservice.diary.util.mapper.GlucoseEntryMapper;
 import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundException;
+import com.artlighter.glucosecontrolservice.statistics.service.StatisticsHandler;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,13 +26,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
 
-@Tag(name = "calculations", description = "методы для модификации инсулиновых профилей и для расчетов инсулина, " +
-        "подсчета статистики")
+@Tag(name = "statistics", description = "методы для сбора аналитики, статистики по записям дневника")
 @ApiResponses(value =
         {@ApiResponse(responseCode = "200", description = "В случае успеха."),
         @ApiResponse(responseCode = "404", description = "Если больной не был найден.",
@@ -38,23 +38,26 @@ import java.util.List;
         @ApiResponse(responseCode = "500", description = "Ошибка сервера.",
                 content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
 @RestController
-@RequestMapping("/api/v1/patients/{userId}/recent")
+@RequestMapping("/api/v1/patients/{userId}")
 public class StatisticsController {
     private InsulinCalculationService insulinCalculationService;
     private PatientProfileService patientProfileService;
     private DiaryEntryService diaryEntryService;
     private GlucoseEntryMapper glucoseEntryMapper;
     private DiaryEntryCollectionMapper diaryEntryCollectionMapper;
+    private StatisticsHandler statisticsHandler;
 
     public StatisticsController(InsulinCalculationService insulinCalculationService,
                                 PatientProfileService patientProfileService, DiaryEntryService diaryEntryService,
                                 GlucoseEntryMapper glucoseEntryMapper,
-                                DiaryEntryCollectionMapper diaryEntryCollectionMapper) {
+                                DiaryEntryCollectionMapper diaryEntryCollectionMapper,
+                                StatisticsHandler statisticsHandler) {
         this.insulinCalculationService = insulinCalculationService;
         this.patientProfileService = patientProfileService;
         this.diaryEntryService = diaryEntryService;
         this.glucoseEntryMapper = glucoseEntryMapper;
         this.diaryEntryCollectionMapper = diaryEntryCollectionMapper;
+        this.statisticsHandler = statisticsHandler;
     }
 
     @Operation(summary = "Получить и рассчитать информацию о " +
@@ -62,7 +65,7 @@ public class StatisticsController {
             description = "Если у больного не найден инсулиновый профиль, то активный инсулин рассчитан не будет")
     @ApiResponses(value = @ApiResponse(responseCode = "400", description = "Если параметры запроса некорректны.",
             content = @Content(schema = @Schema(implementation = ExceptionDTO.class))))
-    @GetMapping
+    @GetMapping("/recent")
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, true, false)")
     public RecentActivityDTO getRecentActivity(@PathVariable int userId,
                                                @Parameter(description = "UTC-смещение, к которому будут " +
@@ -106,6 +109,31 @@ public class StatisticsController {
                 carbsOfDay, patientProfile.getCarbsUnit()*/);
     }
 
+    @Operation(summary = "Вычислить доли распределения уровней глюкозы в различных диапазонах, " +
+            "заданных в профиле больного.")
+    @ApiResponses(value = @ApiResponse(responseCode = "400", description = "Если параметры запроса некорректны.",
+            content = @Content(schema = @Schema(implementation = ExceptionDTO.class))))
+    @GetMapping("/level-distribution")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, true, false)")
+    public GlucoseDistributionDTO getGlucoseDistribution(@PathVariable int userId,
+                                                         @Parameter(description = "Нижняя граница временного " +
+                                                                 "периода выборки записей для статистики. " +
+                                                                     "Если не указана, то нижняя граница выбирается " +
+                                                                 "как точка за неделю до верхней.")
+                                                         @RequestParam(required = false)
+                                                         Instant from,
+                                                         @Parameter(description = "Верхняя граница временного " +
+                                                                     "периода выборки записей для статистики. " +
+                                                                     "Если не указана, то определяется текущим " +
+                                                                     "моментом времени.")
+                                                         @RequestParam(required = false)
+                                                         Instant to) {
+        PatientProfile patientProfile = patientProfileService.getByUserId(userId);
+        List<DiaryEntry> entries = diaryEntryService.getDiaryEntriesOfType(DiaryEntryType.GLUCOSE_ENTRY,
+                patientProfile.getUserId(), from, to);
+
+        return statisticsHandler.getGlucoseLevelsDistribution(patientProfile, entries);
+    }
 
 //
 //    private float calculateCarbs(List<? extends DiaryEntry> entries, Instant localStartOfDay) {

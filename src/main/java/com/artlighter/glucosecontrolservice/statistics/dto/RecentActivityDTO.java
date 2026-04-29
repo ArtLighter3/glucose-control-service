@@ -1,4 +1,4 @@
-package com.artlighter.glucosecontrolservice.calculations.dto;
+package com.artlighter.glucosecontrolservice.statistics.dto;
 
 import com.artlighter.glucosecontrolservice.diary.dto.GlucoseEntryDTO;
 import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryWithTypeDTO;
@@ -17,8 +17,8 @@ public record RecentActivityDTO(
         @Schema(description = "Активный инсулин, рассчитанный относительно запрошенного момента. " +
                 "Может быть null, если не удалось рассчитать из-за отсутствия инсулинового профиля.")
         Float activeInsulin/*,
-        @Schema(description = "Углеводы, принятые от начала дня. Может быть null, если не был передан outputZoneOffset " +
-                "в запросе.")
+        @Schema(description = "Углеводы, принятые от начала дня. Может быть null, если не был передан outputZoneOffset "
+        + "в запросе.")
         Float carbsOfDay,
         @Schema(description = "Единицы измерения значения углеводов в carbsOfDay")
         CarbsUnit carbsUnit*/
