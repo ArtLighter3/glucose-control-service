@@ -31,6 +31,7 @@ public class PatientProfile {
     private float lowGlucose;
     private float hypoGlucose;
 
+    //хоть и поле не используется в коде, оно необходимо в jpql-запросе в PatientProfileRepository
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "attachedPatients")
     Set<DoctorProfile> doctors;
 //

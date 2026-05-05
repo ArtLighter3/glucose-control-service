@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -177,12 +178,14 @@ public class UserService {
         if (pageable == null) pageable = PageRequest
                 .of(0, 10, Sort.by("lastName", "firstName", "middleName"));
 
-        Page<User> users = role != null ?
-                userRepository.searchUsersByFullNameAndRolesContaining(searchQuery, role, pageable) :
-                userRepository.searchUsersByFullNameWithRoles(searchQuery, pageable);
-        if (users == null) return Page.empty();
+        Page<Integer> userIDs = role != null ?
+                userRepository.searchUserIDsByFullNameAndRolesContaining(searchQuery, role, pageable) :
+                userRepository.searchUserIDsByFullName(searchQuery, pageable);
+        if (userIDs == null || userIDs.isEmpty()) return Page.empty();
 
-        return users;
+        List<User> users = userRepository.findAllByIdsWithRoles(userIDs.getContent(), userIDs.getSort());
+
+        return new PageImpl<>(users, pageable, userIDs.getTotalElements());
     }
 
     /**
