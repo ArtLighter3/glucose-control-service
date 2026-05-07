@@ -11,9 +11,10 @@ import java.util.Objects;
 /**
  * Общий класс для записи дневника самоконтроля. Определенные типы (измерение глюкозы, ввод инсулина и т.д.)
  * должны быть реализациями. Содержит общие для любого типа поля, а именно численное значение, временную отметку
- * совершения, профиль пользователя, к которому относится, и текстовый комментарий.
+ * совершения, ID профиля пользователя, к которому относится, и текстовый комментарий.
  */
-@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @IdClass(DiaryEntry.DiaryEntryID.class)
 public abstract class DiaryEntry {
     //@EmbeddedId

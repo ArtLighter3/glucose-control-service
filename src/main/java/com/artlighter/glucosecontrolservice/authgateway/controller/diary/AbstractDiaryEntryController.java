@@ -4,6 +4,8 @@ import com.artlighter.glucosecontrolservice.authgateway.util.exception.Exception
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ValidationIsFailedException;
 import com.artlighter.glucosecontrolservice.diary.service.DiaryEntryService;
 import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDTO;
+import com.artlighter.glucosecontrolservice.general.dto.CustomSliceMetadata;
+import com.artlighter.glucosecontrolservice.general.dto.CustomSlicedModel;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
@@ -18,6 +20,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.*;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
@@ -25,7 +29,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.List;
 
 /**
  * Общий абстрактный класс для контроллеров, обслуживающих точки доступа к определенному
@@ -78,21 +81,23 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "В случае успеха.")})
     @GetMapping("/default")
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, true, false)")
-    public List<EXT> getDiaryEntries(@PathVariable int userId,
+    public CustomSlicedModel<EXT> getDiaryEntries(@PathVariable int userId,
                                      @RequestParam(required = false)
-                                     @Parameter(description = "Нижняя граница временного периода выборки записей." +
-                                             "Если не указана, то нижняя граница выбирается как точка за неделю до " +
-                                             "верхней.")
+                                     @Parameter(description = "Нижняя граница временного периода выборки записей.")
                                      Instant from,
                                      @RequestParam(required = false)
-                                     @Parameter(description = "Верхняя граница временного периода выборки записей. " +
-                                             "Если не указана, то определяется текущим моментом времени.")
+                                     @Parameter(description = "Верхняя граница временного периода выборки записей.")
                                      Instant to,
                                      @RequestParam(required = false) @Parameter(description = "UTC-смещение, к" +
                                              " которому будут преобразованы временные отметки записей на выходе. " +
                                              "Если не указано, то результаты показываются по UTC+0.")
-                                     ZoneOffset outputZoneOffset) {
-        return getEntries(getEntryType(), userId, from, to, outputZoneOffset);
+                                     ZoneOffset outputZoneOffset,
+                                     @PageableDefault(size = 20, page = 0,
+                                             sort = "commitedAt", direction = Sort.Direction.DESC)
+                                     @Parameter(description = "Данные о странице и сортировке. " +
+                                                 "По-умолчанию сортируется по дате совершения (убыв.)")
+                                     Pageable pageable) {
+        return getEntries(getEntryType(), userId, from, to, outputZoneOffset, pageable);
     }
 
     @ApiResponses(value =
@@ -172,14 +177,17 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
 //            throw new NotCurrentUsersInfoException("You don't have access to this user's info");
 //    }
 
-    private List<EXT> getEntries(DiaryEntryType entryType, int userId,
-                                 Instant from, Instant to, ZoneOffset outputZoneOffset) {
+    private CustomSlicedModel<EXT> getEntries(DiaryEntryType entryType, int userId,
+                                              Instant from, Instant to, ZoneOffset outputZoneOffset,
+                                              Pageable pageable) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
 
-        List<DiaryEntry> entries = diaryEntryService
-                .getDiaryEntriesOfType(entryType, patientProfile.getUserId(), from, to);
+        Slice<DiaryEntry> entries = diaryEntryService
+                .getDiaryEntriesOfType(entryType, patientProfile.getUserId(), from, to, pageable);
 
-        return entryMapper.mapToDtoCollectionWithUnitConversion(entries, patientProfile, outputZoneOffset);
+        return new CustomSlicedModel<EXT>(entryMapper
+                .mapToDtoCollectionWithUnitConversion(entries.getContent(), patientProfile, outputZoneOffset),
+                new CustomSliceMetadata(entries.getSize(), entries.getNumber(), entries.hasNext()));
     }
 
     /**

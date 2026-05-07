@@ -6,17 +6,18 @@ import com.artlighter.glucosecontrolservice.authgateway.util.exception.Validatio
 import com.artlighter.glucosecontrolservice.diary.service.DiaryEntryService;
 import com.artlighter.glucosecontrolservice.diary.dto.GlucoseEntryDTO;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.GlucoseEntry;
+import com.artlighter.glucosecontrolservice.general.dto.CustomSlicedModel;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import com.artlighter.glucosecontrolservice.diary.util.mapper.GlucoseEntryMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.List;
 
 @RestController
 public class GlucoseEntryController extends AbstractDiaryEntryController<GlucoseEntry, GlucoseEntryDTO> {
@@ -31,7 +32,7 @@ public class GlucoseEntryController extends AbstractDiaryEntryController<Glucose
     }
 
     @Override
-    @Operation(summary = "Получить записи с измерениями глюкозы за временной период.",
+    @Operation(summary = "Получить записи с измерениями глюкозы за временной период (постранично).",
             description = "Значение глюкозы в возвращенном объекте будет в тех единицах измерения, которые" +
                     "выставлены в профиле соответствующего больного. " +
                     "Рекомендуется указать UTC-смещение пользователя, к которому будут преобразованы" +
@@ -39,8 +40,9 @@ public class GlucoseEntryController extends AbstractDiaryEntryController<Glucose
                     "периода выборки, то выберутся записи в течение недели до верхней границы. " +
                     "Если не указать верхнюю границу, то верхней границей считается текущий момент времени.")
     @GetMapping("/glucose")
-    public List<GlucoseEntryDTO> getDiaryEntries(int userId, Instant from, Instant to, ZoneOffset outputZoneOffset) {
-        return super.getDiaryEntries(userId, from, to, outputZoneOffset);
+    public CustomSlicedModel<GlucoseEntryDTO> getDiaryEntries(int userId, Instant from, Instant to,
+                                                              ZoneOffset outputZoneOffset, Pageable pageable) {
+        return super.getDiaryEntries(userId, from, to, outputZoneOffset, pageable);
     }
 
     @Override

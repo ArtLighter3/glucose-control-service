@@ -84,8 +84,10 @@ public class StatisticsController {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
 
         Instant timestamp = Instant.now();
-        List<DiaryEntry> recentEntries = diaryEntryService.getAllDiaryEntries(patientProfile.getUserId(),
-                timestamp.minus(interval != null ? interval.getDuration() : TimeInterval.DAY.getDuration()), timestamp);
+        List<DiaryEntry> recentEntries = diaryEntryService.getDiaryEntriesOfType(null,
+                patientProfile.getUserId(),
+                timestamp.minus(interval != null ? interval.getDuration() : TimeInterval.DAY.getDuration()),
+                timestamp);
 
         GlucoseEntryDTO lastGlucoseEntry = null;
         DiaryEntry lastEntry =

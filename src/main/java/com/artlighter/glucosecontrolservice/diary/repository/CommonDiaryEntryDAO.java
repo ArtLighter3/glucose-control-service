@@ -1,8 +1,9 @@
 package com.artlighter.glucosecontrolservice.diary.repository;
 
-import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 
 import java.time.Instant;
@@ -21,12 +22,45 @@ public interface CommonDiaryEntryDAO {
      * @param patientProfileId ID профиля больного, для которого надо найти DiaryEntry;
      * @param from временная отметка, с которой выбираются ресурсы (включительно);
      * @param to временная отметка, до которой выбираются ресурсы (включительно);
-     * @param sort тип сортировки итоговой коллекции;
      * @return список объектов DiaryEntry;
      */
     List<DiaryEntry> getAllOfTypeBetweenDates(DiaryEntryType entryType,
-                                              int patientProfileId, Instant from, Instant to,
-                                              Sort sort);
+                                               int patientProfileId, Instant from, Instant to);
+    /**
+     * Функция находит все ресурсы DiaryEntry определенного типа из хранилища по PatientProfile
+     * в диапазоне временных отметок from и to (постранично)
+     * @param entryType тип DiaryEntry; если null, то выбираются DiaryEntry ВСЕХ типов;
+     * @param patientProfileId ID профиля больного, для которого надо найти DiaryEntry;
+     * @param from временная отметка, с которой выбираются ресурсы (включительно);
+     * @param to временная отметка, до которой выбираются ресурсы (включительно);
+     * @param pageable информация о пагинации;
+     * @return список объектов DiaryEntry;
+     */
+    Slice<DiaryEntry> getAllOfTypeBetweenDates(DiaryEntryType entryType,
+                                               int patientProfileId, Instant from, Instant to,
+                                               Pageable pageable);
+
+    /**
+     * Функция находит все ресурсы DiaryEntry определенного типа из хранилища по PatientProfile
+     * @param entryType тип DiaryEntry; если null, то выбираются DiaryEntry ВСЕХ типов;
+     * @param patientProfileId ID профиля больного, для которого надо найти DiaryEntry;
+     * @param pageable информация о пагинации;
+     * @return список объектов DiaryEntry;
+     */
+    Slice<DiaryEntry> getAllOfType(DiaryEntryType entryType, int patientProfileId, Pageable pageable);
+
+    /**
+     * Функция находит все ресурсы DiaryEntry определенного типа из хранилища по PatientProfile
+     * до временной отметки before
+     * @param entryType тип DiaryEntry; если null, то выбираются DiaryEntry ВСЕХ типов;
+     * @param before временная отметка, до которой выбираются ресурсы (включительно);
+     * @param patientProfileId ID профиля больного, для которого надо найти DiaryEntry;
+     * @param pageable информация о пагинации;
+     * @return список объектов DiaryEntry;
+     */
+    Slice<DiaryEntry> getAllOfTypeBefore(DiaryEntryType entryType, int patientProfileId,
+                                         Instant before,
+                                         Pageable pageable);
 
     /**
      * Функция находит последний ресурс DiaryEntry определенного типа по параметрам сортировки, исключая записи с

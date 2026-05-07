@@ -1,9 +1,7 @@
 package com.artlighter.glucosecontrolservice.diary.entity.entry;
 
 import com.artlighter.glucosecontrolservice.diary.entity.enumeration.MeasurementType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 
@@ -11,7 +9,8 @@ import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 @Table(name = "glucose_entry")
 public class GlucoseEntry extends DiaryEntry {
     private Float value;
-    @Enumerated
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "measurementtype")
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private MeasurementType measurementType;
 

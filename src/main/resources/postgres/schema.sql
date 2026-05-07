@@ -1,7 +1,7 @@
 CREATE TYPE glucose_unit AS ENUM ('MILLIMOLES_PER_LITER', 'MILLIGRAMS_PER_DECILITER');
 CREATE TYPE carbs_unit AS ENUM ('GRAMS', 'BREAD_UNITS_10', 'BREAD_UNITS_12', 'BREAD_UNITS_15');
-CREATE TYPE insulin_type AS ENUM ('LONG', 'SHORT_CARBS', 'SHORT_CORRECTION');
-CREATE TYPE measurement_type AS ENUM ('BEFORE_MEAL', 'AFTER_MEAL');
+CREATE TYPE insulintype AS ENUM ('LONG', 'SHORT_CARBS', 'SHORT_CORRECTION');
+CREATE TYPE measurementtype AS ENUM ('BEFORE_MEAL', 'AFTER_MEAL');
 CREATE TYPE role AS ENUM ('ROLE_PATIENT', 'ROLE_DOCTOR', 'ROLE_ADMIN', 'ROLE_SUPERUSER');
 
 CREATE TABLE Service_User (
@@ -47,7 +47,7 @@ CREATE TABLE Glucose_Entry (
     profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
     value real NOT NULL CHECK (value >= 0.5 AND value <= 40),
     commited_at timestamptz(0) NOT NULL,
-    measurement_type measurement_type,
+    measurement_type measurementtype,
     notes varchar(500),
     PRIMARY KEY (profile_id, commited_at)
 );
@@ -56,7 +56,7 @@ CREATE TABLE Insulin_Entry (
     profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
     value real NOT NULL CHECK (value >= 1 AND value <= 100),
     commited_at timestamptz(0) NOT NULL,
-    insulin_type insulin_type NOT NULL,
+    insulin_type insulintype NOT NULL,
     notes varchar(500),
     PRIMARY KEY (profile_id, commited_at)
 );

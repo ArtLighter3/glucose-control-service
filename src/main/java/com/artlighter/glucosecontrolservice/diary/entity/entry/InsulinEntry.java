@@ -10,6 +10,7 @@ import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 public class InsulinEntry extends DiaryEntry {
     private Float value;
     @Enumerated
+    @Column(columnDefinition = "insulintype")
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private InsulinType insulinType;
 

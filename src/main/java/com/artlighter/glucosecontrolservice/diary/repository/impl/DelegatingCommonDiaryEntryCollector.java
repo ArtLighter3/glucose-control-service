@@ -4,11 +4,12 @@ import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.repository.*;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryRepositoryCollection;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,21 +23,55 @@ import java.util.List;
 @Repository
 public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO {
     private DiaryEntryRepositoryCollection repositories;
+    private CommonDiaryEntryRepository commonDiaryEntryRepository;
 
    // private EntityManager entityManager;
 
-    public DelegatingCommonDiaryEntryCollector(DiaryEntryRepositoryCollection repositories) {
+    public DelegatingCommonDiaryEntryCollector(DiaryEntryRepositoryCollection repositories,
+                                               CommonDiaryEntryRepository commonDiaryEntryRepository) {
         this.repositories = repositories;
+        this.commonDiaryEntryRepository = commonDiaryEntryRepository;
     }
 
     @Override
-    public List<DiaryEntry> getAllOfTypeBetweenDates(DiaryEntryType entryType,
-                                                     int patientProfileId, Instant from, Instant to,
-                                                     Sort sort) {
-        if (entryType == null) return collectAllBetweenDates(patientProfileId, from, to, sort);
+    public List<DiaryEntry> getAllOfTypeBetweenDates(DiaryEntryType entryType, int patientProfileId,
+                                                     Instant from, Instant to) {
+        if (entryType == null)
+            return commonDiaryEntryRepository.getAllByProfileIdAndCommitedAtBetween(patientProfileId, from, to);
 
         ParticularDiaryEntryRepository repository = repositories.getRepositoryForType(entryType);
-        return repository.getAllByProfileIdAndCommitedAtBetween(patientProfileId, from, to, sort);
+        return repository.getAllByProfileIdAndCommitedAtBetween(patientProfileId, from, to);
+    }
+
+    @Override
+    public Slice<DiaryEntry> getAllOfTypeBetweenDates(DiaryEntryType entryType,
+                                                      int patientProfileId, Instant from, Instant to,
+                                                      Pageable pageable) {
+        if (entryType == null)
+            return commonDiaryEntryRepository
+                    .getAllByProfileIdAndCommitedAtBetween(patientProfileId, from, to, pageable);
+
+        ParticularDiaryEntryRepository repository = repositories.getRepositoryForType(entryType);
+        return repository.getAllByProfileIdAndCommitedAtBetween(patientProfileId, from, to, pageable);
+    }
+
+    @Override
+    public Slice<DiaryEntry> getAllOfType(DiaryEntryType entryType, int patientProfileId, Pageable pageable) {
+        if (entryType == null)
+            return commonDiaryEntryRepository.getAllByProfileId(patientProfileId, pageable);
+
+        ParticularDiaryEntryRepository repository = repositories.getRepositoryForType(entryType);
+        return repository.getAllByProfileId(patientProfileId, pageable);
+    }
+
+    @Override
+    public Slice<DiaryEntry> getAllOfTypeBefore(DiaryEntryType entryType, int patientProfileId, Instant before,
+                                                Pageable pageable) {
+        if (entryType == null)
+            return commonDiaryEntryRepository.getAllByProfileIdAndCommitedAtBefore(patientProfileId, before, pageable);
+
+        ParticularDiaryEntryRepository repository = repositories.getRepositoryForType(entryType);
+        return repository.getAllByProfileIdAndCommitedAtBefore(patientProfileId, before, pageable);
     }
 
     /**
@@ -89,18 +124,28 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
         return repository.existsById(new DiaryEntry.DiaryEntryID(entry.getProfileId(), entry.getCommitedAt()));
     }
 
-    private List<DiaryEntry> collectAllBetweenDates(int patientProfileId, Instant from, Instant to,
-                                                    Sort sort) {
-        List<DiaryEntry> diaryEntries = new ArrayList<>();
-        //TODO можно просто добавить отдельный DAO, в котором будет один запрос с UNION для получения всех записей
-        for (ParticularDiaryEntryRepository repository : repositories.getAllRepositories()) {
-            diaryEntries.addAll(repository.getAllByProfileIdAndCommitedAtBetween(patientProfileId, from, to));
-        }
-        //TODO реализовать сортировку по Sort
-        diaryEntries.sort((entry1, entry2) ->
-                entry2.getCommitedAt().compareTo(entry1.getCommitedAt()));
-        return diaryEntries;
-    }
+//    private Slice<DiaryEntry> collectAllBetweenDates(int patientProfileId, Instant from, Instant to,
+//                                                    Pageable pageable) {
+//
+//        return commonDiaryEntryRepository.getAllByProfileIdAndCommitedAtBetween(patientProfileId, from, to, pageable);
+////        List<DiaryEntry> diaryEntries = new ArrayList<>();
+////        //TODO можно просто добавить отдельный DAO, в котором будет один запрос с UNION для получения всех записей
+////        for (ParticularDiaryEntryRepository repository : repositories.getAllRepositories()) {
+////            diaryEntries.addAll(repository.getAllByProfileIdAndCommitedAtBetween(patientProfileId, from, to));
+////        }
+////        //TODO реализовать сортировку по Sort
+////        diaryEntries.sort((entry1, entry2) ->
+////                entry2.getCommitedAt().compareTo(entry1.getCommitedAt()));
+////        return diaryEntries;
+//    }
+//
+//    private Slice<DiaryEntry> collectAll(int patientProfileId, Pageable pageable) {
+//        return commonDiaryEntryRepository.getAllByProfileId(patientProfileId, pageable);
+//    }
+//
+//    private Slice<DiaryEntry> collectAllBeforeDate(int patientProfileId, Instant before, Pageable pageable) {
+//        return commonDiaryEntryRepository.getAllByProfileIdAndCommitedAtBefore(patientProfileId, before, pageable);
+//    }
 
     private void checkArguments(DiaryEntry entry) {
         if (entry == null) throw new IllegalArgumentException("DiaryEntry cannot be null");

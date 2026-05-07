@@ -4,17 +4,24 @@ import com.artlighter.glucosecontrolservice.authgateway.util.exception.Exception
 import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryWithTypeDTO;
 import com.artlighter.glucosecontrolservice.diary.service.DiaryEntryService;
 import com.artlighter.glucosecontrolservice.diary.dto.DiaryEntryDTO;
+import com.artlighter.glucosecontrolservice.general.dto.CustomSliceMetadata;
+import com.artlighter.glucosecontrolservice.general.dto.CustomSlicedModel;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
 import com.artlighter.glucosecontrolservice.diary.util.mapper.DiaryEntryCollectionMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -46,22 +53,28 @@ public class DiaryEntryCollectionController {
         this.collectionMapper = collectionMapper;
     }
 
-    @Operation(summary = "Получить все записи дневника всех типов в заданном периоде времени.",
-            description = "Рекомендуется указать UTC-смещение пользователя, к которому будут преобразованы" +
-                    "временные отметки записей. Иначе они будут по UTC+0. Если не указать нижнюю границу временного " +
-                    "периода выборки, то выберутся записи в течение недели до верхней границы. " +
-                    "Если не указать верхнюю границу, то верхней границей считается текущий момент времени.")
+    @Operation(summary = "Получить все записи дневника всех типов в заданном периоде времени (постранично).",
+            description = "Рекомендуется указать UTC-смещение пользователя, к которому будут преобразованы " +
+                    "временные отметки записей. Иначе они будут по UTC+0.")
     @GetMapping
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, true, false)")
-    public List<DiaryEntryWithTypeDTO> getAllEntries(@PathVariable int userId,
-                                                     @RequestParam(required = false) Instant from,
-                                                     @RequestParam(required = false) Instant to,
-                                                     @RequestParam(required = false) ZoneOffset outputZoneOffset) {
+    public CustomSlicedModel<DiaryEntryWithTypeDTO> getAllEntries(@PathVariable int userId,
+                                                                  @RequestParam(required = false) Instant from,
+                                                                  @RequestParam(required = false) Instant to,
+                                                                  @RequestParam(required = false) ZoneOffset outputZoneOffset,
+                                                                  @PageableDefault(size = 20, page = 0,
+                                                             sort = "commitedAt", direction = Sort.Direction.DESC)
+                                                     @Parameter(description = "Данные о странице и сортировке. " +
+                                                                 "По-умолчанию сортируется по дате совершения (убыв.)")
+                                                     Pageable pageable) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
 
-        List<DiaryEntry> entries = diaryEntryService.getAllDiaryEntries(patientProfile.getUserId(), from, to);
+        Slice<DiaryEntry> entries =
+                diaryEntryService.getAllDiaryEntries(patientProfile.getUserId(), from, to, pageable);
 
-        return collectionMapper.mapToDTO(entries, patientProfile, outputZoneOffset);
+        return new CustomSlicedModel<DiaryEntryWithTypeDTO>(collectionMapper
+                .mapToDTO(entries.getContent(), patientProfile, outputZoneOffset),
+                new CustomSliceMetadata(entries.getSize(), entries.getNumber(), entries.hasNext()));
     }
 
     @Operation(summary = "Добавить весь список записей разных типов.",

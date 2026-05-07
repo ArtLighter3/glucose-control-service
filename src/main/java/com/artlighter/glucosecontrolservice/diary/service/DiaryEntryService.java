@@ -7,11 +7,13 @@ import com.artlighter.glucosecontrolservice.diary.repository.*;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
@@ -109,17 +111,48 @@ public class DiaryEntryService {
     }
 
     /**
-     * Находит все записи дневника самоконтроля ВСЕХ типов в заданном периоде времени.
+     * Находит все записи дневника самоконтроля ВСЕХ типов в заданном периоде времени (постранично).
      * @param patientProfileId ID профиля больного;
      * @param from нижняя граница временного периода выборки по UTC+0;
-     *             если null, то выберутся записи в течение недели до верхней границы to;
-     * @param to верхняя граница временного периода выборки по UTC+0; если null, то верхней границей считается
-     *           текущий момент времени;
-     * @return список записей дневника всех типов; никогда не null;
+     *             если null, выберутся все записи до верхней границы;
+     * @param to верхняя граница временного периода выборки по UTC+0;
+     *           если null, то выберутся все записи после нижней границы;
+     * @param pageable информация о пагинации;
+     * @return страница Slice со списком записей дневника всех типов; никогда не null;
      */
     @Transactional(readOnly = true)
-    public List<DiaryEntry> getAllDiaryEntries(int patientProfileId, Instant from, Instant to) {
-        return getDiaryEntriesOfType(null, patientProfileId, from, to);
+    public Slice<DiaryEntry> getAllDiaryEntries(int patientProfileId, Instant from, Instant to, Pageable pageable) {
+        return getDiaryEntriesOfType(null, patientProfileId, from, to, pageable);
+    }
+
+    /**
+     * Находит все записи дневника самоконтроля определенного типа (постранично).
+     * @param entryType тип записи дневника самоконтроля; если null, то выбираются записи ВСЕХ типов;
+     * @param patientProfileId ID профиля больного;
+     * @param from нижняя граница временного периода выборки по UTC+0;
+     *             если null, выберутся все записи до верхней границы;
+     * @param to верхняя граница временного периода выборки по UTC+0;
+     *           если null, то выберутся все записи после нижней границы;
+     * @param pageable информация о пагинации;
+     * @return страница Slice со списком записей дневника соответствующего типа; никогда не null;
+     */
+    @Transactional(readOnly = true)
+    public Slice<DiaryEntry> getDiaryEntriesOfType(DiaryEntryType entryType, int patientProfileId,
+                                                   Instant from, Instant to, Pageable pageable) {
+        Slice<DiaryEntry> entries = null;
+
+        if (to == null && from == null)
+            entries = commonDiaryEntryDAO.getAllOfType(entryType, patientProfileId, pageable);
+        else if (to != null && from != null)
+            entries = commonDiaryEntryDAO.getAllOfTypeBetweenDates(entryType, patientProfileId, from, to, pageable);
+        else if (from == null)
+            entries = commonDiaryEntryDAO.getAllOfTypeBefore(entryType, patientProfileId, to, pageable);
+        else
+            entries = commonDiaryEntryDAO
+                    .getAllOfTypeBetweenDates(entryType, patientProfileId, from, Instant.now(), pageable);
+
+        if (entries == null) return Page.empty();
+        return entries;
     }
 
     /**
@@ -127,19 +160,15 @@ public class DiaryEntryService {
      * @param entryType тип записи дневника самоконтроля; если null, то выбираются записи ВСЕХ типов;
      * @param patientProfileId ID профиля больного;
      * @param from нижняя граница временного периода выборки по UTC+0;
-     *             если null, то выберутся записи в течение недели до верхней границы to;
-     * @param to верхняя граница временного периода выборки по UTC+0; если null, то верхней границей считается
-     *           текущий момент времени;
-     * @return список записей дневника соответствующего типа; никогда не null;
+     *             если null, то нижней границей считается отметка за неделю до to;
+     * @param to верхняя граница временного периода выборки по UTC+0;
+     *           если null, то верхней границей считается текущий момент;
+     * @return Список записей дневника соответствующего типа; никогда не null;
      */
     @Transactional(readOnly = true)
     public List<DiaryEntry> getDiaryEntriesOfType(DiaryEntryType entryType, int patientProfileId,
                                                   Instant from, Instant to) {
-        if (to == null) to = Instant.now();
-        if (from == null) from = to.minus(Duration.ofDays(defaultDatePeriodInDays));
-
-        List<DiaryEntry> entries = commonDiaryEntryDAO.getAllOfTypeBetweenDates(entryType, patientProfileId, from, to,
-                Sort.by("commitedAt").descending());
+        List<DiaryEntry> entries = commonDiaryEntryDAO.getAllOfTypeBetweenDates(entryType, patientProfileId, from, to);
 
         if (entries == null) return Collections.emptyList();
 
