@@ -24,15 +24,15 @@ import java.util.*;
 @Transactional
 public class DiaryEntryService {
     private CommonDiaryEntryDAO commonDiaryEntryDAO;
-    //private CommonDiaryEntryRepository diaryEntryRepository;
+    private CommonDiaryEntryRepository diaryEntryRepository;
 //    @Value("${glucose-control-service.diary.default-period-for-fetch-in-days}")
 //    private final int defaultDatePeriodInDays = 7;
 
     @Autowired
-    public DiaryEntryService(CommonDiaryEntryDAO commonDiaryEntryDAO/*,
-                             CommonDiaryEntryRepository diaryEntryRepository*/) {
+    public DiaryEntryService(CommonDiaryEntryDAO commonDiaryEntryDAO,
+                             CommonDiaryEntryRepository diaryEntryRepository) {
         this.commonDiaryEntryDAO = commonDiaryEntryDAO;
-       // this.diaryEntryRepository = diaryEntryRepository;
+        this.diaryEntryRepository = diaryEntryRepository;
     }
 
     /**
@@ -47,11 +47,11 @@ public class DiaryEntryService {
     public DiaryEntry addDiaryEntry(DiaryEntry diaryEntry, int patientProfileId, Instant commitedAt) {
         fill(diaryEntry, patientProfileId, commitedAt);
 
-        if (commonDiaryEntryDAO.exists(diaryEntry))
+        if (diaryEntryRepository.existsById(new DiaryEntry.DiaryEntryID(patientProfileId, commitedAt)))
             throw new ResourceAlreadyExistsException(diaryEntry,
                     "Diary entry for this user and this timestamp already exists");
 
-        return commonDiaryEntryDAO.saveOrUpdate(diaryEntry);
+        return diaryEntryRepository.save(diaryEntry);
     }
 
     /**
@@ -73,8 +73,9 @@ public class DiaryEntryService {
             entry.setProfileId(patientProfileId);
 
             try {
-                if (updateIfExists || !commonDiaryEntryDAO.exists(entry)) {
-                    commonDiaryEntryDAO.saveOrUpdate(entry);
+                if (updateIfExists || !diaryEntryRepository
+                        .existsById(new DiaryEntry.DiaryEntryID(patientProfileId, entry.getCommitedAt()))) {
+                    diaryEntryRepository.save(entry);
                     savedEntries.add(entry);
                 }
             } catch (Exception ignored) {}
@@ -95,11 +96,11 @@ public class DiaryEntryService {
     public DiaryEntry updateDiaryEntry(DiaryEntry diaryEntry, int patientProfileId, Instant commitedAt) {
         fill(diaryEntry, patientProfileId, commitedAt);
 
-        if (!commonDiaryEntryDAO.exists(diaryEntry))
+        if (!diaryEntryRepository.existsById(new DiaryEntry.DiaryEntryID(patientProfileId, commitedAt)))
             throw new ResourceNotFoundException(DiaryEntry.class, "diary entry for patient profile '"
                     + patientProfileId + "' and timestamp '" + diaryEntry.getCommitedAt()  + "' not found");
 
-        return commonDiaryEntryDAO.saveOrUpdate(diaryEntry);
+        return diaryEntryRepository.save(diaryEntry);
     }
 
     /**
@@ -110,7 +111,7 @@ public class DiaryEntryService {
      * @param commitedAt временная отметка совершения удаляемой записи;
      */
     public void deleteDiaryEntry(DiaryEntryType entryType, int patientProfileId, Instant commitedAt) {
-        commonDiaryEntryDAO.deleteById(entryType, new DiaryEntry.DiaryEntryID(patientProfileId, commitedAt));
+        diaryEntryRepository.deleteById(patientProfileId, commitedAt, entryType.getEntryClass());
     }
 
     /**

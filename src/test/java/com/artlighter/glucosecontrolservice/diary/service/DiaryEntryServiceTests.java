@@ -25,16 +25,17 @@ import static org.mockito.Mockito.when;
 public class DiaryEntryServiceTests {
     @MockitoBean
     private CommonDiaryEntryDAO diaryEntryDAO;
-//    @MockitoBean
-//    private CommonDiaryEntryRepository diaryEntryRepository;
+    @MockitoBean
+    private CommonDiaryEntryRepository diaryEntryRepository;
     @Autowired
     private DiaryEntryService diaryEntryService;
 
     @Test
     public void addDiaryEntry_EntryExists_ThrowsResourceAlreadyExistsException() {
         DiaryEntry toSave = createEntry(6.7, null, "123");
+        DiaryEntry.DiaryEntryID id = new DiaryEntry.DiaryEntryID(2, Instant.ofEpochMilli(67895));
 
-        when(diaryEntryDAO.exists(toSave)).thenReturn(true);
+        when(diaryEntryRepository.existsById(id)).thenReturn(true);
 
         assertThrows(ResourceAlreadyExistsException.class, () -> {
            diaryEntryService.addDiaryEntry(toSave, 2, Instant.ofEpochMilli(67895));
@@ -44,23 +45,25 @@ public class DiaryEntryServiceTests {
     @Test
     public void addDiaryEntry_SavesEntryAndReturnsSaved() {
         DiaryEntry toSave = createEntry(6.7, Instant.ofEpochMilli(11), "123");
+       // DiaryEntry.DiaryEntryID id = new DiaryEntry.DiaryEntryID(2, Instant.ofEpochMilli(67895));
         DiaryEntry expected =
                 createEntry(toSave.getValue().doubleValue(), Instant.ofEpochMilli(67895), toSave.getNotes());
         expected.setProfileId(2);
-        when(diaryEntryDAO.saveOrUpdate(toSave)).thenReturn(expected);
+        when(diaryEntryRepository.save(toSave)).thenReturn(expected);
 
         DiaryEntry actual = diaryEntryService.addDiaryEntry(toSave, 2, Instant.ofEpochMilli(67895));
 
         assertEquals(2, toSave.getProfileId());
         checkEquality(expected, actual);
-        verify(diaryEntryDAO).saveOrUpdate(toSave);
+        verify(diaryEntryRepository).save(toSave);
     }
 
     @Test
     public void updateDiaryEntry_EntryDoesNotExist_ThrowsResourceNotFoundException() {
         DiaryEntry toUpdate = createEntry(6.7, null, "123");
 
-        when(diaryEntryDAO.exists(toUpdate)).thenReturn(false);
+        DiaryEntry.DiaryEntryID id = new DiaryEntry.DiaryEntryID(2, Instant.ofEpochMilli(67895));
+        when(diaryEntryRepository.existsById(id)).thenReturn(false);
 
         assertThrows(ResourceNotFoundException.class, () -> {
             diaryEntryService.updateDiaryEntry(toUpdate, 2, Instant.ofEpochMilli(67895));
@@ -70,24 +73,24 @@ public class DiaryEntryServiceTests {
     @Test
     public void updateDiaryEntry_UpdatesEntryAndReturnsSaved() {
         DiaryEntry toUpdate = createEntry(6.7, Instant.ofEpochMilli(11), "123");
+        DiaryEntry.DiaryEntryID id = new DiaryEntry.DiaryEntryID(2, Instant.ofEpochMilli(67895));
         DiaryEntry expected =
                 createEntry(toUpdate.getValue().doubleValue(), Instant.ofEpochMilli(67895), toUpdate.getNotes());
         expected.setProfileId(2);
-        when(diaryEntryDAO.exists(toUpdate)).thenReturn(true);
-        when(diaryEntryDAO.saveOrUpdate(toUpdate)).thenReturn(expected);
+        when(diaryEntryRepository.existsById(id)).thenReturn(true);
+        when(diaryEntryRepository.save(toUpdate)).thenReturn(expected);
 
         DiaryEntry actual = diaryEntryService.updateDiaryEntry(toUpdate, 2, Instant.ofEpochMilli(67895));
 
         assertEquals(2, toUpdate.getProfileId());
         checkEquality(expected, actual);
-        verify(diaryEntryDAO).saveOrUpdate(toUpdate);
+        verify(diaryEntryRepository).save(toUpdate);
     }
 
     @Test
     public void deleteDiaryEntry_CallsRepositoryToDelete() {
         diaryEntryService.deleteDiaryEntry(DiaryEntryType.GLUCOSE_ENTRY, 2, Instant.ofEpochMilli(67895));
-        verify(diaryEntryDAO).deleteById(eq(DiaryEntryType.GLUCOSE_ENTRY),
-                eq(new DiaryEntry.DiaryEntryID(2, Instant.ofEpochMilli(67895))));
+        verify(diaryEntryRepository).deleteById(eq(2), eq(Instant.ofEpochMilli(67895)), eq(GlucoseEntry.class));
     }
 
     //TODO дополнить тесты
