@@ -24,12 +24,15 @@ import java.util.*;
 @Transactional
 public class DiaryEntryService {
     private CommonDiaryEntryDAO commonDiaryEntryDAO;
-    @Value("${glucose-control-service.diary.default-period-for-fetch-in-days}")
-    private final int defaultDatePeriodInDays = 7;
+    //private CommonDiaryEntryRepository diaryEntryRepository;
+//    @Value("${glucose-control-service.diary.default-period-for-fetch-in-days}")
+//    private final int defaultDatePeriodInDays = 7;
 
     @Autowired
-    public DiaryEntryService(CommonDiaryEntryDAO commonDiaryEntryDAO) {
+    public DiaryEntryService(CommonDiaryEntryDAO commonDiaryEntryDAO/*,
+                             CommonDiaryEntryRepository diaryEntryRepository*/) {
         this.commonDiaryEntryDAO = commonDiaryEntryDAO;
+       // this.diaryEntryRepository = diaryEntryRepository;
     }
 
     /**
