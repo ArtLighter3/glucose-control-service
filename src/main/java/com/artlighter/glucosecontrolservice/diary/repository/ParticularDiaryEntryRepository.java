@@ -11,20 +11,15 @@ import java.time.Instant;
 import java.util.List;
 
 /**
- * Общий интерфейс для репозитория записей дневника одного определенного типа.
+ * Общий интерфейс для репозитория записей дневника одного определенного типа. Отдельные репозитории нужны
+ * для оптимизации различных методов удаления, проверки существования, которые в общем репозитории делают запросы
+ * с UNION директивами для каждой таблицы каждого типа записи.
  * @param <T> Тип-класс записи дневника (наследник DiaryEntry)
  */
-
 @NoRepositoryBean
 public interface ParticularDiaryEntryRepository<T extends DiaryEntry>
-        extends JpaRepository<T, DiaryEntry.DiaryEntryID> {
+        extends JpaRepository<T, DiaryEntry.DiaryEntryID>, DiaryEntryFetchMethods<T> {
 
-//    List<T> getAllByPatientProfile(PatientProfile patientProfile);
-//    List<T> getAllByPatientProfile(PatientProfile patientProfile, Sort sort);
-    Slice<T> getAllByProfileId(int profileId, Pageable pageable);
-    List<T> getAllByProfileIdAndCommitedAtBetween(int profileId, Instant from, Instant to);
-    Slice<T> getAllByProfileIdAndCommitedAtBetween(int profileId, Instant from, Instant to, Pageable pageable);
-    Slice<T> getAllByProfileIdAndCommitedAtBefore(int profileId, Instant before, Pageable pageable);
     T findFirstByProfileIdAndCommitedAtBefore(int patientProfileId, Instant before, Sort sort);
 
 }

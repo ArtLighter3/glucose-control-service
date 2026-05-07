@@ -7,28 +7,27 @@ import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.List;
 
 /**
- * Реализация CommonDiaryEntryDAO, работающая как прослойка между репозиториями и логикой
- * и делегирующая доступ к данным записей дневника репозиториям соответствующего типа записи дневника.
- * В случае доступа ко всем типам записей пользователя
- * собирает данные из разных репозиториев, делая отдельные запросы к каждому типу, что может сказываться
- * на производительности.
+ * Реализация CommonDiaryEntryDAO, работающая как прослойка между
+ * нагромождением репозиториев для разных типов записей дневника и логикой
+ * и делегирующая доступ к репозиториям соответствующего типа записи, либо к общему
+ * репозиторию в зависимости от того, какой из вариантов считается более оптимизированным.
  */
 
-@Repository
-public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO {
+@Component
+public class DelegatingCommonDiaryEntryDAO implements CommonDiaryEntryDAO {
     private DiaryEntryRepositoryCollection repositories;
     private CommonDiaryEntryRepository commonDiaryEntryRepository;
 
    // private EntityManager entityManager;
 
-    public DelegatingCommonDiaryEntryCollector(DiaryEntryRepositoryCollection repositories,
-                                               CommonDiaryEntryRepository commonDiaryEntryRepository) {
+    public DelegatingCommonDiaryEntryDAO(DiaryEntryRepositoryCollection repositories,
+                                         CommonDiaryEntryRepository commonDiaryEntryRepository) {
         this.repositories = repositories;
         this.commonDiaryEntryRepository = commonDiaryEntryRepository;
     }
@@ -78,11 +77,11 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
      * @throws IllegalArgumentException если entryType равен null;
      */
     @Override
-    public DiaryEntry findLastEntryOfType(DiaryEntryType entryType, int patientProfileId, Sort sort) {
+    public DiaryEntry findFirstEntryOfType(DiaryEntryType entryType, int patientProfileId, Sort sort) {
         if (entryType == null) throw new IllegalArgumentException("entryType cannot be null");
 
         ParticularDiaryEntryRepository repository = repositories.getRepositoryForType(entryType);
-        return  repository.findFirstByProfileIdAndCommitedAtBefore(patientProfileId, Instant.now(), sort);
+        return repository.findFirstByProfileIdAndCommitedAtBefore(patientProfileId, Instant.now(), sort);
     }
 
     /**
@@ -98,16 +97,15 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
     }
 
     /**
-     * @throws IllegalArgumentException в случае, если DiaryEntry равен null, либо не содержит
-     * внутри идентифицирующего его поля commitedAt;
+     * @throws IllegalArgumentException в случае, если id равен null, либо не содержит
+     * внутри идентифицирующих полей;
      */
     @Override
-    public void deleteById(DiaryEntryType entryType, DiaryEntry.DiaryEntryID id) {
-        if (entryType == null) throw new IllegalArgumentException("entryType cannot be null");
-        if (id == null || id.getCommitedAt() == null)
+    public void deleteById(DiaryEntry.DiaryEntryID id) {
+        if (id == null || id.getCommitedAt() == null || id.getType() == null)
             throw new IllegalArgumentException("id cannot be null and must contain id data");
 
-        ParticularDiaryEntryRepository repository = repositories.getRepositoryForType(entryType);
+        ParticularDiaryEntryRepository repository = repositories.getRepositoryForType(id.getType());
         repository.deleteById(id);
     }
 
@@ -121,7 +119,9 @@ public class DelegatingCommonDiaryEntryCollector implements CommonDiaryEntryDAO 
        // if (entry == null || entry.getPatientProfile() == null) return false;
 
         ParticularDiaryEntryRepository repository = repositories.getRepositoryForEntity(entry);
-        return repository.existsById(new DiaryEntry.DiaryEntryID(entry.getProfileId(), entry.getCommitedAt()));
+        return repository.existsById(new DiaryEntry.DiaryEntryID(entry.getProfileId(),
+                entry.getCommitedAt(),
+                entry.getType()));
     }
 
 //    private Slice<DiaryEntry> collectAllBetweenDates(int patientProfileId, Instant from, Instant to,

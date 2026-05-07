@@ -1,3 +1,4 @@
+CREATE TYPE diaryentrytype AS ENUM ('GLUCOSE_ENTRY', 'INSULIN_ENTRY', 'CARBS_ENTRY', 'MEDICATION_ENTRY');
 CREATE TYPE glucose_unit AS ENUM ('MILLIMOLES_PER_LITER', 'MILLIGRAMS_PER_DECILITER');
 CREATE TYPE carbs_unit AS ENUM ('GRAMS', 'BREAD_UNITS_10', 'BREAD_UNITS_12', 'BREAD_UNITS_15');
 CREATE TYPE insulintype AS ENUM ('LONG', 'SHORT_CARBS', 'SHORT_CORRECTION');
@@ -46,36 +47,40 @@ CREATE TABLE Patient_Profile (
 CREATE TABLE Glucose_Entry (
     profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
     value real NOT NULL CHECK (value >= 0.5 AND value <= 40),
+    type diaryentrytype NOT NULL CHECK (type = 'GLUCOSE_ENTRY') DEFAULT 'GLUCOSE_ENTRY',
     commited_at timestamptz(0) NOT NULL,
     measurement_type measurementtype,
     notes varchar(500),
-    PRIMARY KEY (profile_id, commited_at)
+    PRIMARY KEY (profile_id, commited_at, type)
 );
 
 CREATE TABLE Insulin_Entry (
     profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
     value real NOT NULL CHECK (value >= 1 AND value <= 100),
+    type diaryentrytype NOT NULL CHECK (type = 'INSULIN_ENTRY') DEFAULT 'INSULIN_ENTRY',
     commited_at timestamptz(0) NOT NULL,
     insulin_type insulintype NOT NULL,
     notes varchar(500),
-    PRIMARY KEY (profile_id, commited_at)
+    PRIMARY KEY (profile_id, commited_at, type)
 );
 
 CREATE TABLE Medication_Entry (
     profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
     name varchar(200) NOT NULL,
     value real NOT NULL CHECK (value >= 0.1 AND value <= 1000),
+    type diaryentrytype NOT NULL CHECK (type = 'MEDICATION_ENTRY') DEFAULT 'MEDICATION_ENTRY',
     commited_at timestamptz(0) NOT NULL,
     notes varchar(500),
-    PRIMARY KEY (profile_id, commited_at)
+    PRIMARY KEY (profile_id, commited_at, type)
 );
 
 CREATE TABLE Carbs_Entry (
     profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
     value real NOT NULL CHECK (value >= 0.1 AND value <= 300),
+    type diaryentrytype NOT NULL CHECK (type = 'CARBS_ENTRY') DEFAULT 'CARBS_ENTRY',
     commited_at timestamptz(0) NOT NULL,
     notes varchar(500),
-    PRIMARY KEY (profile_id, commited_at)
+    PRIMARY KEY (profile_id, commited_at, type)
 );
 
 CREATE TABLE Doctor_Profile (

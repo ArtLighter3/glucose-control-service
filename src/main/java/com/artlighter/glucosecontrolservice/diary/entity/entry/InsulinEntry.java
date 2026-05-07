@@ -1,6 +1,7 @@
 package com.artlighter.glucosecontrolservice.diary.entity.entry;
 
 import com.artlighter.glucosecontrolservice.diary.entity.enumeration.InsulinType;
+import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
@@ -13,6 +14,10 @@ public class InsulinEntry extends DiaryEntry {
     @Column(columnDefinition = "insulintype")
     @JdbcType(PostgreSQLEnumJdbcType.class)
     private InsulinType insulinType;
+
+    public InsulinEntry() {
+        this.type = DiaryEntryType.INSULIN_ENTRY;
+    }
 
     @Override
     public Float getValue() {

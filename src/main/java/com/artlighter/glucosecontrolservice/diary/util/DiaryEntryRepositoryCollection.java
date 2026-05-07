@@ -6,9 +6,8 @@ import com.artlighter.glucosecontrolservice.diary.util.exception.NoRepositoryFor
 
 import java.util.Collection;
 /**
- * Интерфейс для класса, инкапсулирующего коллекцию репозиториев для записей дневника разных типов.
- * Предоставляет методы для получения репозитория для нужного типа записи по экземпляру DiaryEntry, с которым
- * репозиторий будет проводить операции.
+ * Интерфейс для класса, инкапсулирующего коллекцию отдельных репозиториев для каждого типа записи дневника.
+ * Предоставляет методы для получения репозитория для нужного типа записи по экземпляру DiaryEntry или DiaryEntryType.
  */
 
 public interface DiaryEntryRepositoryCollection {
@@ -36,6 +35,6 @@ public interface DiaryEntryRepositoryCollection {
      * Функция собирает все репозитории для всех типов записей дневника
      * @return коллекция репозиториев для всех типов записей дневника
      */
-    Collection<ParticularDiaryEntryRepository> getAllRepositories();
+    Collection<ParticularDiaryEntryRepository<? extends DiaryEntry>> getAllRepositories();
 
 }

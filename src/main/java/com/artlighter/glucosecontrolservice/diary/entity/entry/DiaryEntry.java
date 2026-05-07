@@ -1,12 +1,13 @@
 package com.artlighter.glucosecontrolservice.diary.entity.entry;
 
+import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcType;
+import org.hibernate.dialect.type.PostgreSQLEnumJdbcType;
 
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Objects;
-
-//TODO МБ добавить поле DiaryEntryType?
 
 /**
  * Общий класс для записи дневника самоконтроля. Определенные типы (измерение глюкозы, ввод инсулина и т.д.)
@@ -17,23 +18,17 @@ import java.util.Objects;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @IdClass(DiaryEntry.DiaryEntryID.class)
 public abstract class DiaryEntry {
-    //@EmbeddedId
-    //protected DiaryEntryID id;
     private String notes;
-    //private int profileId;
-  //  @MapsId("profileId")
     @Id
     private int profileId;
     @Id
     private Instant commitedAt;
-
-//    public DiaryEntryID getId() {
-//        return id;
-//    }
-//
-//    public void setId(DiaryEntryID id) {
-//        this.id = id;
-//    }
+    //Пришлось добавить поле type для исправления слияния записей разных типов в одну сущность при UNION выборке с БД
+    @Id
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "diaryentrytype")
+    @JdbcType(PostgreSQLEnumJdbcType.class)
+    protected DiaryEntryType type;
 
     public abstract Number getValue();
     public abstract void setValue(Number value);
@@ -62,7 +57,11 @@ public abstract class DiaryEntry {
         this.commitedAt = commitedAt;
     }
 
-//    public int getProfileId() {
+    public DiaryEntryType getType() {
+        return type;
+    }
+
+    //    public int getProfileId() {
 //        return profileId;
 //    }
 //
@@ -110,6 +109,7 @@ public abstract class DiaryEntry {
         //private int profileId;
         private Instant commitedAt;
         private int profileId;
+        private DiaryEntryType type;
 
 //        public int getProfileId() {
 //            return profileId;
@@ -123,9 +123,10 @@ public abstract class DiaryEntry {
         public DiaryEntryID() {
         }
 
-        public DiaryEntryID(int profileId, Instant commitedAt) {
+        public DiaryEntryID(int profileId, Instant commitedAt, DiaryEntryType type) {
             this.profileId = profileId;
             this.commitedAt = commitedAt;
+            this.type = type;
         }
 
         public Instant getCommitedAt() {
@@ -144,16 +145,21 @@ public abstract class DiaryEntry {
             this.profileId = profileId;
         }
 
+        public DiaryEntryType getType() {
+            return type;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (o == null || getClass() != o.getClass()) return false;
             DiaryEntryID that = (DiaryEntryID) o;
-            return Objects.equals(commitedAt, that.commitedAt) && Objects.equals(profileId, that.profileId);
+            return Objects.equals(commitedAt, that.commitedAt) && Objects.equals(profileId, that.profileId) &&
+                    Objects.equals(type, that.type);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(commitedAt, profileId);
+            return Objects.hash(commitedAt, profileId, type);
         }
 
 //                @Override

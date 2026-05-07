@@ -10,29 +10,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @ExtendWith(SpringExtension.class)
 public class InMapByTypeNameDiaryEntryRepositoryCollectionTests {
     private InMapByTypeNameDiaryEntryRepositoryCollection collection;
-    private Map<String, ParticularDiaryEntryRepository> repositoryMap;
+    private List<ParticularDiaryEntryRepository<? extends DiaryEntry>> repositoryList;
 
     @BeforeEach
     public void setUp() {
         GlucoseEntryRepository glucoseEntryRepository = Mockito.mock(GlucoseEntryRepository.class);
         InsulinEntryRepository insulinEntryRepository = Mockito.mock(InsulinEntryRepository.class);
         CarbsEntryRepository carbsEntryRepository = Mockito.mock(CarbsEntryRepository.class);
-        //MedicationEntryRepository medicationEntryRepository = Mockito.mock(MedicationEntryRepository.class);
 
-        repositoryMap = new HashMap<>();
-        repositoryMap.put("GlucoseEntry", glucoseEntryRepository);
-        repositoryMap.put("InsulinEntry", insulinEntryRepository);
-        repositoryMap.put("CarbsEntry", carbsEntryRepository);
-        //repositoryMap.put("MedicationEntry", medicationEntryRepository);
-
-        collection = new InMapByTypeNameDiaryEntryRepositoryCollection(repositoryMap);
+        collection = new InMapByTypeNameDiaryEntryRepositoryCollection(List.of(glucoseEntryRepository,
+                insulinEntryRepository,
+                carbsEntryRepository));
     }
 
     @Test
@@ -99,14 +92,5 @@ public class InMapByTypeNameDiaryEntryRepositoryCollectionTests {
     public void getRepositoryForType_DoesNotFindRepositoryForType_ThrowsNoRepositoryFoundException() {
         assertThrows(NoRepositoryForEntryTypeException.class, () ->
                 collection.getRepositoryForType(DiaryEntryType.MEDICATION_ENTRY));
-    }
-
-    @Test
-    public void getAllRepositories_ReturnsCorrectCollectionOfAllRepositories() {
-        Collection<ParticularDiaryEntryRepository> expected = repositoryMap.values();
-
-        Collection<ParticularDiaryEntryRepository> actual = collection.getAllRepositories();
-        assertNotNull(actual);
-        assertIterableEquals(expected, actual);
     }
 }

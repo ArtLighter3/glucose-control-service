@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * Общий интерфейс для слоя доступа к записям дневника DiaryEntry сразу ВСЕХ типов (то есть любого
- * наследника DiaryEntry)
+ * наследника DiaryEntry). Необходим как единый DAO для любого типа.
  */
 
 public interface CommonDiaryEntryDAO {
@@ -70,7 +70,7 @@ public interface CommonDiaryEntryDAO {
      * @param sort тип сортировки для поиска по ней последнего элемента;
      * @return Ресурс DiaryEntry; null, если не было найдено ни одного;
      */
-    DiaryEntry findLastEntryOfType(DiaryEntryType entryType, int patientProfileId, Sort sort);
+    DiaryEntry findFirstEntryOfType(DiaryEntryType entryType, int patientProfileId, Sort sort);
     /**
      * Функция сохраняет новый ресурс DiaryEntry в хранилище, либо обновляет, если тот уже существует
      * @param entry ресурс DiaryEntry, который необходимо сохранить или обновить
@@ -83,12 +83,11 @@ public interface CommonDiaryEntryDAO {
     /**
      * Функция удаляет ресурс DiaryEntry из хранилища для пользователя по его типу и временной отметке.
      * Если ресурс уже существует, он игнорируется.
-     * @param entryType тип записи для удаления;
      * @param id ID записи, содержащая ID профиля больного и временную отметку записи;
      * @throws IllegalArgumentException в случае, если entryType равен null, либо если id
      * равен null или не содержит внутри идентификационных данных;
      */
-    void deleteById(DiaryEntryType entryType, DiaryEntry.DiaryEntryID id);
+    void deleteById(DiaryEntry.DiaryEntryID id);
 
     /**
      * Функция определяет, существует ли переданный ресурс DiaryEntry

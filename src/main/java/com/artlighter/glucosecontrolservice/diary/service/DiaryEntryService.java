@@ -6,7 +6,6 @@ import com.artlighter.glucosecontrolservice.diary.entity.entry.DiaryEntry;
 import com.artlighter.glucosecontrolservice.diary.repository.*;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -24,15 +23,14 @@ import java.util.*;
 @Transactional
 public class DiaryEntryService {
     private CommonDiaryEntryDAO commonDiaryEntryDAO;
-    //private CommonDiaryEntryRepository diaryEntryRepository;
+//    private CommonDiaryEntryRepository diaryEntryRepository;
 //    @Value("${glucose-control-service.diary.default-period-for-fetch-in-days}")
 //    private final int defaultDatePeriodInDays = 7;
 
+
     @Autowired
-    public DiaryEntryService(CommonDiaryEntryDAO commonDiaryEntryDAO/*,
-                             CommonDiaryEntryRepository diaryEntryRepository*/) {
+    public DiaryEntryService(CommonDiaryEntryDAO commonDiaryEntryDAO) {
         this.commonDiaryEntryDAO = commonDiaryEntryDAO;
-       // this.diaryEntryRepository = diaryEntryRepository;
     }
 
     /**
@@ -110,7 +108,7 @@ public class DiaryEntryService {
      * @param commitedAt временная отметка совершения удаляемой записи;
      */
     public void deleteDiaryEntry(DiaryEntryType entryType, int patientProfileId, Instant commitedAt) {
-        commonDiaryEntryDAO.deleteById(entryType, new DiaryEntry.DiaryEntryID(patientProfileId, commitedAt));
+        commonDiaryEntryDAO.deleteById(new DiaryEntry.DiaryEntryID(patientProfileId, commitedAt, entryType));
     }
 
     /**
@@ -185,8 +183,8 @@ public class DiaryEntryService {
      * @return Последнюю запись дневника этого типа; null, если не было найдено;
      */
     @Transactional(readOnly = true)
-    public DiaryEntry findLastEntryOfType(DiaryEntryType entryType, int patientProfileId) {
-        DiaryEntry entry = commonDiaryEntryDAO.findLastEntryOfType(entryType, patientProfileId,
+    public DiaryEntry findMostRecentEntryOfType(DiaryEntryType entryType, int patientProfileId) {
+        DiaryEntry entry = commonDiaryEntryDAO.findFirstEntryOfType(entryType, patientProfileId,
                 Sort.by("commitedAt").descending());
 
         return entry;

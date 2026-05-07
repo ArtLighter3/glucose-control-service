@@ -25,8 +25,6 @@ import static org.mockito.Mockito.when;
 public class DiaryEntryServiceTests {
     @MockitoBean
     private CommonDiaryEntryDAO diaryEntryDAO;
-//    @MockitoBean
-//    private CommonDiaryEntryRepository diaryEntryRepository;
     @Autowired
     private DiaryEntryService diaryEntryService;
 
@@ -44,6 +42,7 @@ public class DiaryEntryServiceTests {
     @Test
     public void addDiaryEntry_SavesEntryAndReturnsSaved() {
         DiaryEntry toSave = createEntry(6.7, Instant.ofEpochMilli(11), "123");
+       // DiaryEntry.DiaryEntryID id = new DiaryEntry.DiaryEntryID(2, Instant.ofEpochMilli(67895));
         DiaryEntry expected =
                 createEntry(toSave.getValue().doubleValue(), Instant.ofEpochMilli(67895), toSave.getNotes());
         expected.setProfileId(2);
@@ -59,7 +58,6 @@ public class DiaryEntryServiceTests {
     @Test
     public void updateDiaryEntry_EntryDoesNotExist_ThrowsResourceNotFoundException() {
         DiaryEntry toUpdate = createEntry(6.7, null, "123");
-
         when(diaryEntryDAO.exists(toUpdate)).thenReturn(false);
 
         assertThrows(ResourceNotFoundException.class, () -> {
@@ -86,8 +84,9 @@ public class DiaryEntryServiceTests {
     @Test
     public void deleteDiaryEntry_CallsRepositoryToDelete() {
         diaryEntryService.deleteDiaryEntry(DiaryEntryType.GLUCOSE_ENTRY, 2, Instant.ofEpochMilli(67895));
-        verify(diaryEntryDAO).deleteById(eq(DiaryEntryType.GLUCOSE_ENTRY),
-                eq(new DiaryEntry.DiaryEntryID(2, Instant.ofEpochMilli(67895))));
+        verify(diaryEntryDAO).deleteById(eq(new DiaryEntry.DiaryEntryID(2,
+                Instant.ofEpochMilli(67895),
+                DiaryEntryType.GLUCOSE_ENTRY)));
     }
 
     //TODO дополнить тесты

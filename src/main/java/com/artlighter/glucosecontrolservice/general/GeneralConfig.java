@@ -8,11 +8,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.List;
+import java.util.Locale;
 
 @Configuration
 @EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
 public class GeneralConfig {
+
+    @Bean
+    public DecimalFormat decimalFormat() {
+        return new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.US));
+    }
 
     @Bean
     public CommonsRequestLoggingFilter logFilter() {

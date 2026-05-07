@@ -91,7 +91,7 @@ public class StatisticsController {
 
         GlucoseEntryDTO lastGlucoseEntry = null;
         DiaryEntry lastEntry =
-                diaryEntryService.findLastEntryOfType(DiaryEntryType.GLUCOSE_ENTRY, patientProfile.getUserId());
+                diaryEntryService.findMostRecentEntryOfType(DiaryEntryType.GLUCOSE_ENTRY, patientProfile.getUserId());
         if (lastEntry instanceof GlucoseEntry)
             lastGlucoseEntry = glucoseEntryMapper.mapToDtoWithUnitConversion((GlucoseEntry) lastEntry,
                     patientProfile, outputZoneOffset);
