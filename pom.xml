@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.artlighter</groupId>
     <artifactId>glucose-control-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.9</version>
     <name>glucose-control-service</name>
     <description>glucose-control-service</description>
     <url/>
@@ -127,13 +127,13 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>build-image-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>build-image-no-fork</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
             </plugin>
         </plugins>
     </build>
