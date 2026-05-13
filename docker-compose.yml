@@ -1,0 +1,31 @@
+services:
+  glucose-control-service:
+    image: glucose-control-service:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: "no"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - glucose-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://glucose-db/glucose_control_service
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+
+  glucose-db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: glucose_control_service
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./infrastructure/postgres/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - postgresql-data:/var/lib/postgresql/18/main
+    restart: unless-stopped
+
+volumes:
+  postgresql-data:
