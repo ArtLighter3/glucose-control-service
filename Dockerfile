@@ -22,9 +22,10 @@ COPY --from=layers /app/extracted/application/ ./
 RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
 
-ENV SPRING_DATASOURCE_URL 'jdbc:postgresql://localhost:5432/glucose_control_service'
-ENV SPRING_DATASOURCE_USERNAME 'postgres'
-ENV SPRING_DATASOURCE_PASSWORD 'postgres'
+ENV CORS_FRONTEND_URL='http://localhost:5173'
+ENV SPRING_DATASOURCE_URL='jdbc:postgresql://localhost:5432/glucose_control_service'
+ENV SPRING_DATASOURCE_USERNAME='postgres'
+ENV SPRING_DATASOURCE_PASSWORD='postgres'
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

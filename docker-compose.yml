@@ -10,6 +10,7 @@ services:
     depends_on:
       - glucose-db
     environment:
+      - CORS_FRONTEND_URL=http://localhost:5173
       - SPRING_DATASOURCE_URL=jdbc:postgresql://glucose-db/glucose_control_service
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
