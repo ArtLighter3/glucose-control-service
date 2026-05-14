@@ -36,14 +36,6 @@ CREATE TABLE Patient_Profile (
     hypo_glucose real NOT NULL CHECK (hypo_glucose >= 0.5 AND hypo_glucose <= 40) DEFAULT 2
 );
 
--- CREATE TABLE Diary_Entry (
---     profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
---     commited_at timestamptz(0) NOT NULL,
---     notes varchar(500),
---     type entry_type,
---     PRIMARY KEY (profile_id, commited_at)
--- );
-
 CREATE TABLE Glucose_Entry (
     profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
     value real NOT NULL CHECK (value >= 0.5 AND value <= 40),
