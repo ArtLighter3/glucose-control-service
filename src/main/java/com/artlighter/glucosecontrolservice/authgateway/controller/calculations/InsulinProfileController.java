@@ -29,8 +29,6 @@ import java.util.Map;
         "подсчета статистики")
 @ApiResponses(value =
         {@ApiResponse(responseCode = "404", description = "Если больной или его инсулиновый профиль не были найдены.",
-                content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
-        @ApiResponse(responseCode = "500", description = "Ошибка сервера.",
                 content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
 @RestController
 @RequestMapping("/api/v1/patients/{userId}/insulin-profile")

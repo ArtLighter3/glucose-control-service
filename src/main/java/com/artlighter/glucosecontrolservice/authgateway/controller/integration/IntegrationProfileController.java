@@ -23,8 +23,6 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "integration", description = "методы для модификации профилей с настройками интеграции с другими сервисами")
 @ApiResponses(value =
         {@ApiResponse(responseCode = "404", description = "Если больной или его профиль интеграций не были найдены.",
-                content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
-        @ApiResponse(responseCode = "500", description = "Ошибка сервера.",
                 content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
 @RestController
 @RequestMapping("/api/v1/patients/{userId}/integration-profile")

@@ -14,6 +14,7 @@ import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationEntryPointFailureHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
@@ -56,7 +57,8 @@ public class AuthConfig {
                                         new HttpStatusEntryPoint(HttpStatus.BAD_REQUEST)))
                                 .permitAll())
                 .logout(logout -> logout
-                                .logoutUrl("/api/v1/auth/logout"))
+                        .logoutUrl("/api/v1/auth/logout")
+                        .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK)))
                 .userDetailsService(userDetailsService)
                 .sessionManagement(session ->
                         session.maximumSessions(1).sessionRegistry(sessionRegistry()))

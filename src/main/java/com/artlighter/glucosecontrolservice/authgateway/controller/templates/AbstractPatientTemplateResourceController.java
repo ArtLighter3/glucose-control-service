@@ -53,8 +53,6 @@ import org.springframework.web.bind.annotation.*;
         "модификации личных заготовок больного (блюд, препаратов), а также для расчета общего количества")
 @ApiResponses(value =
         {@ApiResponse(responseCode = "404", description = "Если больной не был найден.",
-                content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
-        @ApiResponse(responseCode = "500", description = "Ошибка сервера.",
                 content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
 @RequestMapping("/api/v1/patients/{userId}/templates/")
 public abstract class AbstractPatientTemplateResourceController

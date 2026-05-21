@@ -23,10 +23,7 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-@ApiResponses(value =
-        {@ApiResponse(responseCode = "200", description = "В случае успеха."),
-        @ApiResponse(responseCode = "500", description = "Ошибка сервера.",
-                        content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+@ApiResponses(value = {@ApiResponse(responseCode = "200", description = "В случае успеха.")})
 @Tag(name = "auth", description = "методы для аутентификации и авторизации")
 @RestController
 @RequestMapping("/api/v1/auth")
