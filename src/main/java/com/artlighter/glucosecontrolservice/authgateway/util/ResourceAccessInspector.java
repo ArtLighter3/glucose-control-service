@@ -1,6 +1,8 @@
 package com.artlighter.glucosecontrolservice.authgateway.util;
 
 import com.artlighter.glucosecontrolservice.authgateway.ServiceUserDetails;
+import com.artlighter.glucosecontrolservice.user.UserService;
+import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.user.service.DoctorProfileService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,14 +17,14 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class ResourceAccessInspector {
-    private DoctorProfileService doctorProfileService;
+    private UserService userService;
 
     /**
      *
-     * @param doctorProfileService сервис для доступа к профилям врачей
+     * @param userService сервис для доступа к пользователям
      */
-    public ResourceAccessInspector(DoctorProfileService doctorProfileService) {
-        this.doctorProfileService = doctorProfileService;
+    public ResourceAccessInspector(UserService userService) {
+        this.userService = userService;
     }
 
 //    /**
@@ -147,6 +149,16 @@ public class ResourceAccessInspector {
         return checkIfUserIsResourceOwner(resourceOwnerId, currentUserDetails);
     }
 
+    /**
+     * Проверяет, является ли пользователь с переданным ID администратором. Необходимо для проверок, где
+     * результат может зависеть от наличия роли админа (например, один админ не может редактировать другого)
+     * @param userId ID пользователя, у которого проверяется наличие роли администратора;
+     * @return true, пользователь имеет роль администратора; иначе false;
+     */
+    public boolean isAdmin(int userId) {
+        return userService.hasRole(userId, Role.ROLE_ADMIN);
+    }
+
     private boolean checkIfUserIsResourceOwner(int resourceOwnerId, UserDetails currentUserDetails) {
        // UserDetails userDetails = (UserDetails) actualCurrentUserAuth.getPrincipal();
         if (currentUserDetails instanceof ServiceUserDetails serviceUserDetails) {
@@ -157,7 +169,7 @@ public class ResourceAccessInspector {
 
     private boolean checkIfResourceOwnerIsAttachedToCurrentUser(int resourceOwnerId, UserDetails currentUserDetails) {
         if (currentUserDetails instanceof ServiceUserDetails serviceUserDetails) {
-            return doctorProfileService.isPatientAttached(serviceUserDetails.getId(), resourceOwnerId);
+            return userService.isPatientAttached(serviceUserDetails.getId(), resourceOwnerId);
         }
         return false;
     }

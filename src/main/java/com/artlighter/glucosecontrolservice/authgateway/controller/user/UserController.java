@@ -31,9 +31,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "users", description = "методы для управления пользователями, общей информацией о них")
-@ApiResponses(value =
-        {@ApiResponse(responseCode = "500", description = "Ошибка сервера.",
-                content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
@@ -81,12 +78,13 @@ public class UserController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "В случае успеха."),
             @ApiResponse(responseCode = "404", description = "Если пользователь с таким ID не найден.")})
     @GetMapping("/{userId}")
-    @PreAuthorize("hasRole('ADMIN') || @resourceAccessInspector.isOwnerOfResource(#userId, authentication)")
+    @PreAuthorize("hasRole('ADMIN') or @resourceAccessInspector.isOwnerOfResource(#userId, authentication)")
     public UserUpdatableInfoDTO getUser(@PathVariable int userId) {
         return userUpdatableInfoMapper.mapToDTO(userService.getUserById(userId));
     }
 
-    @Operation(summary = "Создать пользователя")
+    @Operation(summary = "Создать пользователя (для администраторов).",
+            description = "Администраторы по-умолчанию не могут создавать других администраторов")
     @ApiResponses(value =
             {@ApiResponse(responseCode = "201", description = "В случае успеха."),
                     @ApiResponse(responseCode = "400", description = "Если тело запроса неверное.",
@@ -94,7 +92,11 @@ public class UserController {
                     @ApiResponse(responseCode = "409", description = "Если пользователь уже существует.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SUPERUSER') or (hasRole('ADMIN') " +
+            "and not #userCreationDTO.roles()" +
+                ".contains(T(com.artlighter.glucosecontrolservice.user.entity.Role).ROLE_ADMIN) " +
+            "and not #userCreationDTO.roles()" +
+                ".contains(T(com.artlighter.glucosecontrolservice.user.entity.Role).ROLE_SUPERUSER))")
     @ResponseStatus(HttpStatus.CREATED)
     public UserDetailedInfoDTO postUser(@RequestBody @Valid UserCreationDTO userCreationDTO,
                                         BindingResult bindingResult) {
@@ -106,13 +108,15 @@ public class UserController {
         return userDetailedInfoMapper.mapToDTO(createdUser);
     }
 
-    @Operation(summary = "Обновить данные аккаунта пользователя (для самого владельца аккаунта)")
+    @Operation(summary = "Обновить данные аккаунта пользователя (для самого владельца аккаунта или администратора)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "400", description = "Если тело запроса неверное.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
             @ApiResponse(responseCode = "404", description = "Если пользователь с таким ID не найден.")})
     @PutMapping("/{userId}")
-    @PreAuthorize("hasRole('ADMIN') || @resourceAccessInspector.isOwnerOfResource(#userId, authentication)")
+    @PreAuthorize("@resourceAccessInspector.isOwnerOfResource(#userId, authentication) or " +
+            "(hasRole('ADMIN') and not @resourceAccessInspector.isAdmin(#userId)) or " +
+            "hasRole('SUPERUSER')")
     public UserUpdatableInfoDTO putUser(@PathVariable int userId,
                                         @RequestBody @Valid UserUpdatableInfoDTO userUpdatableInfoDTO,
                                         BindingResult bindingResult) {
@@ -129,7 +133,7 @@ public class UserController {
     @ApiResponses(value =
             {@ApiResponse(responseCode = "200", description = "Пользователь удален, либо его и не существовало.")})
     @DeleteMapping("/{userId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SUPERUSER') or (hasRole('ADMIN') and not @resourceAccessInspector.isAdmin(#userId))")
     public void deleteUser(@PathVariable int userId) {
         userService.deleteUser(userId);
     }

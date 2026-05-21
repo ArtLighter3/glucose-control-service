@@ -1,7 +1,7 @@
 package com.artlighter.glucosecontrolservice.authgateway.util;
 
 import com.artlighter.glucosecontrolservice.authgateway.ServiceUserDetails;
-import com.artlighter.glucosecontrolservice.user.service.DoctorProfileService;
+import com.artlighter.glucosecontrolservice.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 @Import(ResourceAccessInspector.class)
 public class ResourceAccessInspectorTests {
     @MockitoBean
-    private DoctorProfileService doctorProfileService;
+    private UserService userService;
     @Autowired
     private ResourceAccessInspector resourceAccessInspector;
 
@@ -95,8 +95,8 @@ public class ResourceAccessInspectorTests {
     @Test
     public void hasAccessToPatientResource_DoctorAccessIsNotGranted_UserHasDoctorRoleAndAttachedUsers_ReturnsFalse() {
         Authentication authentication = createAuthentication(0, "ROLE_DOCTOR");
-        when(doctorProfileService.isPatientAttached(0, 1)).thenReturn(true);
-        when(doctorProfileService.isPatientAttached(0, 2)).thenReturn(true);
+        when(userService.isPatientAttached(0, 1)).thenReturn(true);
+        when(userService.isPatientAttached(0, 2)).thenReturn(true);
 
         assertFalse(resourceAccessInspector
                 .hasAccessToPatientResource(3, authentication, false, false));
@@ -117,8 +117,8 @@ public class ResourceAccessInspectorTests {
     @Test
     public void hasAccessToPatientResource_DoctorAccessIsGranted_UserIsNotOwnerAndDoesNotHaveDoctorRole_ReturnsFalse() {
         Authentication authentication = createAuthentication(0, "ROLE_PATIENT", "ROLE_ADMIN");
-        when(doctorProfileService.isPatientAttached(0, 1)).thenReturn(true);
-        when(doctorProfileService.isPatientAttached(0, 2)).thenReturn(true);
+        when(userService.isPatientAttached(0, 1)).thenReturn(true);
+        when(userService.isPatientAttached(0, 2)).thenReturn(true);
 
         assertFalse(resourceAccessInspector
                 .hasAccessToPatientResource(3, authentication, true, false));
@@ -131,8 +131,8 @@ public class ResourceAccessInspectorTests {
     @Test
     public void hasAccessToPatientResource_DoctorAccessIsGranted_UserHasDoctorRoleAndAttachedUsers_ReturnsTrueOnlyIfOwnerIsAttached() {
         Authentication authentication = createAuthentication(0, "ROLE_DOCTOR");
-        when(doctorProfileService.isPatientAttached(0, 1)).thenReturn(true);
-        when(doctorProfileService.isPatientAttached(0, 2)).thenReturn(true);
+        when(userService.isPatientAttached(0, 1)).thenReturn(true);
+        when(userService.isPatientAttached(0, 2)).thenReturn(true);
 
         assertTrue(resourceAccessInspector
                 .hasAccessToPatientResource(1, authentication, true, false));
@@ -157,8 +157,8 @@ public class ResourceAccessInspectorTests {
     public void hasAccessToPatientResource_DoctorAccessIsGranted_UserHasBothPatientAndDoctorRole_ReturnsTrueIfCurrentUserIsOwnerOrIfOwnerIsAttachedToUser() {
         Authentication authentication =
                 createAuthentication(10, "ROLE_DOCTOR", "ROLE_PATIENT");
-        when(doctorProfileService.isPatientAttached(10, 1)).thenReturn(true);
-        when(doctorProfileService.isPatientAttached(10, 2)).thenReturn(true);
+        when(userService.isPatientAttached(10, 1)).thenReturn(true);
+        when(userService.isPatientAttached(10, 2)).thenReturn(true);
 
         for (int i = 3; i < 10; i++) {
             assertFalse(resourceAccessInspector
@@ -176,8 +176,8 @@ public class ResourceAccessInspectorTests {
     public void hasAccessToPatientResource_DoctorAccessIsNotGranted_ReturnsFalseEvenIfOwnerIsAttachedToDoctor() {
         Authentication authentication =
                 createAuthentication(10, "ROLE_DOCTOR");
-        when(doctorProfileService.isPatientAttached(10, 1)).thenReturn(true);
-        when(doctorProfileService.isPatientAttached(10, 2)).thenReturn(true);
+        when(userService.isPatientAttached(10, 1)).thenReturn(true);
+        when(userService.isPatientAttached(10, 2)).thenReturn(true);
 
         for (int i = 0; i < 10; i++) {
             assertFalse(resourceAccessInspector

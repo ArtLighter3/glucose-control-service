@@ -145,14 +145,18 @@ public class UserService {
     }
 
     /**
-     * Определяет, есть ли у пользователя роль без необходимости загрузки всего пользователя
+     * Определяет, есть ли у пользователя роль. При отсутствии пользователя возвращает false.
      * @param id идентификатор пользователя в системе
      * @param role роль
-     * @return true, если роль есть; false иначе;
+     * @return true, если роль есть; false, если роль или сам пользователь не были найдены;
      */
     @Transactional(readOnly = true)
     public boolean hasRole(int id, Role role) {
-        return userRepository.existsByIdAndRolesContaining(id, role);
+        User userToCheck = userRepository.findByIdWithRoles(id);
+
+        if (userToCheck.getRoles().contains(Role.ROLE_SUPERUSER)) return true;
+
+        return userToCheck.getRoles().contains(role);
     }
 
     /**
@@ -249,5 +253,17 @@ public class UserService {
      */
     public DoctorProfile detachPatientFromDoctor(int doctorId, int patientId) {
         return doctorProfileService.detachPatientFromDoctor(doctorId, patientId);
+    }
+
+    /**
+     * Проверяет, прикреплен ли больной к врачу по их ID.
+     * @param doctorId ID врача;
+     * @param patientId ID больного;
+     * @return true, если больной прикреплен;
+     *         false, если не прикреплен, либо врач или больной с такими ID не были найдены;
+     */
+    @Transactional(readOnly = true)
+    public boolean isPatientAttached(int doctorId, int patientId) {
+        return doctorProfileService.isPatientAttached(doctorId, patientId);
     }
 }
