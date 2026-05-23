@@ -18,7 +18,7 @@ public class MedicationEntryMapper extends AbstractEntryMapper<MedicationEntry, 
     @Override
     public MedicationEntryDTO mapToDtoWithUnitConversion(MedicationEntry entry, PatientProfile patientProfile,
                                                          ZoneOffset outputZoneOffset) {
-        return new MedicationEntryDTO(entry.getValue(), entry.getCommitedAt().atOffset(outputZoneOffset),
+        return new MedicationEntryDTO(round(entry.getValue()), entry.getCommitedAt().atOffset(outputZoneOffset),
                 entry.getMedicationName(), entry.getNotes());
     }
 

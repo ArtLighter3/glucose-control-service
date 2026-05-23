@@ -18,7 +18,7 @@ public class InsulinEntryMapper extends AbstractEntryMapper<InsulinEntry, Insuli
     @Override
     public InsulinEntryDTO mapToDtoWithUnitConversion(InsulinEntry entry, PatientProfile patientProfile,
                                                       ZoneOffset outputZoneOffset) {
-        return new InsulinEntryDTO(entry.getValue(), entry.getCommitedAt().atOffset(outputZoneOffset),
+        return new InsulinEntryDTO(round(entry.getValue()), entry.getCommitedAt().atOffset(outputZoneOffset),
                 entry.getInsulinType(), entry.getNotes());
     }
 
