@@ -4,11 +4,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    restart: "no"
+    restart: unless-stopped
     ports:
       - "8080:8080"
     depends_on:
-      - glucose-db
+      glucose-db:
+        condition: service_healthy
+        restart: true
     environment:
       - CORS_FRONTEND_URL=http://localhost:5173
       - SPRING_DATASOURCE_URL=jdbc:postgresql://glucose-db/glucose_control_service
@@ -24,9 +26,15 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./infrastructure/postgres/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./infrastructure/postgres/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./infrastructure/postgres/data.sql:/docker-entrypoint-initdb.d/02-data.sql
       - postgresql-data:/var/lib/postgresql/18/main
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
 
 volumes:
   postgresql-data:
