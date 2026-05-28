@@ -3,8 +3,6 @@ package com.artlighter.glucosecontrolservice.integration.controller;
 import com.artlighter.glucosecontrolservice.integration.dto.NightscoutEntryDTO;
 import com.artlighter.glucosecontrolservice.integration.dto.NightscoutTreatmentDTO;
 import com.artlighter.glucosecontrolservice.integration.service.NightscoutService;
-import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
-import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;

@@ -38,6 +38,7 @@ public class AuthConfig {
                 .cors(Customizer.withDefaults())
                 .csrf((csrf) -> csrf
                         //.disable())
+                        .ignoringRequestMatchers("/nightscout/**")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
                 .authorizeHttpRequests(requests -> requests
