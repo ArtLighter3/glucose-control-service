@@ -11,7 +11,7 @@ import org.hibernate.validator.constraints.Length;
 public record MealDTO(
         @Schema(description = "Имя блюда")
         @NotBlank
-        @Length(max = 200)
+        @Length(max = 255)
         String name,
         @Schema(description = "Количество углеводов (в граммах) на 100 г. веса", example = "50")
         @NotNull

@@ -22,7 +22,7 @@ public record MedicationEntryDTO(
         OffsetDateTime commitedAt,
         @Schema(description = "Наименование препарата")
         @NotBlank
-        @Length(max = 200)
+        @Length(max = 255)
         String name,
         @Schema(description = "Комментарий-заметка к записи")
         @Length(max = 500)

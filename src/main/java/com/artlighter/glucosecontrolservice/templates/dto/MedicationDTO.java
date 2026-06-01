@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.Length;
 public record MedicationDTO(
         @Schema(description = "Имя препарата")
         @NotBlank
-        @Length(max = 200)
+        @Length(max = 255)
         String name,
         @Schema(description = "Сколько миллиграмм вещества содержится в порции. Порцией может считаться любая единица" +
                 " препарата, будь-то таблетка, капля, чайная или столовая ложки и т.д.")
