@@ -11,7 +11,6 @@ import com.artlighter.glucosecontrolservice.diary.entity.enumeration.InsulinType
 import com.artlighter.glucosecontrolservice.diary.service.DiaryEntryService;
 import com.artlighter.glucosecontrolservice.diary.util.DiaryEntryType;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
-import com.artlighter.glucosecontrolservice.user.service.PatientProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
