@@ -49,14 +49,7 @@ public class MealController extends AbstractPatientTemplateResourceController<Me
             "в тех единицах измерения, которые выставлены в профиле больного. Доступ имеет только владелец списка.")
     @GetMapping("/meals")
     public Page<MealDTO> getTemplates(int userId, Pageable pageable) {
-        //Не используется метод родителя напрямую, потому что необходимо маппить в DTO с преобразованием количества
-        //углеводов в нужные единицы измерения
-        PatientProfile patientProfile = getPatientProfileOrThrowException(userId);
-
-        Page<Meal> meals = getTemplateService().getAllByPatientProfileId(patientProfile.getUserId(), pageable);
-
-        return meals.map((meal) ->
-                getTemplateMapper().mapToDtoWithUnitConversion(meal, patientProfile.getCarbsUnit()));
+        return super.getTemplates(userId, pageable);
     }
 
     @Override
@@ -66,14 +59,7 @@ public class MealController extends AbstractPatientTemplateResourceController<Me
                     "которые выставлены в профиле больного. Доступ имеет только владелец списка.")
     @GetMapping("/meals/search")
     public Page<MealDTO> getTemplatesBySearchQuery(int userId, String query, Pageable pageable) {
-        //Не используется метод родителя напрямую, потому что необходимо маппить в DTO с преобразованием количества
-        //углеводов в нужные единицы измерения
-        PatientProfile patientProfile = getPatientProfileOrThrowException(userId);
-
-        Page<Meal> meals = getTemplateService().searchByNameQuery(patientProfile.getUserId(), query, pageable);
-
-        return meals.map((meal) ->
-                getTemplateMapper().mapToDtoWithUnitConversion(meal, patientProfile.getCarbsUnit()));
+        return super.getTemplatesBySearchQuery(userId, query, pageable);
     }
 
     @Override
@@ -110,6 +96,11 @@ public class MealController extends AbstractPatientTemplateResourceController<Me
                 patientProfile.getCarbsUnit());
     }
 
+    @Override
+    protected Page<MealDTO> mapFetchedToDto(Page<Meal> meals, PatientProfile patientProfile) {
+        return meals.map((meal) ->
+                getTemplateMapper().mapToDtoWithUnitConversion(meal, patientProfile.getCarbsUnit()));
+    }
 
     @Override
     protected MealService getTemplateService() {

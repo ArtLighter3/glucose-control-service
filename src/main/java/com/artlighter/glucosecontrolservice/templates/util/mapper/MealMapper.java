@@ -25,7 +25,9 @@ public class MealMapper implements TemplateMapper<Meal, MealDTO> {
 
     public MealDTO mapToDtoWithUnitConversion(Meal internal, CarbsUnit patientCarbsUnit) {
         return new MealDTO(internal.getId().getName(),
-                (float) patientCarbsUnit.convertFromGrams(internal.getCarbsPer100Grams()));
+              //  (float) patientCarbsUnit.convertFromGrams(internal.getCarbsPer100Grams())
+                internal.getCarbsPer100Grams()
+        );
     }
 
 }

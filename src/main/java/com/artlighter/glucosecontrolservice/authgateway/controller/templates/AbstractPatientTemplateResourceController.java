@@ -82,7 +82,7 @@ public abstract class AbstractPatientTemplateResourceController
 
         Page<INT> templates = getTemplateService().getAllByPatientProfileId(patientProfile.getUserId(), pageable);
 
-        return templates.map(getTemplateMapper()::mapToDTO);
+        return mapFetchedToDto(templates, patientProfile);
     }
 
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "В случае успеха.")})
@@ -101,7 +101,7 @@ public abstract class AbstractPatientTemplateResourceController
 
         Page<INT> templates = getTemplateService().searchByNameQuery(patientProfile.getUserId(), query, pageable);
 
-        return templates.map(getTemplateMapper()::mapToDTO);
+        return mapFetchedToDto(templates, patientProfile);
     }
 
     @ApiResponses(value =
@@ -166,6 +166,19 @@ public abstract class AbstractPatientTemplateResourceController
 
     protected PatientProfile getPatientProfileOrThrowException(int userId) {
         return getPatientProfileService().getByUserId(userId);
+    }
+
+    /**
+     * Метод производит маппинг страницы с внутренними объектами в страницу с DTO. По-умолчанию для одного элемента
+     * использует обычный метод маппера mapToDTO, преобразующий внутренний объект во внешний. Переопределяется, если
+     * необходимо выполнить преобразование по-своему, например, с конвертацией величин, что требует другие методы
+     * маппера, принимающие дополнительные аргументы.
+     * @param templates страница с внутренними объектами;
+     * @param patientProfile профиль больного;
+     * @return страница с DTO;
+     */
+    protected Page<EXT> mapFetchedToDto(Page<INT> templates, PatientProfile patientProfile) {
+        return templates.map(getTemplateMapper()::mapToDTO);
     }
 
    // protected abstract EXT mapToDTO(INT internal);
