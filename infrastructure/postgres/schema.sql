@@ -117,8 +117,8 @@ CREATE TABLE Patient_Meal (
 CREATE TABLE Patient_Medication (
     profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
     name varchar(255) NOT NULL,
-    milligrams_in_portion real NOT NULL CHECK (milligrams_in_portion >= 0 AND milligrams_in_portion <= 1000),
-    default_portions int NOT NULL CHECK (default_portions >= 1 AND default_portions <= 20) DEFAULT 1,
+    milligrams_in_portion real NOT NULL CHECK (milligrams_in_portion >= 0.1 AND milligrams_in_portion <= 1000),
+    default_portions real NOT NULL CHECK (default_portions >= 0.1 AND default_portions <= 30) DEFAULT 1,
     PRIMARY KEY (profile_id, name)
 );
 

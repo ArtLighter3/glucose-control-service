@@ -18,8 +18,8 @@ public record MedicationDTO(
         Float milligramsInPortion,
         @Schema(description = "Количество порцией по-умолчанию. Нужно для того, чтобы каждый раз не заполнять кол-во" +
                 " порций при подсчете, если оно почти всегда одинаковое для препарата у пользователя")
-        @Min(1)
-        @Max(20)
-        Integer defaultPortions
+        @DecimalMin("0.1")
+        @DecimalMax("30")
+        Float defaultPortions
 ) implements PatientTemplateEntityDTO {
 }

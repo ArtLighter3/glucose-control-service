@@ -7,13 +7,13 @@ import jakarta.persistence.Table;
 @Table(name = "patient_medication")
 public class Medication extends PatientTemplateEntity {
     private float milligramsInPortion;
-    private int defaultPortions;
+    private float defaultPortions;
 
     public Medication() {
         super();
     }
 
-    public Medication(PatientTemplateEntityID id, float milligramsInPortion, int defaultPortions) {
+    public Medication(PatientTemplateEntityID id, float milligramsInPortion, float defaultPortions) {
         super(id);
         this.milligramsInPortion = milligramsInPortion;
         this.defaultPortions = defaultPortions;
@@ -27,11 +27,11 @@ public class Medication extends PatientTemplateEntity {
         this.milligramsInPortion = milligramsInPortion;
     }
 
-    public int getDefaultPortions() {
+    public float getDefaultPortions() {
         return defaultPortions;
     }
 
-    public void setDefaultPortions(int defaultPortions) {
+    public void setDefaultPortions(float defaultPortions) {
         this.defaultPortions = defaultPortions;
     }
 }
