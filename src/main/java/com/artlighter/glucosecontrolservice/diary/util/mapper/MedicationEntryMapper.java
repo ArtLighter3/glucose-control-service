@@ -19,13 +19,15 @@ public class MedicationEntryMapper extends AbstractEntryMapper<MedicationEntry, 
     public MedicationEntryDTO mapToDtoWithUnitConversion(MedicationEntry entry, PatientProfile patientProfile,
                                                          ZoneOffset outputZoneOffset) {
         return new MedicationEntryDTO(round(entry.getValue()), entry.getCommitedAt().atOffset(outputZoneOffset),
-                entry.getMedicationName(), entry.getNotes());
+                entry.getMedicationName(), entry.getPortionType(), entry.getMilligramsInPortion(), entry.getNotes());
     }
 
     @Override
     protected void fillFieldsOfInternalWithUnitConversion(MedicationEntry entry, MedicationEntryDTO entryDTO,
                                                           PatientProfile patientProfile) {
         entry.setMedicationName(entryDTO.name());
+        entry.setPortionType(entryDTO.portionType());
+        entry.setMilligramsInPortion(entryDTO.milligramsInPortion());
     }
 
     @Override

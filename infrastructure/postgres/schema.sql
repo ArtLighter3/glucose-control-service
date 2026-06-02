@@ -3,6 +3,8 @@ CREATE TYPE glucose_unit AS ENUM ('MILLIMOLES_PER_LITER', 'MILLIGRAMS_PER_DECILI
 CREATE TYPE carbs_unit AS ENUM ('GRAMS', 'BREAD_UNITS_10', 'BREAD_UNITS_12', 'BREAD_UNITS_15');
 CREATE TYPE insulintype AS ENUM ('LONG', 'SHORT_CARBS', 'SHORT_CORRECTION', 'SHORT');
 CREATE TYPE measurementtype AS ENUM ('BEFORE_MEAL', 'AFTER_MEAL');
+CREATE TYPE portiontype AS ENUM ('PILLS', 'DROPS', 'INJECTIONS', 'UNITS', 'DOSES',
+    'MILLILITERS', 'TEASPOONS', 'TABLESPOONS');
 CREATE TYPE role AS ENUM ('ROLE_PATIENT', 'ROLE_DOCTOR', 'ROLE_ADMIN', 'ROLE_SUPERUSER');
 
 CREATE TABLE Service_User (
@@ -61,6 +63,8 @@ CREATE TABLE Medication_Entry (
     name varchar(255) NOT NULL,
     value real NOT NULL CHECK (value >= 0.1 AND value <= 1000),
     type diaryentrytype NOT NULL CHECK (type = 'MEDICATION_ENTRY') DEFAULT 'MEDICATION_ENTRY',
+    portion_type portiontype NOT NULL DEFAULT 'UNITS',
+    milligrams_in_portion real CHECK (milligrams_in_portion >= 0.1 AND milligrams_in_portion <= 1000),
     commited_at timestamptz(0) NOT NULL,
     notes varchar(500),
     PRIMARY KEY (profile_id, commited_at, type)
@@ -117,8 +121,9 @@ CREATE TABLE Patient_Meal (
 CREATE TABLE Patient_Medication (
     profile_id int REFERENCES Patient_Profile(id) ON DELETE CASCADE,
     name varchar(255) NOT NULL,
-    milligrams_in_portion real NOT NULL CHECK (milligrams_in_portion >= 0.1 AND milligrams_in_portion <= 1000),
-    default_portions real NOT NULL CHECK (default_portions >= 0.1 AND default_portions <= 30) DEFAULT 1,
+    milligrams_in_portion real CHECK (milligrams_in_portion >= 0.1 AND milligrams_in_portion <= 1000),
+    default_portions real NOT NULL CHECK (default_portions >= 0.1 AND default_portions <= 1000) DEFAULT 1,
+    portion_type portiontype NOT NULL DEFAULT 'UNITS',
     PRIMARY KEY (profile_id, name)
 );
 

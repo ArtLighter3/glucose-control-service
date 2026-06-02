@@ -10,12 +10,14 @@ public class MedicationMapper implements TemplateMapper<Medication, MedicationDT
     @Override
     public MedicationDTO mapToDTO(Medication internal) {
         return new MedicationDTO(internal.getId().getName(),
-                internal.getMilligramsInPortion(), internal.getDefaultPortions());
+                internal.getMilligramsInPortion(), internal.getDefaultPortions(),
+                internal.getPortionType());
     }
 
     @Override
     public Medication mapToInternal(MedicationDTO externalDTO) {
         return new Medication(new PatientTemplateEntity.PatientTemplateEntityID(0, externalDTO.name()),
-                externalDTO.milligramsInPortion(), externalDTO.defaultPortions());
+                externalDTO.milligramsInPortion(), externalDTO.defaultPortions(),
+                externalDTO.portionType());
     }
 }
