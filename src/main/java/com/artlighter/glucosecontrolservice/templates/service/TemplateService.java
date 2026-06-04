@@ -24,6 +24,25 @@ public abstract class TemplateService<T extends PatientTemplateEntity> {
     }
 
     /**
+     * Находит заготовку этого типа по наименованию;
+     * @param patientProfileId ID профиля больного;
+     * @param name наименование заготовки;
+     * @return информация о заготовке с наименованием name; никогда не null;
+     * @throws IllegalArgumentException если name равно null;
+     * @throws ResourceNotFoundException если не было найдено заготовки с этим наименованием;
+     */
+    @Transactional(readOnly = true)
+    public T getByName(int patientProfileId, String name) {
+        if (name == null) throw new IllegalArgumentException("name cannot be null");
+
+        T template = patientTemplateEntityRepository.getByIdPatientProfileIdAndIdName(patientProfileId, name);
+        if (template == null) throw new ResourceNotFoundException(PatientTemplateEntity.class,
+                "template with name " + name + " for patient with profile id " + patientProfileId + " not found");
+
+        return template;
+    }
+
+    /**
      * Находит все заготовки этого типа по ID профиля больного.
      * @param patientProfileId ID профиля больного;
      * @param pageable объект с информацией о пагинации;
