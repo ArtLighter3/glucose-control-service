@@ -1,4 +1,4 @@
-package com.artlighter.glucosecontrolservice.authgateway.statistics;
+package com.artlighter.glucosecontrolservice.authgateway.controller.statistics;
 
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ExceptionDTO;
 import com.artlighter.glucosecontrolservice.statistics.dto.GlucoseDistributionDTO;
