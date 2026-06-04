@@ -39,10 +39,10 @@ public class PatientProfileController {
         this.convertableValueRangeValidator = convertableValueRangeValidator;
     }
 
-    @Operation(summary = "Получить профиль больного с его настройками.", description = "Доступно только самим" +
-            "владельцам профиля с ролью больного")
+    @Operation(summary = "Получить профиль больного с его настройками.", description = "Доступно самим " +
+            "владельцам профиля с ролью больного и их врачам")
     @GetMapping
-    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
+    @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, true, false)")
     public PatientProfileDTO getPatientProfile(@PathVariable int userId) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
 
