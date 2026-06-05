@@ -9,6 +9,7 @@ import com.artlighter.glucosecontrolservice.user.entity.Role;
 import com.artlighter.glucosecontrolservice.user.entity.User;
 import com.artlighter.glucosecontrolservice.user.repository.DoctorProfileRepository;
 import com.artlighter.glucosecontrolservice.user.repository.PatientProfileRepository;
+import com.artlighter.glucosecontrolservice.user.util.CodeGenerator;
 import com.artlighter.glucosecontrolservice.user.util.exception.UserIsNotDoctorException;
 import com.artlighter.glucosecontrolservice.user.util.exception.UserIsNotPatientException;
 import org.springframework.data.domain.Page;
@@ -24,17 +25,22 @@ import java.util.Set;
 @Service
 @Transactional
 public class DoctorProfileService {
+    private static final int CODE_LENGTH = 8;
+
     private DoctorProfileRepository doctorProfileRepository;
     private PatientProfileService patientProfileService;
+    private CodeGenerator codeGenerator;
 
     public DoctorProfileService(DoctorProfileRepository doctorProfileRepository,
-                                PatientProfileService patientProfileService) {
+                                PatientProfileService patientProfileService,
+                                CodeGenerator codeGenerator) {
         this.doctorProfileRepository = doctorProfileRepository;
         this.patientProfileService = patientProfileService;
+        this.codeGenerator = codeGenerator;
     }
 
     /**
-     * Создает стандартный профиль врача для пользователя.
+     * Создает стандартный профиль врача для пользователя с генерацией личного кода.
      * @param user пользователь, для которого нужно сохранить профиль врача;
      * @return сохраненный DoctorProfile;
      * @throws ResourceAlreadyExistsException если профиль врача уже существует для этого пользователя.
@@ -50,7 +56,15 @@ public class DoctorProfileService {
         if (!user.getRoles().contains(Role.ROLE_DOCTOR))
             throw new UserIsNotDoctorException(user.getId());
 
-        return doctorProfileRepository.save(new DoctorProfile(user.getId()));
+        String personalSecret;
+        do {
+            personalSecret = codeGenerator.generateAlphaNumericCode(8);
+        } while (doctorProfileRepository.existsByPersonalSecret(personalSecret));
+
+        DoctorProfile doctorProfile = new DoctorProfile(user.getId());
+        doctorProfile.setPersonalSecret(personalSecret);
+
+        return doctorProfileRepository.save(doctorProfile);
     }
 
 //    @Transactional(readOnly = true)
@@ -97,6 +111,28 @@ public class DoctorProfileService {
     }
 
     /**
+     * Прикрепляет больного к врачу по личному коду врача и ID больного. Не проверяет наличие права врача или пациента!
+     * @param patientId ID больного;
+     * @param doctorCode личный код врача;
+     * @return обновленный профиль врача, к которому было произведено прикрепление;
+     * @throws ResourceNotFoundException если врач с таким кодом или пациент с переданным ID не были найдены;
+     * @throws ResourceAlreadyExistsException если больной уже был прикреплен к врачу;
+     */
+    public DoctorProfile attachPatientToDoctorByCode(int patientId, String doctorCode) {
+        DoctorProfile doctorProfile = doctorProfileRepository.getByPersonalSecret(doctorCode);
+        if (doctorProfile == null) throw new ResourceNotFoundException(DoctorProfile.class, "doctor profile not found");
+
+        PatientProfile patientProfile = patientProfileService.getByUserId(patientId);
+
+        Set<PatientProfile> attachedPatients = doctorProfile.getAttachedPatients();
+        boolean attached = attachedPatients.add(patientProfile);
+        if (!attached)
+            throw new ResourceAlreadyExistsException(patientProfile, "patient is already attached to this doctor");
+
+        return doctorProfileRepository.save(doctorProfile);
+    }
+
+    /**
      * Открепляет больного от врача.
      * @param doctorId ID врача;
      * @param patientId ID больного;
@@ -113,6 +149,28 @@ public class DoctorProfileService {
         if (!detached)
             throw new ResourceNotFoundException(PatientProfile.class, "patient '"
                     + patientId + "' is not attached to doctor '" + doctorId + "'");
+
+        return doctorProfileRepository.save(doctorProfile);
+    }
+
+    /**
+     * Открепляет больного от врача по коду врача.
+     * @param patientId ID больного;
+     * @return обновленный профиль врача, у которого был удален прикрепленный больной;
+     * @throws ResourceNotFoundException если врач с таким кодом или пациент с переданными ID не были найдены, либо если
+     *                                   больной уже откреплен;
+     */
+    public DoctorProfile detachPatientFromDoctorByCode(int patientId, String doctorCode) {
+        DoctorProfile doctorProfile = doctorProfileRepository.getByPersonalSecret(doctorCode);
+        if (doctorProfile == null) throw new ResourceNotFoundException(DoctorProfile.class, "doctor profile not found");
+
+        PatientProfile patientProfile = patientProfileService.getByUserId(patientId);
+
+        Set<PatientProfile> attachedPatients = doctorProfile.getAttachedPatients();
+        boolean detached = attachedPatients.remove(patientProfile);
+        if (!detached)
+            throw new ResourceNotFoundException(PatientProfile.class, "patient '"
+                    + patientId + "' is not attached to doctor '" + doctorProfile.getId() + "'");
 
         return doctorProfileRepository.save(doctorProfile);
     }
@@ -157,6 +215,16 @@ public class DoctorProfileService {
             throw new ResourceNotFoundException(DoctorProfile.class, "doctor with ID '" + doctorId  + "' not found");
 
         return doctorProfile;
+    }
+
+    /**
+     * Находит врачей, к которым прикреплен больной (их профилей) по ID больного.
+     * @param patientId идентификатор больного в системе;
+     * @param pageable объект с информацией о пагинации;
+     * @return текущая страница с профилями врачей, связанных с больным; пустая страница, если больной не был найден;
+     */
+    public Page<DoctorProfile> findDoctorsOfPatient(int patientId, Pageable pageable) {
+        return doctorProfileRepository.getDoctorsAttachedToPatientByPatientId(patientId, pageable);
     }
 
 

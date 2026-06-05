@@ -16,6 +16,6 @@ public class AttachedPatientMapper implements DTOMapper<PatientProfile, Attached
 
     @Override
     public PatientProfile mapToInternal(AttachedPatientDTO externalDTO) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

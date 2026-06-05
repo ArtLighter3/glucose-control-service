@@ -80,7 +80,8 @@ CREATE TABLE Carbs_Entry (
 );
 
 CREATE TABLE Doctor_Profile (
-    id int PRIMARY KEY REFERENCES Service_User(id) ON DELETE CASCADE
+    id int PRIMARY KEY REFERENCES Service_User(id) ON DELETE CASCADE,
+    personal_secret varchar(8) NOT NULL UNIQUE CHECK (LENGTH(personal_secret) = 8)
 );
 
 CREATE TABLE Patient_Doctor (
@@ -130,6 +131,8 @@ CREATE TABLE Patient_Medication (
 CREATE TABLE Integration_Profile (
     patient_profile_id int PRIMARY KEY REFERENCES Patient_Profile(id) ON DELETE CASCADE,
     is_nightscout_enabled bool NOT NULL DEFAULT false,
-    nightscout_api_secret varchar CHECK ((nightscout_api_secret IS NOT NULL AND length(nightscout_api_secret) >= 12)
+    nightscout_api_secret varchar CHECK ((nightscout_api_secret IS NOT NULL AND LENGTH(nightscout_api_secret) >= 12)
         OR is_nightscout_enabled = false)
 );
+
+CREATE UNIQUE INDEX idx_doctor_profile_personal_secret ON Doctor_Profile(personal_secret);

@@ -4,7 +4,9 @@ import com.artlighter.glucosecontrolservice.authgateway.util.exception.Exception
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ValidationIsFailedException;
 import com.artlighter.glucosecontrolservice.user.UserService;
 import com.artlighter.glucosecontrolservice.user.dto.AttachedPatientDTO;
+import com.artlighter.glucosecontrolservice.user.dto.DoctorProfileDTO;
 import com.artlighter.glucosecontrolservice.user.dto.PatientAttachDetachDTO;
+import com.artlighter.glucosecontrolservice.user.entity.DoctorProfile;
 import com.artlighter.glucosecontrolservice.user.entity.PatientProfile;
 import com.artlighter.glucosecontrolservice.user.service.DoctorProfileService;
 import com.artlighter.glucosecontrolservice.user.util.mapper.AttachedPatientMapper;
@@ -24,7 +26,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "doctors", description = "методы для получения и модификации врачей, получения и модификации " +
+@Tag(name = "doctors", description = "методы для получения профилей врачей, получения и модификации " +
         "прикрепленных к ним больных")
 @ApiResponses(value =
         {@ApiResponse(responseCode = "200", description = "В случае успеха."),
@@ -44,8 +46,18 @@ public class DoctorController {
         this.attachedPatientMapper = attachedPatientMapper;
     }
 
+    @Operation(summary = "Получить профиль врача с его уникальным кодом.",
+            description = "Доступно только владельцу профиля")
+    @GetMapping("/doctor-profile")
+    @PreAuthorize("hasRole('DOCTOR') and @resourceAccessInspector.isOwnerOfResource(#userId, authentication)")
+    public DoctorProfileDTO getDoctorProfile(@PathVariable int userId) {
+        DoctorProfile doctorProfile = doctorProfileService.getByUserId(userId);
+
+        return new DoctorProfileDTO(doctorProfile.getPersonalSecret());
+    }
+
     @Operation(summary = "Получить список прикрепленных к врачу больных.", description = "Возвращает список " +
-            "постранично с возможностью сортировки по определенному полю.")
+            "постранично с возможностью сортировки по определенному полю. Доступно владельцу профиля и администраторам")
     @GetMapping("/attached-patients")
     @PreAuthorize("hasRole('ADMIN') or " +
             "(hasRole('DOCTOR') and @resourceAccessInspector.isOwnerOfResource(#userId, authentication))")
@@ -62,7 +74,7 @@ public class DoctorController {
     }
 
     @Operation(summary = "Найти прикрепленных к врачу больных по их ФИО.", description = "Возвращает список " +
-            "постранично с возможностью сортировки по определенному полю.")
+            "постранично с возможностью сортировки по определенному полю. Доступно владельцу профиля и администраторам")
     @GetMapping("/attached-patients/search")
     @PreAuthorize("hasRole('ADMIN') or " +
             "(hasRole('DOCTOR') and @resourceAccessInspector.isOwnerOfResource(#userId, authentication))")
@@ -82,7 +94,7 @@ public class DoctorController {
         return attachedPatients.map(attachedPatientMapper::mapToDTO);
     }
 
-    @Operation(summary = "Прикрепить больного к врачу.")
+    @Operation(summary = "Прикрепить больного к врачу.", description = "Доступно только администраторам")
     @ApiResponses(value =
             {@ApiResponse(responseCode = "400", description = "Если тело запроса неверное.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
@@ -102,7 +114,7 @@ public class DoctorController {
         return attachDetachDTO;
     }
 
-    @Operation(summary = "Открепить больного от врача.")
+    @Operation(summary = "Открепить больного от врача.", description = "Доступно только администраторам")
     @ApiResponses(value =
             {@ApiResponse(responseCode = "400", description = "Если параметры запроса некорректны.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),

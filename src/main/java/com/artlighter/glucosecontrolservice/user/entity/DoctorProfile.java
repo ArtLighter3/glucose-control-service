@@ -10,6 +10,11 @@ import java.util.Set;
 public class DoctorProfile {
     @Id
     private int id;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id", referencedColumnName = "id")
+    @MapsId
+    private User user;
+    private String personalSecret;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     @JoinTable(name = "patient_doctor",
             joinColumns = @JoinColumn(name = "doctor_profile_id"),
@@ -30,6 +35,12 @@ public class DoctorProfile {
         this.attachedPatients = attachedPatients;
     }
 
+    public DoctorProfile(int id, String personalSecret, Set<PatientProfile> attachedPatients) {
+        this.id = id;
+        this.personalSecret = personalSecret;
+        this.attachedPatients = attachedPatients;
+    }
+
     public int getId() {
         return id;
     }
@@ -38,7 +49,15 @@ public class DoctorProfile {
         this.id = id;
     }
 
-//    public Map<Integer, PatientProfile> getAttachedPatients() {
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    //    public Map<Integer, PatientProfile> getAttachedPatients() {
 //        return attachedPatients;
 //    }
 //
@@ -46,6 +65,14 @@ public class DoctorProfile {
 //        this.attachedPatients = attachedPatients;
 //    }
 
+
+    public String getPersonalSecret() {
+        return personalSecret;
+    }
+
+    public void setPersonalSecret(String personalSecret) {
+        this.personalSecret = personalSecret;
+    }
 
     public Set<PatientProfile> getAttachedPatients() {
         return attachedPatients;
