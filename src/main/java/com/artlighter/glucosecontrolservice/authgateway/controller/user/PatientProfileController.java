@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.*;
         @ApiResponse(responseCode = "404", description = "Если профиль больного не был найден.",
                 content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
 @RestController
-@RequestMapping("/api/v1/patients/{userId}/patient-profile")
+@RequestMapping("/api/v1/patients/{userId}")
 public class PatientProfileController {
     private PatientProfileService patientProfileService;
     private DoctorProfileService doctorProfileService;
@@ -57,7 +57,7 @@ public class PatientProfileController {
 
     @Operation(summary = "Получить профиль больного с его настройками.", description = "Доступно самим " +
             "владельцам профиля с ролью больного и их врачам")
-    @GetMapping
+    @GetMapping("/patient-profile")
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, true, false)")
     public PatientProfileDTO getPatientProfile(@PathVariable int userId) {
         PatientProfile patientProfile = patientProfileService.getByUserId(userId);
@@ -74,7 +74,7 @@ public class PatientProfileController {
                                                                 {"user.lastName", "user.firstName", "user.middleName"})
                                                         @Parameter(description = "Данные о странице и сортировке." +
                                                                 "По-умолчанию сортируется " +
-                                                                "по ФИО пользователя (возр.)")
+                                                                "по ФИО врача (возр.)")
                                                         Pageable pageable) {
         Page<DoctorProfile> doctors = doctorProfileService.findDoctorsOfPatient(userId, pageable);
 
@@ -115,7 +115,7 @@ public class PatientProfileController {
             "владельцам профиля с ролью больного")
     @ApiResponses(value = {@ApiResponse(responseCode = "400", description = "Если тело запроса некорректное.",
             content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
-    @PutMapping
+    @PutMapping("/patient-profile")
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     public PatientProfileDTO putPatientProfile(@PathVariable int userId,
                                                @RequestBody @Valid PatientProfileDTO patientProfileDTO,
