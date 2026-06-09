@@ -61,7 +61,8 @@ public class DoctorProfileService {
             personalSecret = codeGenerator.generateAlphaNumericCode(8);
         } while (doctorProfileRepository.existsByPersonalSecret(personalSecret));
 
-        DoctorProfile doctorProfile = new DoctorProfile(user.getId());
+        DoctorProfile doctorProfile = new DoctorProfile();
+        doctorProfile.setUser(user);
         doctorProfile.setPersonalSecret(personalSecret);
 
         return doctorProfileRepository.save(doctorProfile);

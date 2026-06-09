@@ -26,6 +26,10 @@ public class DoctorProfile {
     public DoctorProfile() {
     }
 
+    public DoctorProfile(User user) {
+        this.user = user;
+    }
+
     public DoctorProfile(int id) {
         this.id = id;
     }
