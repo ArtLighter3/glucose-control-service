@@ -58,8 +58,12 @@ public class AuthController {
             throw new ValidationIsFailedException(bindingResult, "request body is invalid");
         }
 
-        User addedUser = userService.addUser(userRegistrationMapper.mapToInternal(userRegistrationDTO),
-                Role.ROLE_PATIENT);
+        boolean isDoctor = userRegistrationDTO.isDoctor() != null ? userRegistrationDTO.isDoctor() : false;
+
+        User addedUser = userService.addUser(
+                userRegistrationMapper.mapToInternal(userRegistrationDTO),
+                isDoctor ? Role.ROLE_DOCTOR : Role.ROLE_PATIENT
+        );
     }
 
     @Operation(summary = "Получить информацию о пользователе в текущей сессии.",

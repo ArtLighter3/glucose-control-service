@@ -47,29 +47,17 @@ public class UserService {
      * @param user добавляемый пользователь;
      * @param role роль в системе;
      * @return сохраненный пользователь;
-     * @throws IllegalArgumentException если user является null;
+     * @throws IllegalArgumentException если user или role являются null;
      * @throws com.artlighter.glucosecontrolservice.general.exception.ResourceAlreadyExistsException если пользователь
      * с таким именем уже существует;
      */
     public User addUser(User user, Role role) {
-        if (user == null)
-            throw new IllegalArgumentException("user cannot be null");
-        if (userRepository.existsByUsername(user.getUsername()))
-            throw new ResourceAlreadyExistsException(user, "user with this username already exists");
+        if (user == null) throw new IllegalArgumentException("user cannot be null");
+        if (role == null) throw new IllegalArgumentException("role cannot be null");
 
         user.setRoles(Set.of(role));
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        if (role == Role.ROLE_PATIENT) {
-            // если по какой-то ошибке не создастся профиль пациента при создании пользователя (отчего может полететь
-            // много функционала), то нахождение в одной транзакции не создаст и пользователя, так что все должно быть
-            // норм
-            try {
-                patientProfileService.createDefaultProfileForPatient(user);
-            } catch (ResourceAlreadyExistsException ignored) {}
-        }
-
-        return userRepository.save(user);
+        return addUser(user);
     }
     /**
      * Добавляет пользователя в систему.
@@ -90,6 +78,9 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
 
+        // если по какой-то ошибке не создастся профиль при создании пользователя (отчего может полететь
+        // много функционала), то нахождение в одной транзакции не создаст и пользователя, так что все должно быть
+        // норм
         if (user.getRoles().contains(Role.ROLE_PATIENT)) {
             try {
                 patientProfileService.createDefaultProfileForPatient(savedUser);

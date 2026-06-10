@@ -6,11 +6,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.GroupSequence;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
-@Schema(name = "UserRegistration", description = "Форма регистрации нового пользователя-больного.")
+@Schema(name = "UserRegistration", description = "Форма регистрации нового пользователя.")
 @GroupSequence({UserRegistrationDTO.class, TypeGroup.class})
 @PasswordsMatch(groups = TypeGroup.class)
 public record UserRegistrationDTO(
@@ -40,5 +41,7 @@ public record UserRegistrationDTO(
         @Size(max = 255)
         String lastName,
         @Schema(description = "Дата рождения в формате ISO 8601")
-        LocalDate birthDate) {
+        LocalDate birthDate,
+        @Schema(description = "Регистрируется ли пользователь в качестве врача. Если не указано, то false")
+        Boolean isDoctor) {
 }
