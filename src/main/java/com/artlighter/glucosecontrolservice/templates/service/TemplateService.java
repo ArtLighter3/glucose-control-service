@@ -139,6 +139,7 @@ public abstract class TemplateService<T extends PatientTemplateEntity> {
     @Transactional(readOnly = true)
     public Page<T> searchByNameQuery(int patientProfileId, String searchQuery, Pageable pageable) {
         if (pageable == null) pageable = PageRequest.of(0, 10, Sort.by("id.name"));
+        if (searchQuery == null) searchQuery = "";
 
         Page<T> templates = patientTemplateEntityRepository
                 .getAllByIdPatientProfileIdAndIdNameContainingIgnoreCase(patientProfileId, searchQuery, pageable);

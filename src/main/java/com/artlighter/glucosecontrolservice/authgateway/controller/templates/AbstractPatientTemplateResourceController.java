@@ -91,7 +91,6 @@ public abstract class AbstractPatientTemplateResourceController
     public Page<EXT> getTemplatesBySearchQuery(@PathVariable int userId,
                                                @RequestParam @Parameter(required = true,
                                                        description = "Поисковая фраза, содержащаяся в наименовании.")
-                                               @Valid @NotBlank
                                                String query,
                                                @PageableDefault(size = 10, page = 0, sort = "id.name")
                                                @Parameter(description = "Данные о странице и сортировке. " +

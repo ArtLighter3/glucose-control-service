@@ -92,7 +92,10 @@ public class PatientProfileController {
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PostMapping("/doctors/attach")
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
-    public void attachToDoctor(@PathVariable int userId, @RequestBody @Valid DoctorCodeWrapperDTO doctorCodeWrapper) {
+    public void attachToDoctor(@PathVariable int userId, @RequestBody @Valid DoctorCodeWrapperDTO doctorCodeWrapper,
+                               BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) throw new ValidationIsFailedException(bindingResult);
+
         DoctorProfile doctorProfile =
                 doctorProfileService.attachPatientToDoctorByCode(userId, doctorCodeWrapper.doctorCode());
     }
@@ -106,7 +109,10 @@ public class PatientProfileController {
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PostMapping("/doctors/detach")
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
-    public void detachFromDoctor(@PathVariable int userId, @RequestBody @Valid DoctorCodeWrapperDTO doctorCodeWrapper) {
+    public void detachFromDoctor(@PathVariable int userId, @RequestBody @Valid DoctorCodeWrapperDTO doctorCodeWrapper,
+                                 BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) throw new ValidationIsFailedException(bindingResult);
+
         DoctorProfile doctorProfile =
                 doctorProfileService.detachPatientFromDoctorByCode(userId, doctorCodeWrapper.doctorCode());
     }

@@ -81,7 +81,6 @@ public class DoctorController {
     public Page<AttachedPatientDTO> getAttachedPatientsBySearchQuery(@PathVariable int userId,
                                                         @RequestParam("query") @Parameter(required = true,
                                                                 description = "Поисковая фраза, содержащаяся в ФИО.")
-                                                        @Valid @NotBlank
                                                         String query,
                                                         @PageableDefault(sort =
                                                                 {"user.lastName", "user.firstName", "user.middleName"})

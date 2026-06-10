@@ -181,6 +181,7 @@ public class UserService {
     public Page<User> searchByFullNameAndRole(String searchQuery, Role role, Pageable pageable) {
         if (pageable == null) pageable = PageRequest
                 .of(0, 10, Sort.by("lastName", "firstName", "middleName"));
+        if (searchQuery == null) searchQuery = "";
 
         Page<Integer> userIDs = role != null ?
                 userRepository.searchUserIDsByFullNameAndRolesContaining(searchQuery, role, pageable) :

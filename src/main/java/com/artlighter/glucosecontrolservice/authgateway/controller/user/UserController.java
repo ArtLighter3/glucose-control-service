@@ -28,6 +28,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "users", description = "методы для управления пользователями, общей информацией о них")
@@ -55,20 +56,19 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public Page<UserDetailedInfoDTO> getUsersBySearchQuery(@RequestParam
                                                             @Parameter(required = true,
-                                                                        description = "Поисковая фраза, " +
+                                                                       description = "Поисковая фраза, " +
                                                                             "содержащаяся в ФИО.")
-                                                                @Valid @NotBlank
-                                                                String query,
+                                                            String query,
                                                             @RequestParam(required = false)
                                                             @Parameter(required = false,
                                                                        description = "Фильтрация по роли в системе")
                                                             Role role,
-                                                  @PageableDefault(size = 10, page = 0,
+                                                        @PageableDefault(size = 10, page = 0,
                                                           sort = {"lastName", "firstName", "middleName"})
-                                                        @Parameter(description = "Данные о странице и сортировке." +
+                                                        @Parameter(description = "Данные о странице и сортировке. " +
                                                                 "По-умолчанию сортируется " +
                                                                 "по фамилии пользователя (возр.)")
-                                                        Pageable pageable) {
+                                                            Pageable pageable) {
         Page<User> users = userService.searchByFullNameAndRole(query, role, pageable);
 
         return users.map(userDetailedInfoMapper::mapToDTO);
