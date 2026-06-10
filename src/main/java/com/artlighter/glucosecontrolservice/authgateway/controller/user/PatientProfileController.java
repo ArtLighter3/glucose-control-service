@@ -5,7 +5,6 @@ import com.artlighter.glucosecontrolservice.authgateway.util.exception.Convertab
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ExceptionDTO;
 import com.artlighter.glucosecontrolservice.authgateway.util.exception.ValidationIsFailedException;
 import com.artlighter.glucosecontrolservice.user.dto.AttachedDoctorDTO;
-import com.artlighter.glucosecontrolservice.user.dto.AttachedPatientDTO;
 import com.artlighter.glucosecontrolservice.user.dto.DoctorCodeWrapperDTO;
 import com.artlighter.glucosecontrolservice.user.dto.PatientProfileDTO;
 import com.artlighter.glucosecontrolservice.user.entity.DoctorProfile;
