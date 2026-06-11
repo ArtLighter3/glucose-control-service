@@ -5,6 +5,7 @@ import com.artlighter.glucosecontrolservice.general.exception.ResourceNotFoundEx
 import com.artlighter.glucosecontrolservice.user.UserService;
 import com.artlighter.glucosecontrolservice.user.entity.*;
 import com.artlighter.glucosecontrolservice.user.repository.DoctorProfileRepository;
+import com.artlighter.glucosecontrolservice.user.util.CodeGenerator;
 import com.artlighter.glucosecontrolservice.user.util.exception.UserIsNotDoctorException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,6 +29,8 @@ public class DoctorProfileServiceTests {
     private DoctorProfileRepository doctorProfileRepository;
     @MockitoBean
     private PatientProfileService patientProfileService;
+    @MockitoBean
+    private CodeGenerator codeGenerator;
     @Autowired
     private DoctorProfileService doctorProfileService;
 
@@ -63,14 +67,18 @@ public class DoctorProfileServiceTests {
         user.setId(1);
         user.setRoles(Set.of(Role.ROLE_DOCTOR));
         DoctorProfile expected = new DoctorProfile(user.getId());
-        when(doctorProfileRepository.save(expected)).thenReturn(expected);
+        expected.setUser(user);
+        expected.setPersonalSecret("0A0A0A0A");
+        when(doctorProfileRepository.save(eq(expected))).thenReturn(expected);
+        when(codeGenerator.generateAlphaNumericCode(8)).thenReturn("0A0A0A0A");
 
         DoctorProfile actual = doctorProfileService.createDefaultProfileForDoctor(user);
 
-        verify(doctorProfileRepository).save(expected);
+        verify(doctorProfileRepository).save(eq(expected));
         assertEquals(expected, actual);
         assertEquals(user.getId(), actual.getId());
-        assertTrue(expected.getAttachedPatients() == null || expected.getAttachedPatients().isEmpty());
+        assertEquals(expected.getPersonalSecret(), actual.getPersonalSecret());
+        assertTrue(actual.getAttachedPatients() == null || actual.getAttachedPatients().isEmpty());
     }
 
     @Test

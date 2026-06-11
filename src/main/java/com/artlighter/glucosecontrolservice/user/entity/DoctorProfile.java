@@ -90,11 +90,11 @@ public class DoctorProfile {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         DoctorProfile that = (DoctorProfile) o;
-        return id == that.id;
+        return Objects.equals(user, that.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(user);
     }
 }
