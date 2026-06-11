@@ -83,46 +83,67 @@ public class InsulinCalculationService {
 
         InsulinProfile insulinProfile = insulinProfileService.getByPatientProfileId(patientProfile.getUserId());
 
+        //Сбор записей инсулина для вычисления текущего активного инсулина
         Instant now = Instant.now();
-        List<DiaryEntry> entriesToConsider = considerActiveInsulin ?
-                diaryEntryService.getDiaryEntriesOfType(DiaryEntryType.INSULIN_ENTRY,
-                        patientProfile.getUserId(), now.minus(Duration.ofHours(12)), now) : null;
+        List<DiaryEntry> entriesToConsider = correctGlucoseLevel && considerActiveInsulin ?
+                diaryEntryService.getDiaryEntriesOfType(
+                        DiaryEntryType.INSULIN_ENTRY,
+                        patientProfile.getUserId(),
+                        now.minus(Duration.ofHours(12)),
+                        now
+        ) : null;
 
-        float currentIsf = volatileValueExtractor.extractVolatileValue(insulinProfile.getFactorsByTime(),
-                patientTimeOfDay, insulinProfile.getDefaultInsulinSensitivityFactor());
-        float currentIcr = volatileValueExtractor.extractVolatileValue(insulinProfile.getRatiosByTime(),
-                patientTimeOfDay, insulinProfile.getDefaultInsulinToCarbsRatio());
+        //Определение значений ISF и ICR
+        float currentIsf = volatileValueExtractor.extractVolatileValue(
+                insulinProfile.getFactorsByTime(),
+                patientTimeOfDay,
+                insulinProfile.getDefaultInsulinSensitivityFactor()
+        );
+        float currentIcr = volatileValueExtractor.extractVolatileValue(
+                insulinProfile.getRatiosByTime(),
+                patientTimeOfDay,
+                insulinProfile.getDefaultInsulinToCarbsRatio()
+        );
 
+        //Расчет компенсирующей дозы
         double carbsInsulin = insulinCalculator.calculateCarbDose(carbs, currentIcr);
-        double correctionInsulin = 0.0;
 
+        //Расчет активного инсулина
         double activeInsulin = 0.0;
-        if (entriesToConsider != null) {
-            List<InsulinEntry> insulinEntries = entriesToConsider.stream()
-                    .filter((entry) -> entry instanceof InsulinEntry)
-                    .map((entry -> (InsulinEntry) entry)).toList();
+        List<InsulinEntry> insulinEntries = entriesToConsider == null ? null :
+                entriesToConsider.stream()
+                        .filter((entry) -> entry instanceof InsulinEntry)
+                        .map((entry -> (InsulinEntry) entry)).toList();
+        Pair<Double, Double> activeInsulinPair =
+                extractActiveInsulin(insulinEntries, insulinProfile.getDurationOfInsulinAction(), Instant.now());
+        activeInsulin = activeInsulinPair.getFirst() + activeInsulinPair.getSecond();
 
-            Pair<Double, Double> activeInsulinPair =
-                    extractActiveInsulin(insulinEntries, insulinProfile.getDurationOfInsulinAction(), Instant.now());
-            correctionInsulin = insulinCalculator.calculateCorrectionDose(glucose,
-                    patientProfile.getHighGlucose(), currentIsf,
-                    activeInsulinPair.getFirst(), activeInsulinPair.getSecond());
-            activeInsulin = activeInsulinPair.getFirst() + activeInsulinPair.getSecond();
-        }
+        //Расчет корректирующей дозы
+        double correctionInsulin = correctGlucoseLevel ?
+                insulinCalculator.calculateCorrectionDose(
+                        glucose,
+                        patientProfile.getHighGlucose(),
+                        currentIsf,
+                        activeInsulinPair.getFirst(),
+                        activeInsulinPair.getSecond()
+        ) : 0.0;
 
+        //Результаты
         double result = carbsInsulin + correctionInsulin;
-
-        //TODO лучше округлять уже в слое выше при конвертации в DTO
-        return new InsulinResult((float) patientProfile.getGlucoseUnit().convertFromMmolPerLiter(glucose),
+        //TODO мб лучше округлять уже в слое выше при конвертации в DTO
+        return new InsulinResult(
+                (float) patientProfile.getGlucoseUnit().convertFromMmolPerLiter(glucose),
                 patientProfile.getGlucoseUnit(),
                 currentIsf,
                 Float.valueOf(df.format(correctionInsulin)),
                 Float.valueOf(df.format(activeInsulin)),
-                (float) patientProfile.getCarbsUnit().convertFromGrams(carbs), patientProfile.getCarbsUnit(),
+                (float) patientProfile.getCarbsUnit().convertFromGrams(carbs),
+                patientProfile.getCarbsUnit(),
                 currentIcr,
                 Float.valueOf(df.format(carbsInsulin)),
                 correction,
-                Float.valueOf(df.format(result)));
+                Float.valueOf(df.format(result))
+        );
     }
 
 //    public Float calculateActiveInsulin(int patientId) {
@@ -153,7 +174,8 @@ public class InsulinCalculationService {
     }
 
     //public float getActive
-    private Pair<Double, Double> extractActiveInsulin(List<InsulinEntry> insulinEntries, int durationOfInsulinAction,
+    private Pair<Double, Double> extractActiveInsulin(List<InsulinEntry> insulinEntries,
+                                                      int durationOfInsulinAction,
                                                       Instant timestamp) {
         if (insulinEntries == null || insulinEntries.isEmpty()) return Pair.of(0.0, 0.0);
 
@@ -173,7 +195,8 @@ public class InsulinCalculationService {
             double activeInsulin = decayCurveStrategy.getCurrentActiveInsulin(insulinEntry.getValue(),
                     minutesPassedFromAdministration, durationOfInsulinAction);
 
-            if (insulinEntry.getInsulinType() == InsulinType.SHORT_CARBS) carbsInsulin += activeInsulin;
+            //TODO разобраться с типами инсулина
+            if (insulinEntry.getInsulinType() == InsulinType.SHORT) carbsInsulin += activeInsulin;
             else if (insulinEntry.getInsulinType() == InsulinType.SHORT_CORRECTION) correctionInsulin += activeInsulin;
         }
 
