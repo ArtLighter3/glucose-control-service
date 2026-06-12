@@ -66,10 +66,10 @@ public class NightscoutTreatmentMapper implements DTOMapper<List<DiaryEntry>, Ni
 
         fill(insulinEntry, commitedAt, insulin, eventType);
 
-        if (eventType == null) insulinEntry.setInsulinType(InsulinType.SHORT_CORRECTION);
+        if (eventType == null) insulinEntry.setInsulinType(InsulinType.SHORT);
         else if (eventType.equals("Temp Basal") || eventType.equals("Permanent Basal"))
             insulinEntry.setInsulinType(InsulinType.LONG);
-        else insulinEntry.setInsulinType(InsulinType.SHORT_CORRECTION);
+        else insulinEntry.setInsulinType(InsulinType.SHORT);
 
         return insulinEntry;
     }

@@ -71,7 +71,7 @@ public class InsulinCalculationService {
      *                            настройкам в профиле больного);
      * @param carbs количество принимаемых углеводов, для которых производится расчет компенсации;
      * @param glucose текущий уровень глюкозы для коррекции сахара в крови;
-     * @param correction процент коррекции, если необходимо добавить из-за каких-то внешних факторов;
+     * @param correction процент коррекции, если необходимо добавить или убавить из-за каких-то внешних факторов;
      * @return InsulinResult, содержащий как результат, так и каждый элемент, участвовавший в расчете;
      * @throws IllegalArgumentException если patientTimeOfDay или patientProfile равны null;
      */
@@ -196,8 +196,8 @@ public class InsulinCalculationService {
                     minutesPassedFromAdministration, durationOfInsulinAction);
 
             //TODO разобраться с типами инсулина
-            if (insulinEntry.getInsulinType() == InsulinType.SHORT) carbsInsulin += activeInsulin;
-            else if (insulinEntry.getInsulinType() == InsulinType.SHORT_CORRECTION) correctionInsulin += activeInsulin;
+            if (insulinEntry.getInsulinType() == InsulinType.RAPID) carbsInsulin += activeInsulin;
+            else if (insulinEntry.getInsulinType() == InsulinType.SHORT) correctionInsulin += activeInsulin;
         }
 
         return Pair.of(carbsInsulin, correctionInsulin);

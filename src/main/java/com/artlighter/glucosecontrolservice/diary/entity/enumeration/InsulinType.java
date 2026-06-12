@@ -1,8 +1,9 @@
 package com.artlighter.glucosecontrolservice.diary.entity.enumeration;
 
 public enum InsulinType {
+    RAPID,
+    SHORT,
+    INTERMEDIATE,
     LONG,
-    SHORT_CARBS,
-    SHORT_CORRECTION,
-    SHORT
+    OTHER
 }
