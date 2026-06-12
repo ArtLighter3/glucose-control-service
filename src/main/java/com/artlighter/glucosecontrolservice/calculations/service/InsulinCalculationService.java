@@ -198,8 +198,8 @@ public class InsulinCalculationService {
                     minutesPassedFromAdministration, durationOfInsulinAction);
 
             //TODO разобраться с типами инсулина
-            if (insulinEntry.getInsulinType() == InsulinType.RAPID) carbsInsulin += activeInsulin;
-            else if (insulinEntry.getInsulinType() == InsulinType.SHORT) correctionInsulin += activeInsulin;
+            if (insulinEntry.getInsulinType() == InsulinType.SHORT) correctionInsulin += activeInsulin;
+           // else if (insulinEntry.getInsulinType() == InsulinType.SHORT) correctionInsulin += activeInsulin;
         }
 
         return Pair.of(carbsInsulin, correctionInsulin);
