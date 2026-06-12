@@ -128,8 +128,10 @@ public class InsulinCalculationService {
                         activeInsulinPair.getSecond()
         ) : 0.0;
 
+        //Коэффициент коррекции
+        double k = (correction + 100) / 100.0;
         //Результаты
-        double result = carbsInsulin + correctionInsulin;
+        double result = k * (carbsInsulin + correctionInsulin);
         //TODO мб лучше округлять уже в слое выше при конвертации в DTO
         return new InsulinResult(
                 (float) patientProfile.getGlucoseUnit().convertFromMmolPerLiter(glucose),

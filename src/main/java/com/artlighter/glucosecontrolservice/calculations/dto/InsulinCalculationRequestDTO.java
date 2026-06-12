@@ -37,7 +37,10 @@ public record InsulinCalculationRequestDTO(
                 "настройкам в профиле больного.")
         @NotNull
         Boolean correctGlucoseLevel,
-        @Schema(description = "Значение коррекции")
+        @Schema(description = "Значение коррекции в процентах для корректировки " +
+                "(увеличение, уменьшение) конечного результата", example = "-50")
+        @DecimalMin("-100")
+        @DecimalMax("100")
         Float correction
 ) {
 }
