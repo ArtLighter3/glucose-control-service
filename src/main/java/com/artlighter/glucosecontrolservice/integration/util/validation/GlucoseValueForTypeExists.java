@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface GlucoseValueForTypeExists {
-    String message() default "glucose value for this entry type must be provided (sgv, mbg or cal)";
+    String message() default "значение глюкозы должно быть предоставлено (sgv, mbg или cal)";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

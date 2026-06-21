@@ -10,8 +10,8 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CorrectGlucoseIntervals {
-    String message() default "some of the target glucose value is out of bounds " +
-            "relative to its higher or lower target glucose";
+    String message() default "какие-то из пределов интервалов глюкозы выходят за рамки " +
+            "более высокого или низкого интервала";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

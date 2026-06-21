@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CorrectGlucose {
-    String message() default "glucose value should be in range 0.5-40 mmol/L (10-720 mg/dL) with specified units";
+    String message() default "значение глюкозы должно быть 0.5-40 ммоль/л (9-720 мг/дл)";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

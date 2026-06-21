@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -16,6 +18,13 @@ import java.util.Locale;
 @Configuration
 @EnableSpringDataWebSupport(pageSerializationMode = EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO)
 public class GeneralConfig {
+
+    @Bean
+    public LocaleResolver localeResolver() {
+        AcceptHeaderLocaleResolver slr = new AcceptHeaderLocaleResolver();
+        slr.setDefaultLocale(Locale.of("ru", "RU"));
+        return slr;
+    }
 
     @Bean
     public DecimalFormat decimalFormat() {

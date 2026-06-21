@@ -12,7 +12,7 @@ public record GlucoseEntryDTO(
         @Schema(description = "Значение глюкозы в тех единицах измерения, которые указаны в профиле больного. " +
                 "Допустимый диапазон также зависит от единицы измерения: 0.5-40 ммоль/л, 9-720 мг/дл",
                 example = "9.6")
-        @NotNull
+        @NotNull()
         Float value,
         @Schema(description = "Временная отметка измерения глюкозы в формате ISO 8601")
         @NotNull

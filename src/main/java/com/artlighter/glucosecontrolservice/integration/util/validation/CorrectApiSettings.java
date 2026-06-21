@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CorrectApiSettings {
-    String message() default "some of the API integration enabled but no API credentials provided";
+    String message() default "некоторые из интеграций включены, но для них не предоставлены настройки";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

@@ -10,7 +10,8 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CorrectCalculationRequest {
-    String message() default "calculation is requested to correct glucose level but no current glucose was provided";
+    String message()
+            default "расчет настроен для понижения уровня глюкозы, но не было предоставлено текущего уровня глюкозы";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
