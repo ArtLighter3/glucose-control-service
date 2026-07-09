@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @ApiResponses(value =
         {@ApiResponse(responseCode = "404", description = "Если больной или его профиль интеграций не были найдены.",
                 content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+@SecurityRequirement(name = "sessionAuth")
 @RestController
 @RequestMapping("/api/v1/patients/{userId}/integration-profile")
 public class IntegrationProfileController {
@@ -60,6 +62,7 @@ public class IntegrationProfileController {
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
             @ApiResponse(responseCode = "409", description = "Если инсулиновый профиль для больного уже существует.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+    @SecurityRequirement(name = "csrf")
     @PostMapping
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     @ResponseStatus(HttpStatus.CREATED)
@@ -81,6 +84,7 @@ public class IntegrationProfileController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "В случае успеха."),
             @ApiResponse(responseCode = "400", description = "Если тело запроса некорректное.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+    @SecurityRequirement(name = "csrf")
     @PutMapping
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     public IntegrationProfileDTO putIntegrationProfile(@PathVariable int userId,

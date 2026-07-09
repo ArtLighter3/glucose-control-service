@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,7 @@ import java.util.Map;
         {@ApiResponse(responseCode = "404", description = "Если больной или его инсулиновый профиль не были найдены.",
                 content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
 @RestController
+@SecurityRequirement(name = "sessionAuth")
 @RequestMapping("/api/v1/patients/{userId}/insulin-profile")
 public class InsulinProfileController {
     private PatientProfileService patientProfileService;
@@ -74,6 +76,7 @@ public class InsulinProfileController {
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
             @ApiResponse(responseCode = "409", description = "Если инсулиновый профиль для больного уже существует.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+    @SecurityRequirement(name = "csrf")
     @PostMapping
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, true, false)")
     @ResponseStatus(HttpStatus.CREATED)
@@ -101,6 +104,7 @@ public class InsulinProfileController {
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "В случае успеха."),
             @ApiResponse(responseCode = "400", description = "Если тело запроса некорректное.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+    @SecurityRequirement(name = "csrf")
     @PutMapping
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, true, false)")
     public InsulinProfileDTO putInsulinProfile(@PathVariable int userId,

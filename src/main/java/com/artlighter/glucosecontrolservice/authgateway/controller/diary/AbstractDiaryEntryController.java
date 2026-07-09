@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -54,6 +55,7 @@ import java.time.ZoneOffset;
         {@ApiResponse(responseCode = "404", description = "Если больной не был найден.",
                 content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
 @RequestMapping("api/v1/patients/{userId}/entries")
+@SecurityRequirement(name = "sessionAuth")
 //@CrossOrigin(origins = "http://localhost:5173")
 public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT extends DiaryEntryDTO> {
     //TODO мб убрать зависимости из абстрактного класса и просто сделать абстрактные геттеры, как в модуле templates?
@@ -105,6 +107,7 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
             @ApiResponse(responseCode = "409", description = "Если запись этого типа с этой временной отметкой" +
                     " для этого пользователя уже существует.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+    @SecurityRequirement(name = "csrf")
     @PostMapping("/default")
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     @ResponseStatus(HttpStatus.CREATED)
@@ -119,6 +122,7 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
             @ApiResponse(responseCode = "404", description = "Если больной или обновляемая запись не были найдены.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+    @SecurityRequirement(name = "csrf")
     @PutMapping("/default")
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     public EXT putDiaryEntry(@PathVariable int userId, @RequestBody @Valid EXT entryDTO,
@@ -130,6 +134,7 @@ public abstract class AbstractDiaryEntryController<INT extends DiaryEntry, EXT e
             {@ApiResponse(responseCode = "200", description = "Запись удалена, либо ее и не существовало."),
             @ApiResponse(responseCode = "400", description = "Если параметры запроса некорректны.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+    @SecurityRequirement(name = "csrf")
     @DeleteMapping("/default")
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     public void deleteDiaryEntry(@PathVariable int userId,

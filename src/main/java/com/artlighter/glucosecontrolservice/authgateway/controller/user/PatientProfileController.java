@@ -19,11 +19,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
         {@ApiResponse(responseCode = "200", description = "В случае успеха."),
         @ApiResponse(responseCode = "404", description = "Если профиль больного не был найден.",
                 content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+@SecurityRequirement(name = "sessionAuth")
 @RestController
 @RequestMapping("/api/v1/patients/{userId}")
 public class PatientProfileController {
@@ -89,6 +92,7 @@ public class PatientProfileController {
                         content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
             @ApiResponse(responseCode = "409", description = "Если больной уже прикреплен.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+    @SecurityRequirement(name = "csrf")
     @PostMapping("/doctors/attach")
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     public void attachToDoctor(@PathVariable int userId, @RequestBody @Valid DoctorCodeWrapperDTO doctorCodeWrapper,
@@ -106,6 +110,7 @@ public class PatientProfileController {
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
             @ApiResponse(responseCode = "404", description = "Если врач по коду или больной не найдены.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+    @SecurityRequirement(name = "csrf")
     @PostMapping("/doctors/detach")
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     public void detachFromDoctor(@PathVariable int userId, @RequestBody @Valid DoctorCodeWrapperDTO doctorCodeWrapper,
@@ -120,6 +125,7 @@ public class PatientProfileController {
             "владельцам профиля с ролью больного")
     @ApiResponses(value = {@ApiResponse(responseCode = "400", description = "Если тело запроса некорректное.",
             content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+    @SecurityRequirement(name = "csrf")
     @PutMapping("/patient-profile")
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     public PatientProfileDTO putPatientProfile(@PathVariable int userId,

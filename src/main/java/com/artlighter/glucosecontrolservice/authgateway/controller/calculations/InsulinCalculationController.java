@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,6 +30,7 @@ import java.time.Instant;
         @ApiResponse(responseCode = "404", description = "Если больной или его инсулиновый профиль не были найдены.",
                 content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
 @RestController
+@SecurityRequirement(name = "sessionAuth")
 @RequestMapping("/api/v1/patients/{userId}/insulin")
 public class InsulinCalculationController {
     private InsulinCalculationService insulinCalculationService;

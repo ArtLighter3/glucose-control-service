@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -53,6 +54,7 @@ import org.springframework.web.bind.annotation.*;
 @ApiResponses(value =
         {@ApiResponse(responseCode = "404", description = "Если больной не был найден.",
                 content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+@SecurityRequirement(name = "sessionAuth")
 @RequestMapping("/api/v1/patients/{userId}/templates/")
 public abstract class AbstractPatientTemplateResourceController
         <INT extends PatientTemplateEntity, EXT extends PatientTemplateEntityDTO> {
@@ -110,6 +112,7 @@ public abstract class AbstractPatientTemplateResourceController
                             "для этого пользователя уже существует.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
+    @SecurityRequirement(name = "csrf")
     @PostMapping("/defaults")
     @ResponseStatus(HttpStatus.CREATED)
     public EXT postTemplate(@PathVariable int userId, @RequestBody @Valid EXT template, BindingResult bindingResult) {
@@ -124,6 +127,7 @@ public abstract class AbstractPatientTemplateResourceController
             @ApiResponse(responseCode = "404", description = "Если больной или обновляемая заготовка не были найдены.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
+    @SecurityRequirement(name = "csrf")
     @PutMapping("/defaults")
     public EXT putTemplate(@PathVariable int userId, @RequestBody @Valid EXT template, BindingResult bindingResult) {
         INT updated = update(userId, template, bindingResult);
@@ -135,6 +139,7 @@ public abstract class AbstractPatientTemplateResourceController
             @ApiResponse(responseCode = "400", description = "Если параметры запроса некорректны.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
+    @SecurityRequirement(name = "csrf")
     @DeleteMapping("/defaults")
     public void deleteTemplate(@PathVariable int userId, @RequestParam String name) {
         PatientProfile patientProfile = getPatientProfileOrThrowException(userId);

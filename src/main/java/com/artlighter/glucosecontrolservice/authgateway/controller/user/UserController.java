@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "users", description = "методы для управления пользователями, общей информацией о них")
+@SecurityRequirement(name = "sessionAuth")
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
@@ -87,6 +89,7 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
                     @ApiResponse(responseCode = "409", description = "Если пользователь уже существует.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+    @SecurityRequirement(name = "csrf")
     @PostMapping
     @PreAuthorize("hasRole('SUPERUSER') or (hasRole('ADMIN') " +
             "and not #userCreationDTO.roles()" +
@@ -109,6 +112,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Если тело запроса неверное.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
             @ApiResponse(responseCode = "404", description = "Если пользователь с таким ID не найден.")})
+    @SecurityRequirement(name = "csrf")
     @PutMapping("/{userId}")
     @PreAuthorize("@resourceAccessInspector.isOwnerOfResource(#userId, authentication) or " +
             "(hasRole('ADMIN') and not @resourceAccessInspector.isAdmin(#userId)) or " +
@@ -128,6 +132,7 @@ public class UserController {
     @Operation(summary = "Удалить пользователя. Только для администраторов")
     @ApiResponses(value =
             {@ApiResponse(responseCode = "200", description = "Пользователь удален, либо его и не существовало.")})
+    @SecurityRequirement(name = "csrf")
     @DeleteMapping("/{userId}")
     @PreAuthorize("hasRole('SUPERUSER') or (hasRole('ADMIN') and not @resourceAccessInspector.isAdmin(#userId))")
     public void deleteUser(@PathVariable int userId) {

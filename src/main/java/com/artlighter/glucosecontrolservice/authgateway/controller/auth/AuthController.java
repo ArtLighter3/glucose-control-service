@@ -12,10 +12,12 @@ import com.artlighter.glucosecontrolservice.authgateway.util.exception.Validatio
 import com.artlighter.glucosecontrolservice.user.UserService;
 import com.artlighter.glucosecontrolservice.user.util.mapper.UserSessionMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -52,6 +54,7 @@ public class AuthController {
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class))),
             @ApiResponse(responseCode = "409", description = "Если пользователь с таким именем уже существует.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+    @SecurityRequirement(name = "csrf")
     @PostMapping(value = "/register")
     public void register(@RequestBody @Valid UserRegistrationDTO userRegistrationDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -71,6 +74,7 @@ public class AuthController {
     @ApiResponses(value = @ApiResponse(responseCode = "404", description = "Если в сессии с переданным ID не было " +
             "найдено пользователя, либо если ID сессии не был передан.",
             content = @Content(schema = @Schema(implementation = ExceptionDTO.class))))
+    @SecurityRequirement(name = "sessionAuth")
     @GetMapping("/get-current-user")
     public UserSessionDTO getUserInSession(@AuthenticationPrincipal ServiceUserDetails serviceUserDetails) {
         if (serviceUserDetails == null)
@@ -81,7 +85,7 @@ public class AuthController {
 
     @Operation(summary = "Метод, возвращающий CSRF-токен, необходимый для POST, DELETE, PUT запросов")
     @GetMapping("/csrf")
-    public CsrfToken getCsrf(CsrfToken csrfToken) {
+    public CsrfToken getCsrf(@Parameter(hidden = true, required = false) CsrfToken csrfToken) {
         return csrfToken;
     }
 }

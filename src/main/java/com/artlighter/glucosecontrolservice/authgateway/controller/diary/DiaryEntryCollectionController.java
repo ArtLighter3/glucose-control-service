@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +38,7 @@ import java.util.List;
         {@ApiResponse(responseCode = "404", description = "Если больной не был найден.",
                 content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
 @RestController
+@SecurityRequirement(name = "sessionAuth")
 @RequestMapping("api/v1/patients/{userId}/entries")
 public class DiaryEntryCollectionController {
     private DiaryEntryService diaryEntryService;
@@ -84,6 +86,7 @@ public class DiaryEntryCollectionController {
             @ApiResponse(responseCode = "400", description = "Если тело запроса (сам список) некорректное." +
                     "В случае некорректности одной из записей она будет возвращена в ответе с кодом 200.",
                     content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))})
+    @SecurityRequirement(name = "csrf")
     @PostMapping
     @PreAuthorize("@resourceAccessInspector.hasAccessToPatientResource(#userId, authentication, false, false)")
     public List<DiaryEntryDTO> postAllEntries(@PathVariable int userId,

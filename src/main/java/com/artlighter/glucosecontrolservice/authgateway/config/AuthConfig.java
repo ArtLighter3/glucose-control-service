@@ -44,8 +44,11 @@ public class AuthConfig {
                 .authorizeHttpRequests(requests -> requests
                         .requestMatchers("/api/v1/auth/register",
                                 "/api/v1/auth/csrf",
-                                "/nightscout/**").permitAll()
-                                        .anyRequest().authenticated())
+                                "/nightscout/**",
+                                "/api/v1/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html").permitAll()
+                        .anyRequest().authenticated())
                         //        .requestMatchers("/api/auth/process-login").permitAll()
                 .exceptionHandling(exception ->
                         exception.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
