@@ -86,6 +86,8 @@ docker run -d -p <port>:8080 gcs-api
 ## Сборка и запуск без контейнеров
 Для сборки проекта с нуля можно использовать встроенный Maven Wrapper. Также необходим предварительный запуск PostgreSQL и наличие Java 21.
 
+В [src/main/resources/application.properties](src/main/resources/application.properties) также необходимо указать адрес фронта, БД, логин и пароль для БД.
+
 Сборка проекта
 ```
 ./mvnw clean package -DskipTests=true
