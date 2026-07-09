@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.artlighter</groupId>
     <artifactId>glucose-control-service</artifactId>
-    <version>0.9</version>
+    <version>1.0</version>
     <name>glucose-control-service</name>
     <description>glucose-control-service</description>
     <url/>
