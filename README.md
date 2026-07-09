@@ -50,7 +50,7 @@
 Необходимо развернуть сам Back-End и СУБД (используется PostgreSQL).
 
 ## Через Docker Compose
-Доступно развертывание с помощью Docker Compose через файл [docker-compose.yml](docker-compose.yml), где  
+Доступно развертывание сразу и Back-End и настроенной среды с PostgreSQL с помощью Docker Compose через файл [docker-compose.yml](docker-compose.yml), где  
 необходимо выставить переменные: 
 - CORS_FRONTEND_URL (адрес фронта для ответов на OPTIONS-запросы, если фронт браузерный);
 - SPRING_DATASOURCE_USERNAME и POSTGRES_USER (имя пользователя для доступа к БД);
